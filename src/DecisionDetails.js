@@ -38,7 +38,7 @@ const DecisionDetails = () => {
                 {questions.map((q, index) => (
                   <React.Fragment key={index}>
                     <div style={{ margin: '0 10px', border: '1px solid black', padding: '10px', borderRadius: '5px', textAlign: 'left' }}>
-                      <p><strong>Q:</strong> {q.question}</p>
+                      <p><strong>Q:{q.question}</strong> </p>
                       <p><strong>A:</strong> {q.answer}</p>
                     </div>
                     {index < questions.length - 1 && <span style={{ margin: '0 5px', alignSelf: 'center' }}>➡️</span>}
