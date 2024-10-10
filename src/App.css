@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+
+.centered-table-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.centered-table {
+  margin: 0 auto;
+}
+.custom-button {
+  background-color: #238636;
+  color: #fff;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.custom-button:hover {
+  background-color: #1f7a54;
+}
+
+.nav-link {
+  margin-right: 15px;
+}
