@@ -61,3 +61,11 @@
 .nav-link {
   margin-right: 15px;
 }
+.no-bullets {
+  list-style-type: none;
+  padding: 0;
+}
+.no-bullets li {
+  margin-bottom: 5px; /* 增加底部边距 */
+  padding: 5px 0; /* 增加上下的 padding */
+}
