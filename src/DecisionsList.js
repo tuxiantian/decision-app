@@ -83,7 +83,7 @@ const DecisionsList = () => {
                 <td>{new Date(decision.created_at).toLocaleString()}</td>
                 <td>
                   <button onClick={() => viewDetails(decision.id)}>详情</button>
-                  <button onClick={() => viewReport(decision.id)}>报告</button>
+                  <button onClick={() => viewReport(decision.id)} style={{ marginLeft: '10px' }}>报告</button>
                   <button onClick={() => deleteDecision(decision.id)} style={{ marginLeft: '10px' }}>删除</button>
                 </td>
               </tr>
