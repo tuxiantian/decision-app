@@ -63,10 +63,6 @@ const QuestionFlow = () => {
 
   return (
     <div>
-      <nav style={{ marginBottom: '20px' }}>
-        <Link className="nav-link" to="/">Home</Link>
-        <Link className="nav-link" to="/decisions">Decisions List</Link>
-      </nav>
       <h2>决策名称</h2>
       <input
         type="text"

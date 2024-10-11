@@ -51,10 +51,6 @@ function AHPAnalysis() {
 
   return (
     <div className="App">
-    <nav style={{ marginBottom: '20px' }}>
-    <Link className="nav-link" to="/">Home</Link>
-        <Link className="nav-link" to="/decisions">Decisions List</Link>
-      </nav>
       <h1>AHP Decision System</h1>
       {!isNew ? (
         <div className="centered-table-container">

@@ -57,11 +57,6 @@ const DecisionsList = () => {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <nav style={{ marginBottom: '20px' }}>
-      <Link className="nav-link" to="/">Home</Link>
-        <Link  className="nav-link" to="/question-flow">QuestionFlow</Link>
-        <Link  className="nav-link" to="/ahp">AHPAnalysis List</Link>
-      </nav>
       <h2>Decisions List (Page {currentPage} of {totalPages})</h2>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <table style={{ textAlign: 'left' }}>

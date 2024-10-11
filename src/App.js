@@ -21,10 +21,13 @@ function App() {
     <Router>
       <div className="App">
       <nav style={{ marginBottom: '20px' }}>
-          <Link to="/" style={{ marginRight: '15px' }}>Home</Link>
-          <Link to="/checklists" style={{ marginRight: '15px' }}>Checklists</Link>
-          <Link to="/history" style={{ marginRight: '15px' }}>Answer History</Link>
-          <Link to="/checklist-form">Checklist Form</Link>
+          <Link className="nav-link" to="/">Home</Link>
+          <Link className="nav-link" to="/checklists">Checklists</Link>
+          <Link className="nav-link" to="/history">Answer History</Link>
+          <Link className="nav-link" to="/checklist-form">Checklist Form</Link>
+          <Link className="nav-link" to="/decisions">Decisions List</Link>
+          <Link  className="nav-link" to="/question-flow">QuestionFlow</Link>
+          <Link  className="nav-link" to="/ahp">AHPAnalysis List</Link>
         </nav>
         <Routes>
           <Route path="/" element={<Home />} />
