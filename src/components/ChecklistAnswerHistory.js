@@ -6,21 +6,30 @@ const ChecklistAnswerHistory = () => {
   const [checklistDecisions, setChecklistDecisions] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchChecklistDecisions = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/checklist_answers/1');
-        setChecklistDecisions(response.data);
-      } catch (error) {
-        console.error('Error fetching checklist decisions', error);
-      }
-    };
+  const fetchChecklistDecisions = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/checklist_answers/1');
+      setChecklistDecisions(response.data);
+    } catch (error) {
+      console.error('Error fetching checklist decisions', error);
+    }
+  };
 
+  useEffect(() => {
     fetchChecklistDecisions();
   }, []);
 
   const handleViewDetails = (decisionId) => {
     navigate(`/checklist_answers/details/${decisionId}`);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/checklist_answers/${id}`);
+      await fetchChecklistDecisions();
+    } catch (error) {
+      console.error('Error deleting checklist decision', error);
+    }
   };
 
   return (
@@ -33,9 +42,8 @@ const ChecklistAnswerHistory = () => {
             <div><strong>Version:</strong> {decision.version}</div>
             <div><strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
             <div><strong>Final Decision:</strong> {decision.final_decision}</div>
-            <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginTop: '10px', padding: '10px 20px' }}>
-              View Details
-            </button>
+            <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }}>View Details</button>
+            <button onClick={() => handleDelete(decision.decision_id)} style={{ backgroundColor: 'red', color: 'white' }}>Delete</button>
           </li>
         ))}
       </ul>
