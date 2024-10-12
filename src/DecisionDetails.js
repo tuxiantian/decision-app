@@ -23,10 +23,6 @@ const DecisionDetails = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <nav style={{ marginBottom: '20px' }}>
-      <Link className="nav-link" to="/">Home</Link>
-        <Link  className="nav-link" to="/question-flow">QuestionFlow</Link> | <Link to="/decisions">Decisions List</Link>
-      </nav>
       <h2>{decisionDetails.decision_name} - Details</h2>
       <p>Created at: {new Date(decisionDetails.created_at).toLocaleString()}</p>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
