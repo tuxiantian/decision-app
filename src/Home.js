@@ -14,7 +14,7 @@ const Home = () => {
         <section className="home-section" style={{ flex: '1 1 45%', margin: '20px', boxSizing: 'border-box' }}>
           <h2>Get Started with Your Decision</h2>
           <p>Answer guided questions to make the best decision for any situation.</p>
-          <Link to="/questionflow" className="home-link-button">Start a New Decision</Link>
+          <Link to="/question-flow" className="home-link-button">Start a New Decision</Link>
         </section>
 
         <section className="home-section" style={{ flex: '1 1 45%', margin: '20px', boxSizing: 'border-box' }}>
