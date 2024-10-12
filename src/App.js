@@ -15,6 +15,7 @@ import ChecklistDetail from './components/ChecklistDetail';
 import ChecklistForm from './components/ChecklistForm';
 import ChecklistAnswerHistory from './components/ChecklistAnswerHistory';
 import ChecklistDetails from './components/ChecklistDetails';
+import ChecklistUpdate from './components/ChecklistUpdate';
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
           <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
           <Route path="/history" element={<ChecklistAnswerHistory />} />
           <Route path="/checklist_answers/details/:decisionId" element={<ChecklistDetails />} />
-
+          <Route path="/checklist/update/:checklistId" element={<ChecklistUpdate />} />
         </Routes>
       </div>
     </Router>
