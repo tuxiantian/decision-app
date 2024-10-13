@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Modal from 'react-modal';
+import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+import { Viewer } from '@toast-ui/react-editor';
+
 
 const ChecklistDetails = () => {
   const { decisionId } = useParams();
   const [decisionDetails, setDecisionDetails] = useState(null);
+  const [showArticleModal, setShowArticleModal] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +25,16 @@ const ChecklistDetails = () => {
 
     fetchDecisionDetails();
   }, [decisionId]);
+
+  const handleViewArticle = async (articleId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/articles/${articleId}`);
+      setSelectedArticle(response.data);
+      setShowArticleModal(true);
+    } catch (error) {
+      console.error('Error fetching article details', error);
+    }
+  };
 
   if (!decisionDetails) return <div>Loading...</div>;
 
@@ -35,6 +51,23 @@ const ChecklistDetails = () => {
           <li key={index} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
             <div style={{ textAlign: 'left' }}><strong>Q:</strong> <strong>{answer.question}</strong></div>
             <div style={{ textAlign: 'left' }}><strong>A:</strong> {answer.answer}</div>
+            {answer.referenced_articles && answer.referenced_articles.length > 0 && (
+              <div style={{ textAlign: 'left', marginTop: '10px' }}>
+                <strong>Referenced Articles:</strong>
+                <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+                  {answer.referenced_articles.map((article) => (
+                    <li key={article.id}>
+                      <button
+                        onClick={() => handleViewArticle(article.id)}
+                        style={{ textDecoration: 'underline', color: 'blue', background: 'none', border: 'none', cursor: 'pointer' }}
+                      >
+                        {article.title}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </li>
         ))}
       </ul>
@@ -42,6 +75,44 @@ const ChecklistDetails = () => {
       <nav style={{ marginTop: '20px' }}>
         <Link to="/history" style={{ padding: '10px 20px' }}>Back to Checklist Answer History</Link>
       </nav>
+
+      {/* Article Modal */}
+      <Modal
+        isOpen={showArticleModal}
+        onRequestClose={() => setShowArticleModal(false)}
+        contentLabel="Article Details"
+        style={{
+          content: {
+            maxWidth: '800px', // 设置弹窗的最大宽度
+            width: '80%',
+            height: '80vh', // 使用视口高度
+            margin: '20px auto', // 在弹窗上下方添加适当的边距，避免紧贴顶部
+            padding: '20px',
+            overflowY: 'auto', // 使弹窗内容超出时出现滚动条
+          },
+          overlay: {
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center', // 使弹窗垂直居中
+            justifyContent: 'center' // 使弹窗水平居中
+          }
+        }}
+      >
+        {selectedArticle ? (
+          <div>
+            <h2 style={{ marginTop: '0' }}>{selectedArticle.title}</h2>
+            <p><strong>Author:</strong> {selectedArticle.author}</p>
+            <p><strong>Tags:</strong> {selectedArticle.tags}</p>
+            <p><strong>Keywords:</strong> {selectedArticle.keywords}</p>
+            <Viewer initialValue={selectedArticle.content} />
+            <button onClick={() => setShowArticleModal(false)} style={{ marginTop: '20px' }}>Close</button>
+          </div>
+        ) : (
+          <div>Loading article details...</div>
+        )}
+      </Modal>
+
+
     </div>
   );
 };
