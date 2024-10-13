@@ -1,0 +1,39 @@
+.todo-list {
+    padding: 20px;
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .quadrant-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .quadrant {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+  .todo-item {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+  }
+  
+  .todo-item input {
+    margin-right: 10px;
+  }
+  
+  .completed-tasks {
+    margin-top: 20px;
+  }
+  
+  .completed-tasks .todo-item {
+    text-decoration: line-through;
+    color: grey;
+  }
+  
