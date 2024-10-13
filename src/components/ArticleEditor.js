@@ -176,7 +176,7 @@ const ArticleEditor = () => {
             <Editor
                 initialValue={id ? content : ""} // 编辑时加载内容，新增时为空
                 previewStyle="vertical"
-                height="400px"
+                height="600px"
                 initialEditType="markdown"
                 useCommandShortcut={true}
                 ref={editorRef}

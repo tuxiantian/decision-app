@@ -20,6 +20,10 @@ const ChecklistList = () => {
     navigate(`/checklist/update/${checklistId}`);
   };
 
+  const handleMakeDecisionClick = (checklistId) => {
+    navigate(`/checklist/${checklistId}`);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2>Checklist List</h2>
@@ -39,9 +43,12 @@ const ChecklistList = () => {
                 </ul>
               )}
             </div>
-            {checklist.can_update && (
-              <button onClick={() => handleUpdateClick(checklist.id)} style={{ backgroundColor: '#007bff', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Update Version</button>
-            )}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {checklist.can_update && (
+                <button onClick={() => handleUpdateClick(checklist.id)} style={{ backgroundColor: '#007bff', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Update Version</button>
+              )}
+              <button onClick={() => handleMakeDecisionClick(checklist.id)} style={{ backgroundColor: '#28a745', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Make Decision</button>
+            </div>
           </li>
         ))}
       </ul>
