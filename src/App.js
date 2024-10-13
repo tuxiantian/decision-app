@@ -20,6 +20,7 @@ import TodoList from './components/TodoList';
 import ArticleList from './components/ArticleList';
 import ArticleEditor from './components/ArticleEditor';
 import ArticleViewer from './components/ArticleViewer';
+import AboutUs from './AboutUs';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Link className="nav-link" to="/question-flow">QuestionFlow</Link>
           <Link className="nav-link" to="/ahp">AHPAnalysis List</Link>
           <Link className="nav-link" to="/todos">Todo List</Link>
+          <Link className="nav-link" to="/about-us">AboutUs</Link>
         </nav>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -61,7 +63,7 @@ function App() {
           <Route path="/add-article" element={<ArticleEditor />} />
           <Route path="/edit-article/:id" element={<ArticleEditor />} />
           <Route path="/view-article/:id" element={<ArticleViewer />} />
-
+          <Route path="/about-us" element={<AboutUs />} />
         </Routes>
       </div>
     </Router>
