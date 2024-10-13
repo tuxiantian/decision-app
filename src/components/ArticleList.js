@@ -4,22 +4,31 @@ import { useNavigate } from 'react-router-dom';
 
 const ArticleList = () => {
     const [articles, setArticles] = useState([]);
-    const [filteredArticles, setFilteredArticles] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10; // 页大小为10
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchArticles();
-    }, []);
+        fetchArticles(currentPage);
+    }, [currentPage]);
 
-    const fetchArticles = () => {
-        axios.get('http://localhost:5000/articles')
+    const fetchArticles = (page) => {
+        axios.get('http://localhost:5000/articles', {
+            params: {
+                page: page,
+                page_size: pageSize,
+                search: searchTerm,
+            },
+        })
             .then(response => {
-                setArticles(response.data);
-                setFilteredArticles(response.data);
+                if (response.data) {
+                    const { articles, total_pages } = response.data; // 获取 articles 和 total_pages
+                    setArticles(articles); // 更新 articles
+                    setTotalPages(total_pages); // 更新 totalPages
+                }
             })
             .catch(error => {
                 console.error('There was an error fetching the articles!', error);
@@ -31,7 +40,6 @@ const ArticleList = () => {
             .then(() => {
                 const updatedArticles = articles.filter(article => article.id !== id);
                 setArticles(updatedArticles);
-                setFilteredArticles(updatedArticles);
             })
             .catch(error => {
                 console.error('There was an error deleting the article!', error);
@@ -57,31 +65,20 @@ const ArticleList = () => {
 
     // 点击“搜索”按钮时的处理函数
     const handleSearchButton = () => {
-        axios.get(`http://localhost:5000/articles`, {
-            params: {
-                search: searchTerm
-            }
-        })
-        .then(response => {
-            setFilteredArticles(response.data);
-            setCurrentPage(1); // 搜索时重置为第一页
-        })
-        .catch(error => {
-            console.error('There was an error fetching the search results!', error);
-        });
+        setCurrentPage(1); // 搜索时重置为第一页
+        fetchArticles(1);  // 重新获取第一页的数据
     };
 
-    const currentPageArticles = filteredArticles.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
+    // 处理分页的逻辑
     const handleNextPage = () => {
-        if (currentPage < Math.ceil(filteredArticles.length / pageSize)) {
-            setCurrentPage(currentPage + 1);
+        if (currentPage < totalPages) {
+            setCurrentPage(prevPage => prevPage + 1);
         }
     };
 
     const handlePrevPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
+            setCurrentPage(prevPage => prevPage - 1);
         }
     };
 
@@ -100,7 +97,7 @@ const ArticleList = () => {
                 <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }}>Add New Article</button>
             </div>
             <ul style={{ listStyleType: 'none', padding: 0 }}>
-                {currentPageArticles.map(article => (
+                {articles.map(article => (
                     <li key={article.id} style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -143,8 +140,8 @@ const ArticleList = () => {
             </ul>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
                 <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
-                <p>Page {currentPage} of {Math.ceil(filteredArticles.length / pageSize)}</p>
-                <button onClick={handleNextPage} disabled={currentPage === Math.ceil(filteredArticles.length / pageSize)}>Next</button>
+                <p>Page {currentPage} of {totalPages}</p>
+                <button onClick={handleNextPage} disabled={currentPage >= totalPages}>Next</button>
             </div>
         </div>
     );
