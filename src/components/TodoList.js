@@ -3,6 +3,10 @@ import axios from 'axios';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
+  const [completedTodos, setCompletedTodos] = useState([]);
+  const [completedPage, setCompletedPage] = useState(1);
+  const [totalCompletedPages, setTotalCompletedPages] = useState(1);
+  const pageSize = 10;
   const [newTodoName, setNewTodoName] = useState('');
   const [newTodoDueDate, setNewTodoDueDate] = useState('');
   const [newTodoType, setNewTodoType] = useState('today');
@@ -12,6 +16,16 @@ const TodoList = () => {
   const [urgency, setUrgency] = useState(false);
 
   useEffect(() => {
+    fetchTodos();
+    fetchCompletedTodos(completedPage);
+  }, []);
+
+  // 当 completedPage 发生变化时重新获取已完成的待办事项
+  useEffect(() => {
+    fetchCompletedTodos(completedPage);
+  }, [completedPage]);
+
+  const fetchTodos = () => {
     axios.get('http://localhost:5000/todos')
       .then(response => {
         setTodos(response.data);
@@ -19,7 +33,36 @@ const TodoList = () => {
       .catch(error => {
         console.error('There was an error fetching the todos!', error);
       });
-  }, []);
+  };
+
+  const fetchCompletedTodos = (page) => {
+    axios.get('http://localhost:5000/todos/completed', {
+      params: {
+        page,
+        page_size: pageSize
+      }
+    })
+      .then(response => {
+        setCompletedTodos(response.data.todos);
+        setTotalCompletedPages(response.data.total_pages);
+      })
+      .catch(error => {
+        console.error('There was an error fetching the completed todos!', error);
+      });
+
+  };
+
+  const handleNextCompletedPage = () => {
+    if (completedPage < totalCompletedPages) {
+      setCompletedPage(completedPage + 1);
+    }
+  };
+
+  const handlePrevCompletedPage = () => {
+    if (completedPage > 1) {
+      setCompletedPage(completedPage - 1);
+    }
+  };
 
   const handleAddTodo = () => {
     if (newTodoName) {
@@ -75,7 +118,9 @@ const TodoList = () => {
   const handleTodoCompletion = (id) => {
     axios.put(`http://localhost:5000/todos/${id}`, { status: 'completed' })
       .then(() => {
-        setTodos(todos.map(todo => todo.id === id ? { ...todo, status: 'completed' } : todo));
+        // 更新状态后的操作，刷新待办列表和已完成列表
+        fetchTodos(); // 更新待办事项列表
+        fetchCompletedTodos(completedPage); // 更新已完成事项列表
       })
       .catch(error => {
         console.error('There was an error updating the todo!', error);
@@ -231,26 +276,36 @@ const TodoList = () => {
           ))}
         </div>
       </div>
-      <div style={{ marginTop: '20px', width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+      <div style={{ marginTop: '20px', width: '80%' }}>
         <h3>Completed Todos</h3>
-        {todos.filter(todo => todo.status === 'completed').map(todo => (
-          <div key={todo.id} style={{ marginBottom: '10px',
-            padding: '10px',
-            borderRadius: '5px',
-            backgroundColor: 
+        {completedTodos.map(todo => (
+          <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div style={{
+              marginBottom: '10px',
+              padding: '10px',
+              borderRadius: '5px',
+              backgroundColor:
                 todo.importance && todo.urgency ? 'red' :
-                todo.importance && !todo.urgency ? 'orange' :
-                !todo.importance && todo.urgency ? '#FFD700' : 'green', 
-            color: 
+                  todo.importance && !todo.urgency ? 'orange' :
+                    !todo.importance && todo.urgency ? '#FFD700' : 'green',
+              color:
                 todo.importance && todo.urgency ? 'white' :
-                todo.importance && !todo.urgency ? 'white' :
-                !todo.importance && todo.urgency ? 'black' : 'white'}}>
-            <strong style={{ marginRight: '5px' }}>{todo.name}</strong>
-            <small style={{ marginRight: '5px' }}>Importance: {todo.importance ? 'Yes' : 'No'}</small>
-            <small style={{ marginRight: '5px' }}>Urgency: {todo.urgency ? 'Yes' : 'No'}</small>
-            <small>Completed At: {new Date(todo.updated_at).toLocaleString()}</small>
+                  todo.importance && !todo.urgency ? 'white' :
+                    !todo.importance && todo.urgency ? 'black' : 'white'
+            }}>
+              <strong>{todo.name}</strong>
+              <small>Importance: {todo.importance ? 'Yes' : 'No'}</small>
+              <small>Urgency: {todo.urgency ? 'Yes' : 'No'}</small>
+              <small>Completed At: {new Date(todo.updated_at).toLocaleString()}</small>
+            </div>
+            <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
           </div>
         ))}
+        <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '20px' }}>
+          <button onClick={handlePrevCompletedPage} disabled={completedPage === 1}>Previous</button>
+          <p>Page {completedPage} of {totalCompletedPages}</p>
+          <button onClick={handleNextCompletedPage} disabled={completedPage === totalCompletedPages}>Next</button>
+        </div>
       </div>
 
 
