@@ -41,8 +41,8 @@ const ChecklistDetails = () => {
   return (
     <div className="checklist-details" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>{decisionDetails.decision_name} - Details</h2>
-      <div><strong>Version:</strong> {decisionDetails.version}</div>
-      <div><strong>Created At:</strong> {new Date(decisionDetails.created_at).toLocaleString()}</div>
+      <div><strong>Version:</strong> {decisionDetails.version} <strong>Created At:</strong> {new Date(decisionDetails.created_at).toLocaleString()}</div>
+      
       <div><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
 
       <h3>Answers:</h3>
