@@ -19,6 +19,7 @@ import ChecklistUpdate from './components/ChecklistUpdate';
 import TodoList from './components/TodoList';
 import ArticleList from './components/ArticleList';
 import ArticleEditor from './components/ArticleEditor';
+import ArticleViewer from './components/ArticleViewer';
 
 function App() {
   return (
@@ -52,6 +53,8 @@ function App() {
           <Route path="/articles" element={<ArticleList />} />
           <Route path="/add-article" element={<ArticleEditor />} />
           <Route path="/edit-article/:id" element={<ArticleEditor />} />
+          <Route path="/view-article/:id" element={<ArticleViewer />} />
+
         </Routes>
       </div>
     </Router>

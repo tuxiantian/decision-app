@@ -38,6 +38,11 @@ const ArticleList = () => {
         navigate('/add-article');
     };
 
+    // 新增查看功能
+    const handleView = (id) => {
+        navigate(`/view-article/${id}`);
+    };
+
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2>Articles List</h2>
@@ -77,6 +82,7 @@ const ArticleList = () => {
                             </div>
                         </div>
                         <div style={{ flex: 1, textAlign: 'right' }}>
+                            <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }}>View</button>
                             <button onClick={() => handleEdit(article.id)} style={{ marginRight: '10px' }}>Edit</button>
                             <button onClick={() => handleDelete(article.id)}>Delete</button>
                         </div>
@@ -84,7 +90,6 @@ const ArticleList = () => {
                 ))}
             </ul>
         </div>
-
     );
 };
 
