@@ -17,6 +17,8 @@ import ChecklistAnswerHistory from './components/ChecklistAnswerHistory';
 import ChecklistDetails from './components/ChecklistDetails';
 import ChecklistUpdate from './components/ChecklistUpdate';
 import TodoList from './components/TodoList';
+import ArticleList from './components/ArticleList';
+import ArticleEditor from './components/ArticleEditor';
 
 function App() {
   return (
@@ -24,6 +26,7 @@ function App() {
       <div className="App">
       <nav style={{ marginBottom: '20px' }}>
           <Link className="nav-link" to="/">Home</Link>
+          <Link className="nav-link" to="/articles">Article</Link>
           <Link className="nav-link" to="/checklists">Checklists</Link>
           <Link className="nav-link" to="/history">Answer History</Link>
           <Link className="nav-link" to="/checklist-form">Checklist Form</Link>
@@ -46,6 +49,9 @@ function App() {
           <Route path="/checklist_answers/details/:decisionId" element={<ChecklistDetails />} />
           <Route path="/checklist/update/:checklistId" element={<ChecklistUpdate />} />
           <Route path="/todos" element={<TodoList />} />
+          <Route path="/articles" element={<ArticleList />} />
+          <Route path="/add-article" element={<ArticleEditor />} />
+          <Route path="/edit-article/:id" element={<ArticleEditor />} />
         </Routes>
       </div>
     </Router>
