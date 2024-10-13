@@ -220,7 +220,17 @@ const TodoList = () => {
       <div style={{ marginTop: '20px', width: '80%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         <h3>Completed Todos</h3>
         {todos.filter(todo => todo.status === 'completed').map(todo => (
-          <div key={todo.id} style={{ marginBottom: '10px' }}>
+          <div key={todo.id} style={{ marginBottom: '10px',
+            padding: '10px',
+            borderRadius: '5px',
+            backgroundColor: 
+                todo.importance && todo.urgency ? 'red' :
+                todo.importance && !todo.urgency ? 'orange' :
+                !todo.importance && todo.urgency ? '#FFD700' : 'green', 
+            color: 
+                todo.importance && todo.urgency ? 'white' :
+                todo.importance && !todo.urgency ? 'white' :
+                !todo.importance && todo.urgency ? 'black' : 'white'}}>
             <strong style={{ marginRight: '5px' }}>{todo.name}</strong>
             <small style={{ marginRight: '5px' }}>Importance: {todo.importance ? 'Yes' : 'No'}</small>
             <small style={{ marginRight: '5px' }}>Urgency: {todo.urgency ? 'Yes' : 'No'}</small>
