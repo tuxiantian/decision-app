@@ -34,6 +34,18 @@ const Home = () => {
           <p>Use the Analytical Hierarchy Process (AHP) to evaluate complex decisions systematically.</p>
           <Link to="/ahp" className="home-link-button">AHP Analysis</Link>
         </section>
+
+        <section className="home-section" style={{ flex: '1 1 45%', margin: '20px', boxSizing: 'border-box' }}>
+          <h2>Create and Manage Your Articles</h2>
+          <p>Customize your decision-making process by creating tailored articles.</p>
+          <Link to="/articles" className="home-link-button">Manage Articles</Link>
+        </section>
+
+        <section className="home-section" style={{ flex: '1 1 45%', margin: '20px', boxSizing: 'border-box' }}>
+          <h2>Create and Manage Your TodoList</h2>
+          <p>Customize your decision-making process by creating tailored todos.</p>
+          <Link to="/todos" className="home-link-button">TodoList</Link>
+        </section>
       </div>
     </div>
   );
