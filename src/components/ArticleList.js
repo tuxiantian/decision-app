@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 const ArticleList = () => {
     const [articles, setArticles] = useState([]);
+    const [filteredArticles, setFilteredArticles] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10; // 页大小为10
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -14,6 +19,7 @@ const ArticleList = () => {
         axios.get('http://localhost:5000/articles')
             .then(response => {
                 setArticles(response.data);
+                setFilteredArticles(response.data);
             })
             .catch(error => {
                 console.error('There was an error fetching the articles!', error);
@@ -23,7 +29,9 @@ const ArticleList = () => {
     const handleDelete = (id) => {
         axios.delete(`http://localhost:5000/articles/${id}`)
             .then(() => {
-                setArticles(articles.filter(article => article.id !== id));
+                const updatedArticles = articles.filter(article => article.id !== id);
+                setArticles(updatedArticles);
+                setFilteredArticles(updatedArticles);
             })
             .catch(error => {
                 console.error('There was an error deleting the article!', error);
@@ -38,17 +46,61 @@ const ArticleList = () => {
         navigate('/add-article');
     };
 
-    // 新增查看功能
     const handleView = (id) => {
         navigate(`/view-article/${id}`);
+    };
+
+    // 搜索框的 onChange 事件处理函数
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value.toLowerCase());
+    };
+
+    // 点击“搜索”按钮时的处理函数
+    const handleSearchButton = () => {
+        axios.get(`http://localhost:5000/articles`, {
+            params: {
+                search: searchTerm
+            }
+        })
+        .then(response => {
+            setFilteredArticles(response.data);
+            setCurrentPage(1); // 搜索时重置为第一页
+        })
+        .catch(error => {
+            console.error('There was an error fetching the search results!', error);
+        });
+    };
+
+    const currentPageArticles = filteredArticles.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    const handleNextPage = () => {
+        if (currentPage < Math.ceil(filteredArticles.length / pageSize)) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
     };
 
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2>Articles List</h2>
-            <button onClick={handleAdd}>Add New Article</button>
+            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+                <input
+                    type="text"
+                    placeholder="Search by title, tags, or keywords"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    style={{ flex: 1, padding: '10px' }}
+                />
+                <button onClick={handleSearchButton} style={{ padding: '10px' }}>Search</button>
+                <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }}>Add New Article</button>
+            </div>
             <ul style={{ listStyleType: 'none', padding: 0 }}>
-                {articles.map(article => (
+                {currentPageArticles.map(article => (
                     <li key={article.id} style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -64,7 +116,7 @@ const ArticleList = () => {
                                 flexDirection: 'row',
                                 alignItems: 'center',
                                 gap: '20px',
-                                marginBottom: '5px' // 设置第一行与第二行之间的间距
+                                marginBottom: '5px'
                             }}>
                                 <h3 style={{ margin: 0 }}>{article.title}</h3>
                                 <p style={{ margin: 0 }}>Author: {article.author}</p>
@@ -89,6 +141,11 @@ const ArticleList = () => {
                     </li>
                 ))}
             </ul>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                <p>Page {currentPage} of {Math.ceil(filteredArticles.length / pageSize)}</p>
+                <button onClick={handleNextPage} disabled={currentPage === Math.ceil(filteredArticles.length / pageSize)}>Next</button>
+            </div>
         </div>
     );
 };
