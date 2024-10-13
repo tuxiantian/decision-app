@@ -104,6 +104,27 @@ const ArticleEditor = () => {
         }
     };
 
+    const handleImageUpload = async (blob, callback) => {
+        // 创建 FormData 对象，将 blob 作为参数
+        const formData = new FormData();
+        formData.append('file', blob);
+    
+        try {
+          // 向 Flask 后端发送 POST 请求，将图片上传到 MinIO
+          const response = await axios.post('http://localhost:5000/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+    
+          // 使用回调函数，将生成的 URL 设置到编辑器中
+          const imageUrl = response.data.url;
+          callback(imageUrl, 'Uploaded Image');
+        } catch (error) {
+          console.error('There was an error uploading the image:', error);
+        }
+      };
+
     return (
         <div style={{ width: '80%', margin: '0 auto' }}>
             <h2>{id ? 'Edit Article' : 'Create Article'}</h2>
@@ -160,6 +181,9 @@ const ArticleEditor = () => {
                 useCommandShortcut={true}
                 ref={editorRef}
                 onChange={() => setContent(editorRef.current.getInstance().getMarkdown())}
+                hooks={{
+                    addImageBlobHook: (blob, callback) => handleImageUpload(blob, callback),
+                  }}
             />
             {errors.content && <p style={{ color: 'red' }}>{errors.content}</p>}
             <button onClick={handleSave}>Save Article</button>
