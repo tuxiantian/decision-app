@@ -5,7 +5,6 @@ import Modal from 'react-modal';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 
-
 const ChecklistDetails = () => {
   const { decisionId } = useParams();
   const [decisionDetails, setDecisionDetails] = useState(null);
@@ -25,6 +24,20 @@ const ChecklistDetails = () => {
 
     fetchDecisionDetails();
   }, [decisionId]);
+
+  const [reviews, setReviews] = useState([]);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+  const fetchReviews = () => {
+    axios.get(`http://localhost:5000/reviews/${decisionId}`)
+      .then(response => setReviews(response.data))
+      .catch(error => console.error('Error fetching reviews:', error));
+  };
+
+  const openReviewModal = () => {
+    setIsReviewModalOpen(true);
+    fetchReviews();
+  };
 
   const handleViewArticle = async (articleId) => {
     try {
@@ -69,7 +82,50 @@ const ChecklistDetails = () => {
           </li>
         ))}
       </ul>
-
+      <button onClick={openReviewModal}>View Reviews</button>
+      <Modal
+        isOpen={isReviewModalOpen}
+        onRequestClose={() => setIsReviewModalOpen(false)}
+        contentLabel="Review Modal"
+        style={{
+          content: {
+            top: '10%',
+            left: '50%',
+            right: 'auto',
+            bottom: 'auto',
+            marginRight: '-50%',
+            transform: 'translate(-50%, 0)',
+            width: '60%',
+            maxHeight: '80%',
+            overflow: 'auto'
+          }
+        }}
+      >
+        <h2>Reviews</h2>
+        {reviews.length === 0 ? (
+          <p>No reviews available.</p>
+        ) : (
+          reviews.map((review, index) => (
+            <div key={index}>
+              <p>{review.content}</p>
+              <div style={{ textAlign: 'left', marginTop: '10px' }}>
+                <strong>Referenced Articles:</strong>
+                <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+                  {review.referenced_articles.map((article) => (
+                    <li key={article.id}>
+                      <a href={`http://localhost:3000/view-article/${article.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
+                        {article.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <hr />
+            </div>
+          ))
+        )}
+        <button onClick={() => setIsReviewModalOpen(false)}>Close</button>
+      </Modal>
       <nav style={{ marginTop: '20px' }}>
         <Link to="/history" style={{ padding: '10px 20px' }}>Back to Checklist Answer History</Link>
       </nav>
@@ -109,8 +165,6 @@ const ChecklistDetails = () => {
           <div>Loading article details...</div>
         )}
       </Modal>
-
-
     </div>
   );
 };

@@ -20,6 +20,7 @@ import TodoList from './components/TodoList';
 import ArticleList from './components/ArticleList';
 import ArticleEditor from './components/ArticleEditor';
 import ArticleViewer from './components/ArticleViewer';
+import ReviewEditor from './components/ReviewEditor';
 import AboutUs from './AboutUs';
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
           <Route path="/edit-article/:id" element={<ArticleEditor />} />
           <Route path="/view-article/:id" element={<ArticleViewer />} />
           <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
         </Routes>
       </div>
     </Router>

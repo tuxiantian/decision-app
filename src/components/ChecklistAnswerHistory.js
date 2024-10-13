@@ -43,7 +43,9 @@ const ChecklistAnswerHistory = () => {
             <div><strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
             <div><strong>Final Decision:</strong> {decision.final_decision}</div>
             <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }}>View Details</button>
-            <button onClick={() => handleDelete(decision.decision_id)} style={{ backgroundColor: 'red', color: 'white' }}>Delete</button>
+            <button onClick={() => handleDelete(decision.decision_id)} style={{ marginRight: '10px',backgroundColor: 'red', color: 'white' }}>Delete</button>
+            <button onClick={() => navigate(`/checklist/${decision.decision_id}/review`)} >Add Review</button>
+
           </li>
         ))}
       </ul>
