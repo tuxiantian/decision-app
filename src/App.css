@@ -82,3 +82,19 @@
   margin-bottom: 5px; /* 增加底部边距 */
   padding: 5px 0; /* 增加上下的 padding */
 }
+
+/* 适用于编辑器的内容区域 */
+.toastui-editor-contents {
+  text-align: left !important; /* 设置内容区域的文本为左对齐 */
+}
+/* 强制编辑器内容左对齐 */
+.toastui-editor-contents,
+.ProseMirror {
+  text-align: left !important;   /* 确保内容居左对齐 */
+}
+
+/* 避免编辑器默认的居中行为 */
+.toastui-editor {
+  display: block;
+  justify-content: flex-start !important;  /* 强制内容区域靠左 */
+}
