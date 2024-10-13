@@ -5,7 +5,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import QuestionFlow from './QuestionFlow'; 
+import QuestionFlow from './QuestionFlow';
 import DecisionsList from './DecisionsList';
 import DecisionDetails from './DecisionDetails';
 import AHPAnalysis from './AHPAnalysis';
@@ -25,15 +25,22 @@ function App() {
   return (
     <Router>
       <div className="App">
-      <nav style={{ marginBottom: '20px' }}>
+        <nav style={{
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'center', // 导航栏项居中对齐
+          backgroundColor: '#333',  // 导航栏背景颜色
+          padding: '10px 0',        // 导航栏内填充
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' // 添加阴影效果
+        }}>
           <Link className="nav-link" to="/">Home</Link>
           <Link className="nav-link" to="/articles">Article</Link>
           <Link className="nav-link" to="/checklists">Checklists</Link>
           <Link className="nav-link" to="/history">Answer History</Link>
           <Link className="nav-link" to="/checklist-form">Checklist Form</Link>
           <Link className="nav-link" to="/decisions">Decisions List</Link>
-          <Link  className="nav-link" to="/question-flow">QuestionFlow</Link>
-          <Link  className="nav-link" to="/ahp">AHPAnalysis List</Link>
+          <Link className="nav-link" to="/question-flow">QuestionFlow</Link>
+          <Link className="nav-link" to="/ahp">AHPAnalysis List</Link>
           <Link className="nav-link" to="/todos">Todo List</Link>
         </nav>
         <Routes>
@@ -42,7 +49,7 @@ function App() {
           <Route path="/decisions" element={<DecisionsList />} />
           <Route path="/decision/:decisionId" element={<DecisionDetails />} />
           <Route path="/decision-report/:decisionId" element={<DecisionReport />} />
-          <Route path="/ahp" element={<AHPAnalysis />} /> 
+          <Route path="/ahp" element={<AHPAnalysis />} />
           <Route path="/checklist-form" element={<ChecklistForm />} />
           <Route path="/checklists" element={<ChecklistList />} />
           <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />

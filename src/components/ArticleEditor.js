@@ -160,11 +160,6 @@ const ArticleEditor = () => {
                 useCommandShortcut={true}
                 ref={editorRef}
                 onChange={() => setContent(editorRef.current.getInstance().getMarkdown())}
-                style={{
-                    display: 'block',
-                    textAlign: 'left',
-                    verticalAlign: 'top'
-                }}
             />
             {errors.content && <p style={{ color: 'red' }}>{errors.content}</p>}
             <button onClick={handleSave}>Save Article</button>

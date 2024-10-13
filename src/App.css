@@ -60,7 +60,20 @@
 
 .nav-link {
   margin-right: 15px;
+  text-decoration: none;     /* 移除链接下划线 */
+  color: #ffffff;            /* 链接文字颜色为白色 */
+  font-weight: bold;         /* 字体加粗 */
+  transition: color 0.3s ease; /* 过渡效果：颜色 */
 }
+
+.nav-link:hover {
+  color: #ffa500;           /* 悬停时的文字颜色变化 */
+}
+
+.nav-link:last-child {
+  margin-right: 0;          /* 最后一个链接不需要右边距 */
+}
+
 .no-bullets {
   list-style-type: none;
   padding: 0;
