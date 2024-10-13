@@ -82,6 +82,16 @@ const TodoList = () => {
       });
   };
 
+  const handleRemoveTodo = (id) => {
+    axios.delete(`http://localhost:5000/todos/${id}`)
+      .then(() => {
+        setTodos(todos.filter(todo => todo.id !== id));
+      })
+      .catch(error => {
+        console.error('There was an error deleting the todo!', error);
+      });
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2>Todo List</h2>
@@ -154,6 +164,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
             </div>
 
 
@@ -175,6 +186,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
             </div>
           ))}
         </div>
@@ -194,6 +206,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
             </div>
           ))}
         </div>
@@ -213,6 +226,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
             </div>
           ))}
         </div>
