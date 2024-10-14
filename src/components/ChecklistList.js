@@ -24,6 +24,10 @@ const ChecklistList = () => {
     navigate(`/checklist/${checklistId}`);
   };
 
+  const handleViewFlowchartClick = (checklistId) => {
+    navigate(`/checklist/flowchart/${checklistId}`);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2>Checklist List</h2>
@@ -48,6 +52,7 @@ const ChecklistList = () => {
                 <button onClick={() => handleUpdateClick(checklist.id)} style={{ backgroundColor: '#007bff', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Update Version</button>
               )}
               <button onClick={() => handleMakeDecisionClick(checklist.id)} style={{ backgroundColor: '#28a745', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Make Decision</button>
+              <button onClick={() => handleViewFlowchartClick(checklist.id)}  style={{ backgroundColor: '#28a745', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>View Flowchart</button>
             </div>
           </li>
         ))}

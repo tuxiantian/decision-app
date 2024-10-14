@@ -21,6 +21,8 @@ import ArticleList from './components/ArticleList';
 import ArticleEditor from './components/ArticleEditor';
 import ArticleViewer from './components/ArticleViewer';
 import ReviewEditor from './components/ReviewEditor';
+import FlowchartDetail from './components/FlowchartDetail';
+import MermaidEditor from './components/MermaidEditor';
 import AboutUs from './AboutUs';
 
 function App() {
@@ -66,6 +68,7 @@ function App() {
           <Route path="/view-article/:id" element={<ArticleViewer />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
+          <Route path="/checklist/flowchart/:checklistId" element={<FlowchartDetail />} />
         </Routes>
       </div>
     </Router>
