@@ -33,7 +33,8 @@ const FlowchartDetail = () => {
 
       try {
         // 确保 DOM 元素加载完成后，调用 mermaid 的渲染函数
-        mermaid.init(undefined, '.mermaid');
+        mermaid.run();
+
       } catch (e) {
         console.error('Mermaid rendering error:', e);
       }
