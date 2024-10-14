@@ -28,7 +28,7 @@ Mermaid 是一个可以用简单的文本描述来创建复杂图表的工具，
 Mermaid 支持创建流程图，允许用箭头连接不同的节点来表示不同的步骤。
 
 基本语法
-```
+```mermaid
 graph TD
     A[开始] --> B{判断条件?}
     B -->|是| C[操作1]
@@ -56,7 +56,7 @@ C((文本)) 表示一个圆形节点。
 用于描述各个实体之间的交互过程。
 
 基本语法
-```
+```mermaid
 sequenceDiagram
     participant A as 用户
     participant B as 系统
@@ -80,7 +80,7 @@ participant 定义参与者，A as 用户 表示将 A 定义为 "用户"。
 用于创建 UML 类图，展示类与类之间的关系。
 
 基本语法
-```
+```mermaid
 classDiagram
     class 动物 {
         +String 名字
@@ -114,7 +114,7 @@ classDiagram 定义类图。
 
 基本语法
 
-```
+```mermaid
 gantt
     title 项目进度图
     dateFormat YYYY-MM-DD
@@ -141,7 +141,7 @@ active：表示任务正在进行。
 
 基本语法
 
-```
+```mermaid
 stateDiagram-v2
     [*] --> 空闲
     空闲 --> 播放: 播放按钮
@@ -162,7 +162,7 @@ stateDiagram-v2 定义状态图。
 
 基本语法
 
-```
+```mermaid
 erDiagram
     STUDENT {
         string name
@@ -187,7 +187,6 @@ STUDENT {} 定义一个实体，并列出属性。
 Mermaid 使用案例
 你可以在网页中嵌入 Mermaid 图表，比如在 Markdown 文档中，常见的用法是：
 
-```
 ```mermaid
 graph TD
     A[Start] --> B{Decision}
