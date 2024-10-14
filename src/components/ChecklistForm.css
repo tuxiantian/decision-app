@@ -64,3 +64,46 @@
     opacity: 0.9;
   }
   
+  .tabs-container {
+    margin-bottom: 20px;
+  }
+  
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 2px solid #ccc;
+  }
+  
+  .tab-button {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    transition: background-color 0.3s ease;
+  }
+  
+  .tab-button.active {
+    background-color: #2196F3;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .tab-button:hover {
+    background-color: #1976D2;
+    color: white;
+  }
+  
+  .preview-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .preview-btn:hover {
+    background-color: #45a049;
+  }
+  

@@ -41,9 +41,7 @@ const ChecklistForm = () => {
   };
 
   useEffect(() => {
-    // 只在组件挂载后以及代码变化时触发
     if (mermaidCode.trim()) {
-      // 使用 setTimeout 确保 DOM 完全可用
       setTimeout(() => {
         renderMermaid();
       }, 100);
@@ -66,7 +64,6 @@ const ChecklistForm = () => {
   };
 
   const handlePreviewFlowchart = () => {
-    // 点击预览按钮时，设置代码触发 useEffect 中的渲染逻辑
     if (mermaidCode.trim()) {
       setRenderError(null); // 清除之前的错误信息
       renderMermaid(); // 触发渲染逻辑
@@ -94,19 +91,21 @@ const ChecklistForm = () => {
   return (
     <div className="checklist-form">
       <h2>Create Checklist</h2>
-      <div className="tabs">
-        <button
-          className={`tab-button ${activeTab === 'flowchart' ? 'active' : ''}`}
-          onClick={() => setActiveTab('flowchart')}
-        >
-          Flowchart
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'form' ? 'active' : ''}`}
-          onClick={() => setActiveTab('form')}
-        >
-          Checklist Form
-        </button>
+      <div className="tabs-container">
+        <div className="tabs">
+          <div
+            className={`tab-button ${activeTab === 'flowchart' ? 'active' : ''}`}
+            onClick={() => setActiveTab('flowchart')}
+          >
+            Flowchart
+          </div>
+          <div
+            className={`tab-button ${activeTab === 'form' ? 'active' : ''}`}
+            onClick={() => setActiveTab('form')}
+          >
+            Checklist Form
+          </div>
+        </div>
       </div>
 
       {activeTab === 'flowchart' && (
@@ -119,13 +118,12 @@ const ChecklistForm = () => {
             cols="50"
             style={{ width: '100%', marginBottom: '20px' }}
           />
-          <button onClick={handlePreviewFlowchart}>Preview Flowchart</button>
+          <button className="preview-btn" onClick={handlePreviewFlowchart}>Preview Flowchart</button>
           {renderError && (
             <div style={{ color: 'red', marginTop: '10px' }}>
               <strong>Error:</strong> {renderError}
             </div>
           )}
-          {/* Mermaid 渲染容器 */}
           <div
             className="mermaid-preview"
             ref={mermaidContainerRef}
@@ -133,8 +131,6 @@ const ChecklistForm = () => {
           ></div>
         </div>
       )}
-
-
 
       {activeTab === 'form' && (
         <div className="tab-content">
