@@ -130,7 +130,8 @@ const TodoList = () => {
   const handleRemoveTodo = (id) => {
     axios.delete(`http://localhost:5000/todos/${id}`)
       .then(() => {
-        setTodos(todos.filter(todo => todo.id !== id));
+        fetchTodos(); // 更新待办事项列表
+        fetchCompletedTodos(completedPage); // 更新已完成事项列表
       })
       .catch(error => {
         console.error('There was an error deleting the todo!', error);
