@@ -15,8 +15,7 @@ const ChecklistDetail = () => {
   const [articles, setArticles] = useState([]);
   const [selectedArticles, setSelectedArticles] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeQuestionId, setActiveQuestionId] = useState(null);
 
   useEffect(() => {
@@ -31,12 +30,12 @@ const ChecklistDetail = () => {
     fetchChecklistDetails();
   }, [checklistId]);
 
-  const handleNextStep = () => {
-    setStep(step + 1);
+  const handleNextQuestion = () => {
+    setCurrentQuestionIndex(currentQuestionIndex + 1);
   };
 
-  const handlePreviousStep = () => {
-    setStep(step - 1);
+  const handlePreviousQuestion = () => {
+    setCurrentQuestionIndex(currentQuestionIndex - 1);
   };
 
   const handleAnswerChange = (questionId, value) => {
@@ -58,17 +57,15 @@ const ChecklistDetail = () => {
   const fetchArticles = async () => {
     try {
       const response = await axios.get('http://localhost:5000/articles', {
-        params: { search: searchTerm, page: currentPage, page_size: 10 },
+        params: { search: searchTerm },
       });
       setArticles(response.data.articles);
-      setTotalPages(response.data.total_pages);
     } catch (error) {
       console.error('Error fetching articles', error);
     }
   };
 
   const handleSearch = () => {
-    setCurrentPage(1); // 重置为第一页
     fetchArticles();
   };
 
@@ -113,7 +110,6 @@ const ChecklistDetail = () => {
 
   return (
     <div className="checklist-detail" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      {/* Steps */}
       {step === 1 && (
         <div>
           <h2>Step 1: Enter Decision Name</h2>
@@ -126,7 +122,7 @@ const ChecklistDetail = () => {
               onChange={(e) => setDecisionName(e.target.value)}
             />
           </div>
-          <button onClick={handleNextStep} disabled={!decisionName} style={{ padding: '10px 20px' }}>
+          <button onClick={() => setStep(2)} disabled={!decisionName} style={{ padding: '10px 20px' }}>
             Next
           </button>
         </div>
@@ -135,47 +131,60 @@ const ChecklistDetail = () => {
       {step === 2 && (
         <div>
           <h2>Step 2: Answer Checklist Questions</h2>
-          {questions.map((question, index) => (
-            <div key={question.id} className="form-group" style={{ marginBottom: '20px' }}>
-              <label>{`Question ${index + 1}: ${question.question}`}</label>
+          {questions.length > 0 && (
+            <div key={questions[currentQuestionIndex].id} className="form-group" style={{ marginBottom: '20px' }}>
+              <label>{`Question ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`}</label>
               <textarea
                 style={{ width: '80%', padding: '10px', fontSize: '16px', height: '80px' }}
-                value={answers[question.id]?.answer || ''}
-                onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                value={answers[questions[currentQuestionIndex].id]?.answer || ''}
+                onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
               />
               <button
                 style={{ marginTop: '10px' }}
-                onClick={() => handleReferenceArticles(question.id)}
+                onClick={() => handleReferenceArticles(questions[currentQuestionIndex].id)}
               >
                 Reference Mental Models
               </button>
-              {selectedArticles[question.id] && selectedArticles[question.id].length > 0 && (
-                <div>
-                  <h4>Referenced Articles:</h4>
-                  <div style={{ marginLeft: '15px' }}>
-                    {selectedArticles[question.id].map((articleId) => {
-                      const article = articles.find((art) => art.id === articleId);
-                      return (
-                        <div key={articleId} style={{ marginBottom: '5px' }}>
-                          {article ? article.title : ''}
-                        </div>
-                      );
-                    })}
+              {selectedArticles[questions[currentQuestionIndex].id] &&
+                selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
+                  <div>
+                    <h4>Referenced Articles:</h4>
+                    <div style={{ marginLeft: '15px' }}>
+                      {selectedArticles[questions[currentQuestionIndex].id].map((articleId) => {
+                        const article = articles.find((art) => art.id === articleId);
+                        return (
+                          <div key={articleId} style={{ marginBottom: '5px' }}>
+                            {article ? article.title : ''}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
-          ))}
+          )}
           <div style={{ marginTop: '20px' }}>
-            <button onClick={handlePreviousStep} style={{ marginRight: '10px', padding: '10px 20px' }}>
-              Previous
+            {currentQuestionIndex > 0 && (
+              <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }}>
+                Previous Question
+              </button>
+            )}
+            {currentQuestionIndex < questions.length - 1 && (
+              <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }}>
+                Next Question
+              </button>
+            )}
+          </div>
+          <div style={{ marginTop: '20px' }}>
+            <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+              Previous Step
             </button>
             <button
-              onClick={handleNextStep}
+              onClick={() => setStep(3)}
               disabled={Object.keys(answers).length !== questions.length}
               style={{ padding: '10px 20px' }}
             >
-              Next
+              Next Step
             </button>
           </div>
         </div>
@@ -193,8 +202,8 @@ const ChecklistDetail = () => {
             />
           </div>
           <div style={{ marginTop: '20px' }}>
-            <button onClick={handlePreviousStep} style={{ marginRight: '10px', padding: '10px 20px' }}>
-              Previous
+            <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+              Previous Step
             </button>
             <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }}>
               Submit
@@ -203,7 +212,6 @@ const ChecklistDetail = () => {
         </div>
       )}
 
-      {/* 引用文章的弹出窗口 */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
