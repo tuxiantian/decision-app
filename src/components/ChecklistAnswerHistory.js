@@ -39,8 +39,7 @@ const ChecklistAnswerHistory = () => {
         {checklistDecisions.map((decision) => (
           <li key={decision.decision_id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
             <div><strong>Decision Name:</strong> {decision.decision_name}</div>
-            <div><strong>Version:</strong> {decision.version}</div>
-            <div><strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
+            <div><strong>Version:</strong> {decision.version} <strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
             <div><strong>Final Decision:</strong> {decision.final_decision}</div>
             <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }}>View Details</button>
             <button onClick={() => handleDelete(decision.decision_id)} style={{ marginRight: '10px',backgroundColor: 'red', color: 'white' }}>Delete</button>
