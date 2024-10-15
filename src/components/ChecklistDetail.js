@@ -71,19 +71,29 @@ const ChecklistDetail = () => {
 
   const handleSelectArticle = (articleId) => {
     if (activeQuestionId === null) return;
+  
     const selected = selectedArticles[activeQuestionId] || [];
+    
+    // 限制引用的文章数量最多为 10
     if (selected.includes(articleId)) {
+      // 如果已经引用，取消引用（即反选）
       setSelectedArticles({
         ...selectedArticles,
         [activeQuestionId]: selected.filter((id) => id !== articleId),
       });
     } else {
-      setSelectedArticles({
-        ...selectedArticles,
-        [activeQuestionId]: [...selected, articleId],
-      });
+      if (selected.length < 5) {
+        // 如果引用数少于 10，允许添加引用
+        setSelectedArticles({
+          ...selectedArticles,
+          [activeQuestionId]: [...selected, articleId],
+        });
+      } else {
+        alert("You can reference up to 10 articles only.");
+      }
     }
   };
+  
 
   const handleSubmit = async () => {
     try {

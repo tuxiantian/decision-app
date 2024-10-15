@@ -126,9 +126,19 @@ const ArticleList = () => {
                                 gap: '20px'
                             }}>
                                 <p style={{ margin: 0 }}>Tags: {article.tags}</p>
-                                <p style={{ margin: 0 }}>Keywords: {article.keywords}</p>
+                                
                                 <p style={{ margin: 0 }}>Updated At: {new Date(article.updated_at).toLocaleString()}</p>
                             </div>
+                            {/* 第三行：标签、关键词和更新时间 */}
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: '20px'
+                            }}>
+                                <p style={{ margin: 0 }}>Keywords: {article.keywords}</p>
+                            </div>
+
                         </div>
                         <div style={{ flex: 1, textAlign: 'right' }}>
                             <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }}>View</button>
