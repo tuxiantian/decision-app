@@ -86,7 +86,7 @@ function AHPAnalysis() {
                     hour12: false
                   })}</td>
                   <td>
-                    <button className="custom-button" onClick={() => handleDetailsClick(record)}>详情</button>
+                    <button className="custom-button" onClick={() => handleDetailsClick(record)} style={{marginRight:'10px'}}>详情</button>
                     <button className="custom-button" onClick={() => handleDelete(record.id)}>删除</button>
                   </td>
                 </tr>);

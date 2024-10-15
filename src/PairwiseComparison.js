@@ -59,14 +59,6 @@ function PairwiseComparison({ data, onBack }) {
     setAlternativesMatrices(newAlternativesMatrices);
   };
 
-  const parseFraction = (value) => {
-    if (value.includes('/')) {
-      const [numerator, denominator] = value.split('/').map(Number);
-      return denominator ? numerator / denominator : parseFloat(value);
-    }
-    return parseFloat(value);
-  };
-
   const reciprocalAsFraction = (value) => {
     if (value.includes('/')) {
       const [numerator, denominator] = value.split('/').map(Number);

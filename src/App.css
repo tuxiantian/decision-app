@@ -48,15 +48,28 @@
   margin: 0 auto;
 }
 .custom-button {
-  background-color: #238636;
-  color: #fff;
-  outline: none !important;
-  box-shadow: none !important;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .custom-button:hover {
-  background-color: #1f7a54;
+  background: linear-gradient(135deg, #2575fc, #6a11cb);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
 }
+
+.custom-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 
 .nav-link {
   margin-right: 15px;
