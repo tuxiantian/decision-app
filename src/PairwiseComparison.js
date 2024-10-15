@@ -147,24 +147,29 @@ function PairwiseComparison({ data, onBack }) {
       <button className="custom-button" onClick={onBack}>返回</button>
       <h3>Enter Criteria Names</h3>
       {[...Array(criteriaNames.length + 1)].map((_, index) => (
-        <input
-          key={index}
-          type="text"
-          placeholder={`Criterion ${index + 1}`}
-          value={criteriaNames[index] || ''}
-          onChange={(e) => handleCriteriaChange(index, e.target.value)}
-        />
+        index < 9 && (
+          <input
+            key={index}
+            type="text"
+            placeholder={`Criterion ${index + 1}`}
+            value={criteriaNames[index] || ''}
+            onChange={(e) => handleCriteriaChange(index, e.target.value)}
+          />
+        )
+
       ))}
 
       <h3>Enter Alternative Names</h3>
       {[...Array(alternativeNames.length + 1)].map((_, index) => (
-        <input
-          key={index}
-          type="text"
-          placeholder={`Alternative ${index + 1}`}
-          value={alternativeNames[index] || ''}
-          onChange={(e) => handleAlternativeChange(index, e.target.value)}
-        />
+        index < 9 && (
+          <input
+            key={index}
+            type="text"
+            placeholder={`Alternative ${index + 1}`}
+            value={alternativeNames[index] || ''}
+            onChange={(e) => handleAlternativeChange(index, e.target.value)}
+          />
+        )
       ))}
       <br></br>
       <button className="custom-button" onClick={generateMatrices}>Generate Matrices</button>
