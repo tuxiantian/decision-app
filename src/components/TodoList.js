@@ -194,7 +194,7 @@ const TodoList = () => {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '20px', width: '80%', marginTop: '20px' }}>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
-          <h3>重要且紧急</h3>
+          <h3 style={{backgroundColor:'red'}}>重要且紧急</h3>
           {todos.filter(todo => todo.importance && todo.urgency && todo.status === 'in_progress').map(todo => (
             <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <input
@@ -216,7 +216,7 @@ const TodoList = () => {
           ))}
         </div>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
-          <h3>重要但不紧急</h3>
+          <h3 style={{backgroundColor:'orange'}}>重要但不紧急</h3>
           {todos.filter(todo => todo.importance && !todo.urgency && todo.status === 'in_progress').map(todo => (
             <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <input
@@ -236,7 +236,7 @@ const TodoList = () => {
           ))}
         </div>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
-          <h3>不重要但紧急</h3>
+          <h3 style={{backgroundColor:'#FFD700'}}>不重要但紧急</h3>
           {todos.filter(todo => !todo.importance && todo.urgency && todo.status === 'in_progress').map(todo => (
             <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <input
@@ -256,7 +256,7 @@ const TodoList = () => {
           ))}
         </div>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
-          <h3>不重要也不紧急</h3>
+          <h3 style={{backgroundColor:'green'}}>不重要也不紧急</h3>
           {todos.filter(todo => !todo.importance && !todo.urgency && todo.status === 'in_progress').map(todo => (
             <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <input
@@ -291,12 +291,12 @@ const TodoList = () => {
               color:
                 todo.importance && todo.urgency ? 'white' :
                   todo.importance && !todo.urgency ? 'white' :
-                    !todo.importance && todo.urgency ? 'black' : 'white'
+                    !todo.importance && todo.urgency ? 'black' : 'white'   
             }}>
-              <strong>{todo.name}</strong>
-              <small>Importance: {todo.importance ? 'Yes' : 'No'}</small>
-              <small>Urgency: {todo.urgency ? 'Yes' : 'No'}</small>
-              <small>Completed At: {new Date(todo.updated_at).toLocaleString()}</small>
+              <strong style={{ margin: '0 5px' }}>{todo.name}</strong>
+              <small style={{ margin: '0 5px' }}>Importance: {todo.importance ? 'Yes' : 'No'}</small>
+              <small style={{ margin: '0 5px' }}>Urgency: {todo.urgency ? 'Yes' : 'No'}</small>
+              <small style={{ margin: '0 5px' }}>Completed At: {new Date(todo.updated_at).toLocaleString()}</small>
             </div>
             <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
           </div>
