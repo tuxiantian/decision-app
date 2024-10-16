@@ -82,7 +82,7 @@ const ChecklistDetails = () => {
           </li>
         ))}
       </ul>
-      <button onClick={openReviewModal}>View Reviews</button>
+      <button onClick={openReviewModal} className='green-button'>View Reviews</button>
       <Modal
         isOpen={isReviewModalOpen}
         onRequestClose={() => setIsReviewModalOpen(false)}
@@ -124,7 +124,7 @@ const ChecklistDetails = () => {
             </div>
           ))
         )}
-        <button onClick={() => setIsReviewModalOpen(false)}>Close</button>
+        <button onClick={() => setIsReviewModalOpen(false)} className='green-button'>Close</button>
       </Modal>
       <nav style={{ marginTop: '20px' }}>
         <Link to="/history" style={{ padding: '10px 20px' }}>Back to Checklist Answer History</Link>
@@ -159,7 +159,7 @@ const ChecklistDetails = () => {
             <p><strong>Tags:</strong> {selectedArticle.tags}</p>
             <p><strong>Keywords:</strong> {selectedArticle.keywords}</p>
             <Viewer initialValue={selectedArticle.content} />
-            <button onClick={() => setShowArticleModal(false)} style={{ marginTop: '20px' }}>Close</button>
+            <button onClick={() => setShowArticleModal(false)} style={{ marginTop: '20px' }}  className='green-button'>Close</button>
           </div>
         ) : (
           <div>Loading article details...</div>

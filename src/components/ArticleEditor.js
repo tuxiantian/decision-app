@@ -159,7 +159,7 @@ const ArticleEditor = () => {
                         onChange={(e) => setKeywordInput(e.target.value)}
                         style={{ flex: 1, padding: '10px' }}
                     />
-                    <button type="button" onClick={handleAddKeyword} style={{ marginLeft: '10px' }}>Add Keyword</button>
+                    <button type="button" onClick={handleAddKeyword} style={{ marginLeft: '10px' }}  className='green-button'>Add Keyword</button>
                 </div>
             </div>
 
@@ -167,7 +167,7 @@ const ArticleEditor = () => {
                 {keywords.map((keyword, index) => (
                     <div key={index} style={{ display: 'inline-block', marginRight: '10px' }}>
                         <span>{keyword}</span>
-                        <button type="button" onClick={() => handleRemoveKeyword(index)}>x</button>
+                        <button type="button"  className='red-button' onClick={() => handleRemoveKeyword(index)}>x</button>
                     </div>
                 ))}
             </div>
@@ -186,7 +186,7 @@ const ArticleEditor = () => {
                   }}
             />
             {errors.content && <p style={{ color: 'red' }}>{errors.content}</p>}
-            <button onClick={handleSave}>Save Article</button>
+            <button onClick={handleSave}  className='green-button' style={{marginTop:'10px'}}>Save Article</button>
         </div>
     );
 };
