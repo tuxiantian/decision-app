@@ -53,13 +53,13 @@ const ChecklistDetail = () => {
   const handleReferenceArticles = (questionId) => {
     setActiveQuestionId(questionId);
     setIsModalOpen(true);
-    fetchArticles(); // 初始加载文章数据
+    fetchArticles(searchTerm, 1); // 初始加载文章数据
   };
 
-  const fetchArticles = async (page = 1) => {
+  const fetchArticles = async (search = '', page = 1) => {
     try {
       const response = await axios.get('http://localhost:5000/articles', {
-        params: { search: searchTerm, page: page, page_size: 10 },
+        params: { search, page, page_size: 10 },
       });
       setArticles(response.data.articles);
       setTotalPages(response.data.total_pages);
@@ -71,7 +71,7 @@ const ChecklistDetail = () => {
 
   const handleSearch = () => {
     setCurrentPage(1); // 重置为第一页
-    fetchArticles(1);
+    fetchArticles(searchTerm, 1);
   };
 
   const handleSelectArticle = (articleId) => {
@@ -122,13 +122,13 @@ const ChecklistDetail = () => {
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      fetchArticles(currentPage + 1);
+      fetchArticles(searchTerm, currentPage + 1);
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      fetchArticles(currentPage - 1);
+      fetchArticles(searchTerm, currentPage - 1);
     }
   };
 
