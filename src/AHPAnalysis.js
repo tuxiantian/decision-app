@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PairwiseComparison from './PairwiseComparison';
 import { Link, useNavigate } from 'react-router-dom';
+import './App.css'
 const BASE_URL = "http://127.0.0.1:5000";
 
 function AHPAnalysis() {
@@ -54,7 +55,7 @@ function AHPAnalysis() {
       <h1>AHP Decision System</h1>
       {!isNew ? (
         <div className="centered-table-container">
-          <button className="custom-button"  onClick={handleNewClick}>新增</button>
+          <button className="green-button"  onClick={handleNewClick}>新增</button>
           <h2>历史记录</h2>
           
           <table border="1" className="centered-table">
@@ -86,8 +87,8 @@ function AHPAnalysis() {
                     hour12: false
                   })}</td>
                   <td>
-                    <button className="custom-button" onClick={() => handleDetailsClick(record)} style={{marginRight:'10px'}}>详情</button>
-                    <button className="custom-button" onClick={() => handleDelete(record.id)}>删除</button>
+                    <button className="green-button" onClick={() => handleDetailsClick(record)}>详情</button>
+                    <button className="red-button" onClick={() => handleDelete(record.id)}>删除</button>
                   </td>
                 </tr>);
 

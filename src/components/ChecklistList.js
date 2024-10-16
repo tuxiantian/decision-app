@@ -49,10 +49,10 @@ const ChecklistList = () => {
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               {checklist.can_update && (
-                <button onClick={() => handleUpdateClick(checklist.id)} style={{ backgroundColor: '#007bff', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Update Version</button>
+                <button onClick={() => handleUpdateClick(checklist.id)} className='green-button'>Update Version</button>
               )}
-              <button onClick={() => handleMakeDecisionClick(checklist.id)} style={{ backgroundColor: '#28a745', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>Make Decision</button>
-              <button onClick={() => handleViewFlowchartClick(checklist.id)}  style={{ backgroundColor: '#28a745', color: 'white', padding: '5px 10px', border: 'none', cursor: 'pointer' }}>View Flowchart</button>
+              <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>Make Decision</button>
+              <button onClick={() => handleViewFlowchartClick(checklist.id)}   className='green-button'>View Flowchart</button>
             </div>
           </li>
         ))}

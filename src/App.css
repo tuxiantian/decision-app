@@ -47,6 +47,15 @@
 .centered-table {
   margin: 0 auto;
 }
+.green-button {
+  background-color: #28a745; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
+}
+.red-button {
+  background-color: red; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
+}
+.blue-button {
+  background-color: #007bff; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
+}
 .custom-button {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   border: none;

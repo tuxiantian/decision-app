@@ -191,7 +191,7 @@ const TodoList = () => {
           />
           Urgent
         </label>
-        <button onClick={handleAddTodo}>Add Todo</button>
+        <button onClick={handleAddTodo} className='green-button'>Add Todo</button>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '20px', width: '80%', marginTop: '20px' }}>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
@@ -210,7 +210,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
             </div>
 
 
@@ -232,7 +232,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
             </div>
           ))}
         </div>
@@ -252,7 +252,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='green-button'>Remove</button>
             </div>
           ))}
         </div>
@@ -272,7 +272,7 @@ const TodoList = () => {
                   <small>End: {new Date(todo.end_time).toLocaleString()}</small>
                 </div>
               </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
+              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
             </div>
           ))}
         </div>
@@ -299,13 +299,13 @@ const TodoList = () => {
               <small style={{ margin: '0 5px' }}>Urgency: {todo.urgency ? 'Yes' : 'No'}</small>
               <small style={{ margin: '0 5px' }}>Completed At: {new Date(todo.updated_at).toLocaleString()}</small>
             </div>
-            <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }}>Remove</button>
+            <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
           </div>
         ))}
         <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '20px' }}>
-          <button onClick={handlePrevCompletedPage} disabled={completedPage === 1}>Previous</button>
+          <button onClick={handlePrevCompletedPage} disabled={completedPage === 1} className='green-button'>Previous</button>
           <p>Page {completedPage} of {totalCompletedPages}</p>
-          <button onClick={handleNextCompletedPage} disabled={completedPage === totalCompletedPages}>Next</button>
+          <button onClick={handleNextCompletedPage} disabled={completedPage === totalCompletedPages} className='green-button'>Next</button>
         </div>
       </div>
 

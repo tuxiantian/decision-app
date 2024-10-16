@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../App.css'
 
 const ArticleList = () => {
     const [articles, setArticles] = useState([]);
@@ -93,8 +94,8 @@ const ArticleList = () => {
                     onChange={handleSearchChange}
                     style={{ flex: 1, padding: '10px' }}
                 />
-                <button onClick={handleSearchButton} style={{ padding: '10px' }}>Search</button>
-                <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }}>Add New Article</button>
+                <button onClick={handleSearchButton} style={{ padding: '10px' }} className='green-button'>Search</button>
+                <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }} className='green-button'>Add New Article</button>
             </div>
             <ul style={{ listStyleType: 'none', padding: 0 }}>
                 {articles.map(article => (
@@ -141,17 +142,17 @@ const ArticleList = () => {
 
                         </div>
                         <div style={{ flex: 1, textAlign: 'right' }}>
-                            <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }}>View</button>
-                            <button onClick={() => handleEdit(article.id)} style={{ marginRight: '10px' }}>Edit</button>
-                            <button onClick={() => handleDelete(article.id)}>Delete</button>
+                            <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }} className='green-button'>View</button>
+                            <button onClick={() => handleEdit(article.id)} style={{ marginRight: '10px' }} className='green-button'>Edit</button>
+                            <button onClick={() => handleDelete(article.id)} className='green-button'>Delete</button>
                         </div>
                     </li>
                 ))}
             </ul>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                <button onClick={handlePrevPage} disabled={currentPage === 1}>Previous</button>
+                <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
                 <p>Page {currentPage} of {totalPages}</p>
-                <button onClick={handleNextPage} disabled={currentPage >= totalPages}>Next</button>
+                <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
             </div>
         </div>
     );

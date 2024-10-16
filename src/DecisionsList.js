@@ -77,9 +77,9 @@ const DecisionsList = () => {
                 <td>{decision.user_id}</td>
                 <td>{new Date(decision.created_at).toLocaleString()}</td>
                 <td>
-                  <button onClick={() => viewDetails(decision.id)}>详情</button>
-                  <button onClick={() => viewReport(decision.id)} style={{ marginLeft: '10px' }}>报告</button>
-                  <button onClick={() => deleteDecision(decision.id)} style={{ marginLeft: '10px' }}>删除</button>
+                  <button onClick={() => viewDetails(decision.id)} className='green-button'>详情</button>
+                  <button onClick={() => viewReport(decision.id)} className='green-button'>报告</button>
+                  <button onClick={() => deleteDecision(decision.id)} className='red-button'>删除</button>
                 </td>
               </tr>
             ))}
@@ -87,8 +87,8 @@ const DecisionsList = () => {
         </table>
       </div>
       <div style={{ marginTop: '20px' }}>
-        <button onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</button>
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>Next</button>
+        <button onClick={handlePreviousPage} disabled={currentPage === 1} className='green-button'>Previous</button>
+        <button onClick={handleNextPage} disabled={currentPage === totalPages} className='green-button'>Next</button>
       </div>
     </div>
   );

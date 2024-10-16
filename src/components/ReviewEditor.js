@@ -85,7 +85,7 @@ const ReviewEditor = () => {
         placeholder="Enter your review here"
       />
       
-      <button onClick={handleOpenModal} style={{ marginBottom: '10px' }}>Reference Cognitive Bias Articles</button>
+      <button onClick={handleOpenModal} style={{ marginBottom: '10px' }} className='green-button'>Reference Cognitive Bias Articles</button>
 
       <Modal
         isOpen={isModalOpen}
@@ -110,7 +110,7 @@ const ReviewEditor = () => {
             placeholder="Search articles"
             style={{ width: '80%', marginRight: '10px' }}
           />
-          <button onClick={handleSearch}>Search</button>
+          <button onClick={handleSearch} className='green-button'>Search</button>
         </div>
 
         {articles.map(article => (
@@ -131,12 +131,12 @@ const ReviewEditor = () => {
         ))}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-          <button onClick={handlePreviousPage} disabled={currentPage <= 1}>Previous Page</button>
+          <button onClick={handlePreviousPage} disabled={currentPage <= 1} className='green-button'>Previous Page</button>
           <span>Page {currentPage} of {totalPages}</span>
-          <button onClick={handleNextPage} disabled={currentPage >= totalPages}>Next Page</button>
+          <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next Page</button>
         </div>
 
-        <button onClick={handleCloseModal} style={{ marginTop: '20px' }}>Done</button>
+        <button onClick={handleCloseModal} style={{ marginTop: '20px' }} className='green-button'>Done</button>
       </Modal>
 
       <div>
@@ -155,7 +155,7 @@ const ReviewEditor = () => {
         )}
       </div>
 
-      <button onClick={handleSaveReview} style={{ marginTop: '20px' }}>Save Review</button>
+      <button onClick={handleSaveReview} style={{ marginTop: '20px' }} className='green-button'>Save Review</button>
     </div>
   );
 };

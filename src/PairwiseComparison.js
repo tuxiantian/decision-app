@@ -144,7 +144,7 @@ function PairwiseComparison({ data, onBack }) {
 
   return (
     <div className="container">
-      <button className="custom-button" onClick={onBack}>返回</button>
+      <button className="green-button" onClick={onBack}>返回</button>
       <h3>Enter Criteria Names</h3>
       {[...Array(criteriaNames.length + 1)].map((_, index) => (
         index < 9 && (
@@ -172,7 +172,7 @@ function PairwiseComparison({ data, onBack }) {
         )
       ))}
       <br></br>
-      <button className="custom-button" onClick={generateMatrices}>Generate Matrices</button>
+      <button className="green-button" onClick={generateMatrices}>Generate Matrices</button>
 
       <div className="matrix-instructions">
         {'矩阵表格输入提示'}
@@ -258,7 +258,7 @@ function PairwiseComparison({ data, onBack }) {
         </div>
       ))}
 
-      <button className="custom-button" onClick={submitMatrices}>Submit</button>
+      <button className="green-button" onClick={submitMatrices}>Submit</button>
 
       {result && (
         <div>
@@ -267,7 +267,7 @@ function PairwiseComparison({ data, onBack }) {
         </div>
       )}
 
-      {result && <button className="custom-button" onClick={saveHistory}>Save to History</button>}
+      {result && <button className="green-button" onClick={saveHistory}>Save to History</button>}
     </div>
   );
 }
