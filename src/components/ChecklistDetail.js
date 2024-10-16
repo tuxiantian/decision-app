@@ -17,6 +17,8 @@ const ChecklistDetail = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeQuestionId, setActiveQuestionId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchChecklistDetails = async () => {
@@ -54,36 +56,37 @@ const ChecklistDetail = () => {
     fetchArticles(); // 初始加载文章数据
   };
 
-  const fetchArticles = async () => {
+  const fetchArticles = async (page = 1) => {
     try {
       const response = await axios.get('http://localhost:5000/articles', {
-        params: { search: searchTerm },
+        params: { search: searchTerm, page: page, page_size: 10 },
       });
       setArticles(response.data.articles);
+      setTotalPages(response.data.total_pages);
+      setCurrentPage(page);
     } catch (error) {
       console.error('Error fetching articles', error);
     }
   };
 
   const handleSearch = () => {
-    fetchArticles();
+    setCurrentPage(1); // 重置为第一页
+    fetchArticles(1);
   };
 
   const handleSelectArticle = (articleId) => {
     if (activeQuestionId === null) return;
-  
+
     const selected = selectedArticles[activeQuestionId] || [];
     
     // 限制引用的文章数量最多为 10
     if (selected.includes(articleId)) {
-      // 如果已经引用，取消引用（即反选）
       setSelectedArticles({
         ...selectedArticles,
         [activeQuestionId]: selected.filter((id) => id !== articleId),
       });
     } else {
-      if (selected.length < 5) {
-        // 如果引用数少于 10，允许添加引用
+      if (selected.length < 10) {
         setSelectedArticles({
           ...selectedArticles,
           [activeQuestionId]: [...selected, articleId],
@@ -93,7 +96,6 @@ const ChecklistDetail = () => {
       }
     }
   };
-  
 
   const handleSubmit = async () => {
     try {
@@ -118,8 +120,21 @@ const ChecklistDetail = () => {
     }
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      fetchArticles(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      fetchArticles(currentPage - 1);
+    }
+  };
+
   return (
     <div className="checklist-detail" style={{ maxWidth: '800px', margin: '0 auto' }}>
+      {/* 步骤逻辑保持不变 */}
       {step === 1 && (
         <div>
           <h2>Step 1: Enter Decision Name</h2>
@@ -155,24 +170,9 @@ const ChecklistDetail = () => {
               >
                 Reference Mental Models
               </button>
-              {selectedArticles[questions[currentQuestionIndex].id] &&
-                selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
-                  <div>
-                    <h4>Referenced Articles:</h4>
-                    <div style={{ marginLeft: '15px' }}>
-                      {selectedArticles[questions[currentQuestionIndex].id].map((articleId) => {
-                        const article = articles.find((art) => art.id === articleId);
-                        return (
-                          <div key={articleId} style={{ marginBottom: '5px' }}>
-                            {article ? article.title : ''}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
             </div>
           )}
+          {/* 流程控制按钮保持不变 */}
           <div style={{ marginTop: '20px' }}>
             {currentQuestionIndex > 0 && (
               <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }}>
@@ -222,6 +222,7 @@ const ChecklistDetail = () => {
         </div>
       )}
 
+      {/* 引用文章的弹出窗口 */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -261,6 +262,15 @@ const ChecklistDetail = () => {
               {article.title}
             </div>
           ))}
+        </div>
+        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
+          <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+            Previous Page
+          </button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            Next Page
+          </button>
         </div>
         <button onClick={() => setIsModalOpen(false)} style={{ marginTop: '20px' }}>Done</button>
       </Modal>
