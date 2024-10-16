@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 
+// 在组件加载前设置应用程序元素，通常设置为根元素
+Modal.setAppElement('#root');
+
 const ChecklistDetail = () => {
   const { checklistId } = useParams();
   const navigate = useNavigate();
@@ -53,13 +56,13 @@ const ChecklistDetail = () => {
   const handleReferenceArticles = (questionId) => {
     setActiveQuestionId(questionId);
     setIsModalOpen(true);
-    fetchArticles(searchTerm, 1); // 初始加载文章数据
+    fetchArticles(1); // 初始加载文章数据
   };
 
-  const fetchArticles = async (search = '', page = 1) => {
+  const fetchArticles = async (page = 1) => {
     try {
       const response = await axios.get('http://localhost:5000/articles', {
-        params: { search, page, page_size: 10 },
+        params: { search: searchTerm, page, page_size: 10 },
       });
       setArticles(response.data.articles);
       setTotalPages(response.data.total_pages);
@@ -71,37 +74,42 @@ const ChecklistDetail = () => {
 
   const handleSearch = () => {
     setCurrentPage(1); // 重置为第一页
-    fetchArticles(searchTerm, 1);
+    fetchArticles(1);
   };
 
   const handleSelectArticle = (articleId) => {
     if (activeQuestionId === null) return;
 
     const selected = selectedArticles[activeQuestionId] || [];
-    
-    // 限制引用的文章数量最多为 10
-    if (selected.includes(articleId)) {
+    const selectedArticle = articles.find((art) => art.id === articleId);
+
+    if (selected.some((art) => art.id === articleId)) {
+      // 如果已经引用，取消引用（即反选）
       setSelectedArticles({
         ...selectedArticles,
-        [activeQuestionId]: selected.filter((id) => id !== articleId),
+        [activeQuestionId]: selected.filter((art) => art.id !== articleId),
       });
     } else {
-      if (selected.length < 10) {
+      if (selected.length < 5 && selectedArticle) {
+        // 如果引用数少于 5，允许添加引用
         setSelectedArticles({
           ...selectedArticles,
-          [activeQuestionId]: [...selected, articleId],
+          [activeQuestionId]: [...selected, selectedArticle],
         });
       } else {
-        alert("You can reference up to 10 articles only.");
+        alert("You can reference up to 5 articles only.");
       }
     }
   };
+
+
+
 
   const handleSubmit = async () => {
     try {
       const answersArray = Object.keys(answers).map((questionId) => ({
         question_id: parseInt(questionId, 10),
-        answer: answers[questionId].answer,
+        answer: answers[questionId]?.answer || '',
         referenced_articles: selectedArticles[questionId] || [],
       }));
 
@@ -122,19 +130,18 @@ const ChecklistDetail = () => {
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      fetchArticles(searchTerm, currentPage + 1);
+      fetchArticles(currentPage + 1);
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      fetchArticles(searchTerm, currentPage - 1);
+      fetchArticles(currentPage - 1);
     }
   };
 
   return (
     <div className="checklist-detail" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      {/* 步骤逻辑保持不变 */}
       {step === 1 && (
         <div>
           <h2>Step 1: Enter Decision Name</h2>
@@ -147,7 +154,7 @@ const ChecklistDetail = () => {
               onChange={(e) => setDecisionName(e.target.value)}
             />
           </div>
-          <button onClick={() => setStep(2)} disabled={!decisionName} style={{ padding: '10px 20px' }}>
+          <button onClick={() => setStep(2)} disabled={!decisionName} className='custom-button'>
             Next
           </button>
         </div>
@@ -165,34 +172,48 @@ const ChecklistDetail = () => {
                 onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
               />
               <button
-                style={{ marginTop: '10px' }}
+                style={{ marginTop: '10px' }} className='custom-button'
                 onClick={() => handleReferenceArticles(questions[currentQuestionIndex].id)}
               >
                 Reference Mental Models
               </button>
+              {selectedArticles[questions[currentQuestionIndex].id] &&
+                selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
+                  <div>
+                    <h4>Referenced Articles:</h4>
+                    <div style={{ marginLeft: '15px' }}>
+                      {selectedArticles[questions[currentQuestionIndex].id].map((article) => (
+                        <div key={article.id} style={{ marginBottom: '5px' }}>
+                          {article.title}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
             </div>
           )}
-          {/* 流程控制按钮保持不变 */}
           <div style={{ marginTop: '20px' }}>
             {currentQuestionIndex > 0 && (
-              <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }}>
+              <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
                 Previous Question
               </button>
             )}
             {currentQuestionIndex < questions.length - 1 && (
-              <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }}>
+              <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
                 Next Question
               </button>
             )}
           </div>
           <div style={{ marginTop: '20px' }}>
-            <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+            <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
               Previous Step
             </button>
             <button
               onClick={() => setStep(3)}
               disabled={Object.keys(answers).length !== questions.length}
               style={{ padding: '10px 20px' }}
+              className='custom-button'
             >
               Next Step
             </button>
@@ -212,17 +233,16 @@ const ChecklistDetail = () => {
             />
           </div>
           <div style={{ marginTop: '20px' }}>
-            <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }}>
+            <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
               Previous Step
             </button>
-            <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }}>
+            <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }} className='custom-button'>
               Submit
             </button>
           </div>
         </div>
       )}
 
-      {/* 引用文章的弹出窗口 */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -255,7 +275,7 @@ const ChecklistDetail = () => {
             <div key={article.id} style={{ marginBottom: '10px', textAlign: 'left' }}>
               <input
                 type="checkbox"
-                checked={selectedArticles[activeQuestionId]?.includes(article.id)}
+                checked={selectedArticles[activeQuestionId]?.some((art) => art.id === article.id) || false}
                 onChange={() => handleSelectArticle(article.id)}
                 style={{ marginRight: '5px' }}
               />
@@ -272,7 +292,7 @@ const ChecklistDetail = () => {
             Next Page
           </button>
         </div>
-        <button onClick={() => setIsModalOpen(false)} style={{ marginTop: '20px' }}>Done</button>
+        <button onClick={() => setIsModalOpen(false)} style={{ marginTop: '20px' }} className='custom-button'>Done</button>
       </Modal>
     </div>
   );
