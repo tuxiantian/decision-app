@@ -38,7 +38,7 @@ const ReviewEditor = () => {
     const reviewData = {
       decision_id: decisionId,
       content,
-      referenced_articles: referencedArticles
+      referenced_articles: referencedArticles.map(article => article.id) // 只保存文章的 id
     };
 
     axios.post('http://localhost:5000/reviews', reviewData)
@@ -71,6 +71,16 @@ const ReviewEditor = () => {
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       fetchArticles(searchTerm, currentPage + 1);
+    }
+  };
+
+  const handleSelectArticle = (article) => {
+    if (referencedArticles.some((refArticle) => refArticle.id === article.id)) {
+      // 如果已经引用，取消引用
+      setReferencedArticles(referencedArticles.filter((refArticle) => refArticle.id !== article.id));
+    } else {
+      // 添加引用
+      setReferencedArticles([...referencedArticles, article]);
     }
   };
 
@@ -117,14 +127,8 @@ const ReviewEditor = () => {
           <div key={article.id} style={{ marginBottom: '10px' }}>
             <input
               type="checkbox"
-              checked={referencedArticles.includes(article.id)}
-              onChange={() => {
-                if (referencedArticles.includes(article.id)) {
-                  setReferencedArticles(referencedArticles.filter(id => id !== article.id));
-                } else {
-                  setReferencedArticles([...referencedArticles, article.id]);
-                }
-              }}
+              checked={referencedArticles.some((refArticle) => refArticle.id === article.id)}
+              onChange={() => handleSelectArticle(article)}
             />
             <label style={{ marginLeft: '5px' }}>{article.title}</label>
           </div>
@@ -144,14 +148,11 @@ const ReviewEditor = () => {
         {referencedArticles.length === 0 ? (
           <p>No articles referenced.</p>
         ) : (
-          referencedArticles.map(articleId => {
-            const article = articles.find(a => a.id === articleId);
-            return article ? (
-              <div key={article.id}>
-                <p>{article.title}</p>
-              </div>
-            ) : null;
-          })
+          referencedArticles.map(article => (
+            <div key={article.id}>
+              <p>{article.title}</p>
+            </div>
+          ))
         )}
       </div>
 
