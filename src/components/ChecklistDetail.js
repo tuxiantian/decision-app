@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
+import PersonalStateCheck from './PersonalStateCheck';
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
 Modal.setAppElement('#root');
@@ -9,6 +10,7 @@ Modal.setAppElement('#root');
 const ChecklistDetail = () => {
   const { checklistId } = useParams();
   const navigate = useNavigate();
+  const [assessmentComplete, setAssessmentComplete] = useState(false); // 增加一个状态来判断评估是否完成
   const [step, setStep] = useState(1);
   const [decisionName, setDecisionName] = useState('');
   const [questions, setQuestions] = useState([]);
@@ -102,9 +104,6 @@ const ChecklistDetail = () => {
     }
   };
 
-
-
-
   const handleSubmit = async () => {
     try {
       const answersArray = Object.keys(answers).map((questionId) => ({
@@ -140,107 +139,116 @@ const ChecklistDetail = () => {
     }
   };
 
+  const handleAssessmentComplete = () => {
+    setAssessmentComplete(true);
+  };
+
   return (
     <div className="checklist-detail" style={{ maxWidth: '800px', margin: '0 auto' }}>
-      {step === 1 && (
-        <div>
-          <h2>Step 1: Enter Decision Name</h2>
-          <div style={{ marginBottom: '20px' }}>
-            <input
-              type="text"
-              style={{ width: '100%', padding: '10px', fontSize: '16px' }}
-              placeholder="Enter decision name"
-              value={decisionName}
-              onChange={(e) => setDecisionName(e.target.value)}
-            />
-          </div>
-          <button onClick={() => setStep(2)} disabled={!decisionName} className='custom-button'>
-            Next
-          </button>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div>
-          <h2>Step 2: Answer Checklist Questions</h2>
-          {questions.length > 0 && (
-            <div key={questions[currentQuestionIndex].id} className="form-group" style={{ marginBottom: '20px' }}>
-              <label>{`Question ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`}</label>
-              <textarea
-                style={{ width: '80%', padding: '10px', fontSize: '16px', height: '80px' }}
-                value={answers[questions[currentQuestionIndex].id]?.answer || ''}
-                onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
-              />
-              <button
-                style={{ marginTop: '10px' }} className='custom-button'
-                onClick={() => handleReferenceArticles(questions[currentQuestionIndex].id)}
-              >
-                Reference Mental Models
+      {!assessmentComplete ? (
+        <PersonalStateCheck onAssessmentComplete={handleAssessmentComplete} />
+      ) : (
+        <>
+          {step === 1 && (
+            <div>
+              <h2>Step 1: Enter Decision Name</h2>
+              <div style={{ marginBottom: '20px' }}>
+                <input
+                  type="text"
+                  style={{ width: '100%', padding: '10px', fontSize: '16px' }}
+                  placeholder="Enter decision name"
+                  value={decisionName}
+                  onChange={(e) => setDecisionName(e.target.value)}
+                />
+              </div>
+              <button onClick={() => setStep(2)} disabled={!decisionName} className='custom-button'>
+                Next
               </button>
-              {selectedArticles[questions[currentQuestionIndex].id] &&
-                selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
-                  <div>
-                    <h4>Referenced Articles:</h4>
-                    <div style={{ marginLeft: '15px' }}>
-                      {selectedArticles[questions[currentQuestionIndex].id].map((article) => (
-                        <div key={article.id} style={{ marginBottom: '5px' }}>
-                          {article.title}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
             </div>
           )}
-          <div style={{ marginTop: '20px' }}>
-            {currentQuestionIndex > 0 && (
-              <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
-                Previous Question
-              </button>
-            )}
-            {currentQuestionIndex < questions.length - 1 && (
-              <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
-                Next Question
-              </button>
-            )}
-          </div>
-          <div style={{ marginTop: '20px' }}>
-            <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
-              Previous Step
-            </button>
-            <button
-              onClick={() => setStep(3)}
-              disabled={Object.keys(answers).length !== questions.length}
-              style={{ padding: '10px 20px' }}
-              className='custom-button'
-            >
-              Next Step
-            </button>
-          </div>
-        </div>
-      )}
 
-      {step === 3 && (
-        <div>
-          <h2>Step 3: Enter Final Decision</h2>
-          <div style={{ marginBottom: '20px' }}>
-            <textarea
-              style={{ width: '100%', height: '150px', padding: '10px', fontSize: '16px' }}
-              placeholder="Enter final decision"
-              value={finalDecision}
-              onChange={(e) => setFinalDecision(e.target.value)}
-            />
-          </div>
-          <div style={{ marginTop: '20px' }}>
-            <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
-              Previous Step
-            </button>
-            <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }} className='custom-button'>
-              Submit
-            </button>
-          </div>
-        </div>
+          {step === 2 && (
+            <div>
+              <h2>Step 2: Answer Checklist Questions</h2>
+              {questions.length > 0 && (
+                <div key={questions[currentQuestionIndex].id} className="form-group" style={{ marginBottom: '20px' }}>
+                  <label>{`Question ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`}</label>
+                  <textarea
+                    style={{ width: '80%', padding: '10px', fontSize: '16px', height: '80px' }}
+                    value={answers[questions[currentQuestionIndex].id]?.answer || ''}
+                    onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
+                  />
+                  <button
+                    style={{ marginTop: '10px' }} className='custom-button'
+                    onClick={() => handleReferenceArticles(questions[currentQuestionIndex].id)}
+                  >
+                    Reference Mental Models
+                  </button>
+                  {selectedArticles[questions[currentQuestionIndex].id] &&
+                    selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
+                      <div>
+                        <h4>Referenced Articles:</h4>
+                        <div style={{ marginLeft: '15px' }}>
+                          {selectedArticles[questions[currentQuestionIndex].id].map((article) => (
+                            <div key={article.id} style={{ marginBottom: '5px' }}>
+                              {article.title}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                </div>
+              )}
+              <div style={{ marginTop: '20px' }}>
+                {currentQuestionIndex > 0 && (
+                  <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                    Previous Question
+                  </button>
+                )}
+                {currentQuestionIndex < questions.length - 1 && (
+                  <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                    Next Question
+                  </button>
+                )}
+              </div>
+              <div style={{ marginTop: '20px' }}>
+                <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                  Previous Step
+                </button>
+                <button
+                  onClick={() => setStep(3)}
+                  disabled={Object.keys(answers).length !== questions.length}
+                  style={{ padding: '10px 20px' }}
+                  className='custom-button'
+                >
+                  Next Step
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div>
+              <h2>Step 3: Enter Final Decision</h2>
+              <div style={{ marginBottom: '20px' }}>
+                <textarea
+                  style={{ width: '100%', height: '150px', padding: '10px', fontSize: '16px' }}
+                  placeholder="Enter final decision"
+                  value={finalDecision}
+                  onChange={(e) => setFinalDecision(e.target.value)}
+                />
+              </div>
+              <div style={{ marginTop: '20px' }}>
+                <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                  Previous Step
+                </button>
+                <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }} className='custom-button'>
+                  Submit
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <Modal
