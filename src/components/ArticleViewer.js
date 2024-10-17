@@ -26,13 +26,11 @@ const ArticleViewer = () => {
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2>{article.title}</h2>
-            <p><strong>Author:</strong> {article.author}</p>
-            <p><strong>Tags:</strong> {article.tags}</p>
+            <p><strong>Author:</strong> {article.author} <strong>Tags:</strong> {article.tags} <strong>Updated At:</strong> {new Date(article.updated_at).toLocaleString()}</p>
             <p><strong>Keywords:</strong> {article.keywords}</p>
-            <p><strong>Updated At:</strong> {new Date(article.updated_at).toLocaleString()}</p>
             <Viewer initialValue={article.content} />
             {/* 返回文章列表的按钮 */}
-            <button onClick={() => navigate('/articles')} style={{ marginTop: '20px' }}>
+            <button onClick={() => navigate('/articles')} style={{ marginTop: '20px' }} className='green-button'>
                 Back to Articles List
             </button>
         </div>

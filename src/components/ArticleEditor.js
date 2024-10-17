@@ -68,6 +68,10 @@ const ArticleEditor = () => {
         setKeywords(keywords.filter((_, i) => i !== index));
     };
 
+    const goBack = ()=>{
+        navigate('/articles');
+    }
+
     const handleSave = () => {
         if (!validateFields()) {
             return; // 如果有错误，阻止提交
@@ -187,6 +191,7 @@ const ArticleEditor = () => {
             />
             {errors.content && <p style={{ color: 'red' }}>{errors.content}</p>}
             <button onClick={handleSave}  className='green-button' style={{marginTop:'10px'}}>Save Article</button>
+            <button onClick={goBack}  className='green-button' style={{marginTop:'10px'}}>Go Back</button>
         </div>
     );
 };
