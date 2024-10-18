@@ -39,6 +39,9 @@ const ArticleEditor = () => {
             if (editorRef.current) {
                 editorRef.current.getInstance().setMarkdown('');
             }
+            if (tags === "") {
+                setTags("CognitiveBias");
+            }
         }
     }, [id]);
 
@@ -150,7 +153,7 @@ const ArticleEditor = () => {
                     onChange={(e) => setAuthor(e.target.value)}
                     style={{ flex: 1, padding: '10px' }}
                 />
-                <select value={tags} onChange={(e) => setTags(e.target.value)} style={{ flex: 1, padding: '10px' }}>
+                <select value={tags || "CognitiveBias"} onChange={(e) => setTags(e.target.value)} style={{ flex: 1, padding: '10px' }}>
                     <option value="">Select Tag</option>
                     <option value="MentalModel">Mental Model</option>
                     <option value="CognitiveBias">Cognitive Bias</option>

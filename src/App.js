@@ -22,7 +22,7 @@ import ArticleEditor from './components/ArticleEditor';
 import ArticleViewer from './components/ArticleViewer';
 import ReviewEditor from './components/ReviewEditor';
 import FlowchartDetail from './components/FlowchartDetail';
-import MermaidEditor from './components/MermaidEditor';
+import BalancedDecisionMaker from './components/BalancedDecisionMaker';
 import AboutUs from './AboutUs';
 
 function App() {
@@ -38,6 +38,7 @@ function App() {
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' // 添加阴影效果
         }}>
           <Link className="nav-link" to="/">Home</Link>
+          <Link className="nav-link" to="/balanced-decisions">BalancedDecisionMaker</Link>
           <Link className="nav-link" to="/articles">Article</Link>
           <Link className="nav-link" to="/checklists">Checklists</Link>
           <Link className="nav-link" to="/history">Answer History</Link>
@@ -50,6 +51,7 @@ function App() {
         </nav>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
           <Route path="/question-flow" element={<QuestionFlow />} />
           <Route path="/decisions" element={<DecisionsList />} />
           <Route path="/decision/:decisionId" element={<DecisionDetails />} />
