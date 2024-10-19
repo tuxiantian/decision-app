@@ -162,6 +162,23 @@ div.decision-container {
   .comparison-options input[type="radio"] {
     margin-right: 5px;
   } 
+
+  .decision-name-input {
+    width: 600px;
+    padding: 8px;
+    margin: 10px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: border-color 0.3s ease;
+  
+    /* Hover and Focus State */
+    &:focus {
+      border-color: #007bff; /* Change border color when input is focused */
+    }
+  }
+  
   
   /* CSS for Decision List Page */
 .decision-list-container {

@@ -178,6 +178,7 @@ function BalancedDecisionMaker() {
           value={decisionName}
           onChange={(e) => setDecisionName(e.target.value)}
           placeholder="Enter decision name"
+          className='decision-name-input'
         />
       </div>
       <div className="section">
