@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaTimes } from 'react-icons/fa';  // 需要安装 react-icons 包
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../App.css'
@@ -8,7 +9,7 @@ const ArticleList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const pageSize = 10; // 页大小为10
+    const pageSize = 10;
 
     const navigate = useNavigate();
 
@@ -26,9 +27,9 @@ const ArticleList = () => {
         })
             .then(response => {
                 if (response.data) {
-                    const { articles, total_pages } = response.data; // 获取 articles 和 total_pages
-                    setArticles(articles); // 更新 articles
-                    setTotalPages(total_pages); // 更新 totalPages
+                    const { articles, total_pages } = response.data;
+                    setArticles(articles);
+                    setTotalPages(total_pages);
                 }
             })
             .catch(error => {
@@ -59,18 +60,21 @@ const ArticleList = () => {
         navigate(`/view-article/${id}`);
     };
 
-    // 搜索框的 onChange 事件处理函数
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value.toLowerCase());
     };
 
-    // 点击“搜索”按钮时的处理函数
     const handleSearchButton = () => {
-        setCurrentPage(1); // 搜索时重置为第一页
-        fetchArticles(1);  // 重新获取第一页的数据
+        setCurrentPage(1);
+        fetchArticles(1);
     };
 
-    // 处理分页的逻辑
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setCurrentPage(1);
+        fetchArticles(1);
+    };
+
     const handleNextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(prevPage => prevPage + 1);
@@ -86,14 +90,29 @@ const ArticleList = () => {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <h2>Articles List</h2>
-            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-                <input
-                    type="text"
-                    placeholder="Search by title, tags, or keywords"
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    style={{ flex: 1, padding: '10px' }}
-                />
+            <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                    <input
+                        type="text"
+                        placeholder="Search by title, tags, or keywords"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        style={{ width: '100%', padding: '10px', paddingRight: '40px' }}
+                    />
+                    {searchTerm && (
+                        <FaTimes
+                            onClick={handleClearSearch}
+                            style={{
+                                position: 'absolute',
+                                right: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                cursor: 'pointer',
+                                color: '#999'
+                            }}
+                        />
+                    )}
+                </div>
                 <button onClick={handleSearchButton} style={{ padding: '10px' }} className='green-button'>Search</button>
                 <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }} className='green-button'>Add New Article</button>
             </div>
@@ -108,7 +127,6 @@ const ArticleList = () => {
                         marginBottom: '10px'
                     }}>
                         <div style={{ flex: 3 }}>
-                            {/* 第一行：标题和作者 */}
                             <div style={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -119,7 +137,6 @@ const ArticleList = () => {
                                 <h3 style={{ margin: 0 }}>{article.title}</h3>
                                 <p style={{ margin: 0 }}>Author: {article.author}</p>
                             </div>
-                            {/* 第二行：标签、关键词和更新时间 */}
                             <div style={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -127,10 +144,8 @@ const ArticleList = () => {
                                 gap: '20px'
                             }}>
                                 <p style={{ margin: 0 }}>Tags: {article.tags}</p>
-                                
                                 <p style={{ margin: 0 }}>Updated At: {new Date(article.updated_at).toLocaleString()}</p>
                             </div>
-                            {/* 第三行：标签、关键词和更新时间 */}
                             <div style={{
                                 display: 'flex',
                                 flexDirection: 'row',
@@ -139,7 +154,6 @@ const ArticleList = () => {
                             }}>
                                 <p style={{ margin: 0 }}>Keywords: {article.keywords}</p>
                             </div>
-
                         </div>
                         <div style={{ flex: 1, textAlign: 'right' }}>
                             <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }} className='green-button'>View</button>
