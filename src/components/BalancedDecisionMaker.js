@@ -124,13 +124,13 @@ function BalancedDecisionMaker() {
     updatedGroups[index].moreImportant = value;
     setGroups(updatedGroups);
   };
-  
+
 
   // Step 9: Calculate final decision result
   const calculateDecisionResult = () => {
     let positiveScore = 0;
     let negativeScore = 0;
-  
+
     // 遍历所有分组并根据 moreImportant 属性累加相应得分
     groups.forEach((group) => {
       if (group.moreImportant === 'positive') {
@@ -139,7 +139,7 @@ function BalancedDecisionMaker() {
         negativeScore += group.weight;
       }
     });
-  
+
     if (positiveScore > negativeScore) {
       setDecisionResult('Positive Wins');
     } else if (negativeScore > positiveScore) {
@@ -150,6 +150,16 @@ function BalancedDecisionMaker() {
   };
 
   const saveDecisionData = async () => {
+    // 检查条件是否为空
+    if (
+      conditions.positive.length === 0 ||
+      conditions.negative.length === 0 ||
+      comparisons.length === 0 ||
+      groups.length === 0
+    ) {
+      alert('Cannot save decision data. Please complete all the steps.');
+      return;
+    }
     const decisionData = {
       decisionName, // Include decision name
       conditions,
@@ -166,7 +176,7 @@ function BalancedDecisionMaker() {
       alert('Failed to save decision data.');
     }
   };
-  
+
 
   return (
     <div className="decision-container">
@@ -294,7 +304,7 @@ function BalancedDecisionMaker() {
             <h3>Decision Result: {decisionResult}</h3>
           </div>
         )}
-         <button className="button submit-button" onClick={saveDecisionData}>Save Decision</button>
+        <button className="button submit-button" onClick={saveDecisionData}>Save Decision</button>
       </div>
     </div>
   );
