@@ -74,16 +74,24 @@ function BalancedDecisionMaker() {
   // Step 5: Generate groups of positive and negative conditions
   const generateGroups = (sortedPositive, sortedNegative) => {
     const groups = [];
-    const maxLength = Math.max(sortedPositive.length, sortedNegative.length);
+    const minLength = Math.min(sortedPositive.length, sortedNegative.length);
 
-    for (let i = 0; i < maxLength; i++) {
-      const positiveCondition = sortedPositive[i] || sortedPositive[sortedPositive.length - 1];
-      const negativeCondition = sortedNegative[i] || sortedNegative[sortedNegative.length - 1];
+    // Group the same length conditions together
+    for (let i = 0; i < minLength; i++) {
       groups.push({
-        positive: positiveCondition,
-        negative: negativeCondition,
+        positive: [sortedPositive[i]],
+        negative: [sortedNegative[i]],
         weight: 0,
       });
+    }
+
+    // Handle remaining conditions if the lists have different lengths
+    if (sortedPositive.length > minLength) {
+      // Update the last group to add the remaining positive conditions
+      groups[groups.length - 1].positive.unshift(...sortedPositive.slice(minLength));
+    } else if (sortedNegative.length > minLength) {
+      // Update the last group to add the remaining negative conditions
+      groups[groups.length - 1].negative.unshift(...sortedNegative.slice(minLength));
     }
 
     setGroups(groups);
@@ -100,43 +108,39 @@ function BalancedDecisionMaker() {
 
   // Step 7: Generate comparisons between groups
   const generateGroupComparisons = () => {
-    const groupPairs = [];
-    for (let i = 0; i < groups.length; i++) {
-      for (let j = i + 1; j < groups.length; j++) {
-        groupPairs.push({
-          groupA: groups[i],
-          groupB: groups[j],
-          moreImportant: null,
-        });
-      }
-    }
-    setGroupComparisons(groupPairs);
+    const updatedGroups = groups.map((group) => ({
+      ...group,
+      moreImportant: null, // Add moreImportant property to store which condition is more important
+    }));
+    setGroups(updatedGroups);
   };
 
+
   // Step 8: Set the more important group for each pair
-  const setMoreImportantGroup = (index, moreImportant) => {
-    setGroupComparisons((prevGroupComparisons) => {
-      const updatedGroupComparisons = [...prevGroupComparisons];
-      updatedGroupComparisons[index].moreImportant = moreImportant;
-      return updatedGroupComparisons;
-    });
+  const setMoreImportantGroup = (index, value) => {
+    const updatedGroups = [...groups];
+    updatedGroups[index].moreImportant = value;
+    setGroups(updatedGroups);
   };
+  
 
   // Step 9: Calculate final decision result
   const calculateDecisionResult = () => {
     let positiveScore = 0;
     let negativeScore = 0;
-
-    groupComparisons.forEach((comparison) => {
-      if (comparison.moreImportant === comparison.groupA.positive) {
-        positiveScore += comparison.groupA.weight;
-      } else if (comparison.moreImportant === comparison.groupA.negative) {
-        negativeScore += comparison.groupA.weight;
+  
+    // 遍历所有分组并根据 moreImportant 属性累加相应得分
+    groups.forEach((group) => {
+      if (group.moreImportant === 'positive') {
+        positiveScore += group.weight;
+      } else if (group.moreImportant === 'negative') {
+        negativeScore += group.weight;
       }
     });
-
+  
     setDecisionResult(positiveScore > negativeScore ? 'Positive Wins' : 'Negative Wins');
   };
+  
 
   return (
     <div className="decision-container">
@@ -202,8 +206,8 @@ function BalancedDecisionMaker() {
             <div key={index} className="group-item">
               <div className="group-details">
                 <p>Group {index + 1}:</p>
-                <p>Positive: {group.positive.description}</p>
-                <p>Negative: {group.negative.description}</p>
+                <p>Positive: {group.positive.map((item) => item.description).join(', ')}</p>
+                <p>Negative: {group.negative.map((item) => item.description).join(', ')}</p>
               </div>
               <input
                 type="number"
@@ -221,21 +225,32 @@ function BalancedDecisionMaker() {
       <div className="section">
         <h2 className="section-title">Compare Groups</h2>
         <div className="comparisons-list">
-          {groupComparisons.map((comparison, index) => (
+          {groups.map((group, index) => (
             <div key={index} className="comparison-item">
-              <p>Which is more important?</p>
+              <p>Which is more important in Group {index + 1}?</p>
               <div className="comparison-options">
                 <label>
-                  <input type="radio" name={`group-comparison-${index}`} onChange={() => setMoreImportantGroup(index, comparison.groupA.positive)} />
-                  Positive: {comparison.groupA.positive.description}
+                  <input
+                    type="radio"
+                    name={`group-comparison-${index}`}
+                    onChange={() => setMoreImportantGroup(index, 'positive')}
+                    checked={group.moreImportant === 'positive'}
+                  />
+                  Positive: {Array.isArray(group.positive) ? group.positive.map((item) => item.description).join(', ') : group.positive.description}
                 </label>
                 <label>
-                  <input type="radio" name={`group-comparison-${index}`} onChange={() => setMoreImportantGroup(index, comparison.groupA.negative)} />
-                  Negative: {comparison.groupA.negative.description}
+                  <input
+                    type="radio"
+                    name={`group-comparison-${index}`}
+                    onChange={() => setMoreImportantGroup(index, 'negative')}
+                    checked={group.moreImportant === 'negative'}
+                  />
+                  Negative: {Array.isArray(group.negative) ? group.negative.map((item) => item.description).join(', ') : group.negative.description}
                 </label>
               </div>
             </div>
           ))}
+
         </div>
         <button className="button submit-button" onClick={calculateDecisionResult}>Calculate Decision Result</button>
         {decisionResult && (
