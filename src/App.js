@@ -39,22 +39,22 @@ function App() {
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/">Home</Nav.Link>
               <NavDropdown title="Balanced Decisions" id="balanced-decisions-dropdown">
-                <NavDropdown.Item as={Link} to="/balanced-decisions">Balanced Decision Maker</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/balanced-decisions/list">Balanced Decision List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/balanced-decisions"  className="nav-dropdown-item">Balanced Decision Maker</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/balanced-decisions/list"  className="nav-dropdown-item">Balanced Decision List</NavDropdown.Item>
               </NavDropdown>
               <NavDropdown title="Checklists" id="checklists-dropdown">
-                <NavDropdown.Item as={Link} to="/checklists">Checklist List</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/checklist-form">Checklist Form</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/history">Answer History</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/checklists"  className="nav-dropdown-item">Checklist List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/checklist-form"  className="nav-dropdown-item">Checklist Form</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/history"  className="nav-dropdown-item">Answer History</NavDropdown.Item>
               </NavDropdown>
               <NavDropdown title="Articles" id="articles-dropdown">
-                <NavDropdown.Item as={Link} to="/articles">Article List</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/add-article">Add Article</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/articles"  className="nav-dropdown-item">Article List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/add-article"  className="nav-dropdown-item">Add Article</NavDropdown.Item>
               </NavDropdown>
               <NavDropdown title="Decisions" id="decisions-dropdown">
-                <NavDropdown.Item as={Link} to="/decisions">Decisions List</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/question-flow">Question Flow</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/ahp">AHP Analysis</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/decisions"  className="nav-dropdown-item">Decisions List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/question-flow"  className="nav-dropdown-item">Question Flow</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/ahp"  className="nav-dropdown-item">AHP Analysis</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
               <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>

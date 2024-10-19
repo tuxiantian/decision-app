@@ -37,6 +37,48 @@
   }
 }
 
+/* 为导航栏设置 hover 样式 */
+.navbar-nav .nav-link {
+  color: #ffffff; /* 默认文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease; /* 添加平滑过渡效果 */
+}
+
+.navbar-nav .nav-link:hover {
+  background-color: #007bff; /* Hover 时背景变为蓝色 */
+  color: #ffffff; /* 文字颜色在 hover 时保持白色 */
+}
+
+.navbar-nav .nav-dropdown-item {
+  color: #000; /* 默认下拉项的文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease; /* 添加过渡效果 */
+}
+
+.navbar-nav .nav-dropdown-item:hover {
+  background-color: #f0f0f0; /* 下拉项在 hover 时背景变为灰色 */
+  color: #007bff; /* 在 hover 时文字颜色变为蓝色 */
+  border-radius: 4px; /* 给 hover 状态下的项加个边角圆滑的效果 */
+}
+
+.navbar-dark .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.5); /* 为 navbar toggler 设置 hover 边框颜色 */
+}
+
+/* 使下拉项之间的间距更清晰 */
+.navbar-nav .nav-item + .nav-item {
+  margin-left: 15px;
+}
+/* 为 NavDropdown.Item 增加 hover 样式 */
+.nav-dropdown-item {
+  color: #000; /* 默认文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease; /* 添加平滑的过渡效果 */
+}
+
+.nav-dropdown-item:hover {
+  background-color: #007bff; /* 悬停时背景变为蓝色 */
+  color: #ffffff; /* 悬停时文字颜色变为白色 */
+}
+
+
 .centered-table-container {
   display: flex;
   justify-content: center;
