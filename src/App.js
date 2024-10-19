@@ -1,10 +1,11 @@
 import './App.css';
 import Home from './Home';
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import QuestionFlow from './QuestionFlow';
 import DecisionsList from './DecisionsList';
 import DecisionDetails from './DecisionDetails';
@@ -31,27 +32,35 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <nav style={{
-          marginBottom: '20px',
-          display: 'flex',
-          justifyContent: 'center', // 导航栏项居中对齐
-          backgroundColor: '#333',  // 导航栏背景颜色
-          padding: '10px 0',        // 导航栏内填充
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' // 添加阴影效果
-        }}>
-          <Link className="nav-link" to="/">Home</Link>
-          <Link className="nav-link" to="/balanced-decisions">BalancedDecisionMaker</Link>
-          <Link className="nav-link" to="/balanced-decisions/list">BalancedDecisionList</Link>
-          <Link className="nav-link" to="/articles">Article</Link>
-          <Link className="nav-link" to="/checklists">Checklists</Link>
-          <Link className="nav-link" to="/history">Answer History</Link>
-          <Link className="nav-link" to="/checklist-form">Checklist Form</Link>
-          <Link className="nav-link" to="/decisions">Decisions List</Link>
-          <Link className="nav-link" to="/question-flow">QuestionFlow</Link>
-          <Link className="nav-link" to="/ahp">AHPAnalysis List</Link>
-          <Link className="nav-link" to="/todos">Todo List</Link>
-          <Link className="nav-link" to="/about-us">AboutUs</Link>
-        </nav>
+        <Navbar bg="dark" variant="dark" expand="lg" style={{ marginBottom: '20px' }}>
+          <Navbar.Brand as={Link} to="/">Dicision Decision</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <NavDropdown title="Balanced Decisions" id="balanced-decisions-dropdown">
+                <NavDropdown.Item as={Link} to="/balanced-decisions">Balanced Decision Maker</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/balanced-decisions/list">Balanced Decision List</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title="Checklists" id="checklists-dropdown">
+                <NavDropdown.Item as={Link} to="/checklists">Checklist List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/checklist-form">Checklist Form</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/history">Answer History</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title="Articles" id="articles-dropdown">
+                <NavDropdown.Item as={Link} to="/articles">Article List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/add-article">Add Article</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title="Decisions" id="decisions-dropdown">
+                <NavDropdown.Item as={Link} to="/decisions">Decisions List</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/question-flow">Question Flow</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/ahp">AHP Analysis</NavDropdown.Item>
+              </NavDropdown>
+              <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
+              <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
@@ -83,5 +92,3 @@ function App() {
 }
 
 export default App;
-
-
