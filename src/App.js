@@ -10,6 +10,7 @@ import QuestionFlow from './QuestionFlow';
 import DecisionsList from './DecisionsList';
 import DecisionDetails from './DecisionDetails';
 import AHPAnalysis from './AHPAnalysis';
+import PairwiseComparison from './PairwiseComparison';
 import DecisionReport from './DecisionReport';
 import ChecklistList from './components/ChecklistList';
 import ChecklistDetail from './components/ChecklistDetail';
@@ -54,7 +55,10 @@ function App() {
               <NavDropdown title="Decisions" id="decisions-dropdown">
                 <NavDropdown.Item as={Link} to="/decisions"  className="nav-dropdown-item">Decisions List</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/question-flow"  className="nav-dropdown-item">Question Flow</NavDropdown.Item>
+              </NavDropdown>
+              <NavDropdown title="AHP Analysis" id="ahp-analysis-dropdown">
                 <NavDropdown.Item as={Link} to="/ahp"  className="nav-dropdown-item">AHP Analysis</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/ahp-add"  className="nav-dropdown-item">Add AHP Analysis</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
               <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>
@@ -71,6 +75,7 @@ function App() {
           <Route path="/decision/:decisionId" element={<DecisionDetails />} />
           <Route path="/decision-report/:decisionId" element={<DecisionReport />} />
           <Route path="/ahp" element={<AHPAnalysis />} />
+          <Route path="/ahp-add" element={<PairwiseComparison />} />
           <Route path="/checklist-form" element={<ChecklistForm />} />
           <Route path="/checklists" element={<ChecklistList />} />
           <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
