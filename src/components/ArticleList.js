@@ -75,6 +75,13 @@ const ArticleList = () => {
         fetchArticles(1);
     };
 
+    // 添加键盘事件的处理函数，回车键触发搜索
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearchButton();
+        }
+    };
+
     const handleNextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(prevPage => prevPage + 1);
@@ -97,6 +104,7 @@ const ArticleList = () => {
                         placeholder="Search by title, tags, or keywords"
                         value={searchTerm}
                         onChange={handleSearchChange}
+                        onKeyDown={handleKeyDown}  // 监听键盘事件
                         style={{ width: '100%', padding: '10px', paddingRight: '40px' }}
                     />
                     {searchTerm && (
