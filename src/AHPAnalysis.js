@@ -55,9 +55,9 @@ function AHPAnalysis() {
       <h1>AHP Decision System</h1>
       {!isNew ? (
         <div className="centered-table-container">
-          <button className="green-button"  onClick={handleNewClick}>新增</button>
-          <h2>历史记录</h2>
           
+          <h2>历史记录</h2>
+          <button className="green-button"  onClick={handleNewClick}>新增</button>
           <table border="1" className="centered-table">
             <thead>
               <tr>
