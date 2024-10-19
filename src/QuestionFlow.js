@@ -83,7 +83,7 @@ const QuestionFlow = () => {
             placeholder={questions[currentQuestionIndex][1]}
           ></textarea>
           <br />
-          <button onClick={handleAnswerSubmit} disabled={currentAnswer.trim() === "" || decisionName.trim() === ""}>确定</button>
+          <button className='green-button' onClick={handleAnswerSubmit} disabled={currentAnswer.trim() === "" || decisionName.trim() === ""}>确定</button>
         </>
       ) : (
         <>
@@ -95,7 +95,7 @@ const QuestionFlow = () => {
             placeholder="请输入您的最终决策结果..."
           ></textarea>
           <br />
-          <button onClick={submitDecision} disabled={finalDecision.trim() === "" || decisionName.trim() === ""}>提交决策</button>
+          <button className='green-button' onClick={submitDecision} disabled={finalDecision.trim() === "" || decisionName.trim() === ""}>提交决策</button>
         </>
       )}
     </div>

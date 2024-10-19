@@ -84,7 +84,7 @@ const ArticleList = () => {
     };
 
     return (
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <h2>Articles List</h2>
             <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
                 <input

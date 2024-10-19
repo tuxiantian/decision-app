@@ -24,7 +24,7 @@ const DecisionReport = () => {
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '60%', margin: '0 auto' }}>
       <nav style={{ marginBottom: '20px' }}>
-        <button onClick={() => navigate(-1)}>Go Back</button>
+        <button className='green-button' onClick={() => navigate(-1)}>Go Back</button>
       </nav>
       <h1 style={{ textAlign: 'center' }}>{decisionDetails.decision_name}</h1>
       <div style={{ marginTop: '20px' }}>
