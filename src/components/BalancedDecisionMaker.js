@@ -138,7 +138,13 @@ function BalancedDecisionMaker() {
       }
     });
   
-    setDecisionResult(positiveScore > negativeScore ? 'Positive Wins' : 'Negative Wins');
+    if (positiveScore > negativeScore) {
+      setDecisionResult('Positive Wins');
+    } else if (negativeScore > positiveScore) {
+      setDecisionResult('Negative Wins');
+    } else {
+      setDecisionResult(`It's a Tie`);
+    }
   };
   
 
