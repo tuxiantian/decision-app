@@ -23,6 +23,8 @@ import ArticleViewer from './components/ArticleViewer';
 import ReviewEditor from './components/ReviewEditor';
 import FlowchartDetail from './components/FlowchartDetail';
 import BalancedDecisionMaker from './components/BalancedDecisionMaker';
+import BalancedDecisionDetail from './components/BalancedDecisionDetail';
+import BalancedDecisionList from './components/BalancedDecisionList';
 import AboutUs from './AboutUs';
 
 function App() {
@@ -39,6 +41,7 @@ function App() {
         }}>
           <Link className="nav-link" to="/">Home</Link>
           <Link className="nav-link" to="/balanced-decisions">BalancedDecisionMaker</Link>
+          <Link className="nav-link" to="/balanced-decisions/list">BalancedDecisionList</Link>
           <Link className="nav-link" to="/articles">Article</Link>
           <Link className="nav-link" to="/checklists">Checklists</Link>
           <Link className="nav-link" to="/history">Answer History</Link>
@@ -52,6 +55,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
+          <Route path="/balanced-decisions/list" element={<BalancedDecisionList />} />
+          <Route path="/balanced-decisions/:id" element={<BalancedDecisionDetail />} />
           <Route path="/question-flow" element={<QuestionFlow />} />
           <Route path="/decisions" element={<DecisionsList />} />
           <Route path="/decision/:decisionId" element={<DecisionDetails />} />

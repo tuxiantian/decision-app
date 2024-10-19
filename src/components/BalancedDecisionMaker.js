@@ -8,6 +8,8 @@ function BalancedDecisionMaker() {
   const [groups, setGroups] = useState([]);
   const [groupComparisons, setGroupComparisons] = useState([]);
   const [decisionResult, setDecisionResult] = useState(null);
+  const [decisionName, setDecisionName] = useState(""); // 新增状态用于存储决策名称
+
 
   // Step 1: Add conditions (positive or negative)
   const addCondition = (type, condition) => {
@@ -146,11 +148,38 @@ function BalancedDecisionMaker() {
       setDecisionResult(`It's a Tie`);
     }
   };
+
+  const saveDecisionData = async () => {
+    const decisionData = {
+      decisionName, // Include decision name
+      conditions,
+      comparisons,
+      groups,
+      decisionResult,
+    };
+
+    try {
+      await axios.post('http://localhost:5000/api/save_decision', decisionData);
+      alert('Decision data saved successfully!');
+    } catch (error) {
+      console.error('Error saving decision data:', error);
+      alert('Failed to save decision data.');
+    }
+  };
   
 
   return (
     <div className="decision-container">
       <h1 className="title">Balanced Decision Maker</h1>
+      <div className="decision-name">
+        <label>Decision Name:</label>
+        <input
+          type="text"
+          value={decisionName}
+          onChange={(e) => setDecisionName(e.target.value)}
+          placeholder="Enter decision name"
+        />
+      </div>
       <div className="section">
         <h2 className="section-title">Add Conditions</h2>
         <div className="input-group">
@@ -264,6 +293,7 @@ function BalancedDecisionMaker() {
             <h3>Decision Result: {decisionResult}</h3>
           </div>
         )}
+         <button className="button submit-button" onClick={saveDecisionData}>Save Decision</button>
       </div>
     </div>
   );
