@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import PairwiseComparison from './PairwiseComparison';
 import { Link, useNavigate } from 'react-router-dom';
-import './App.css'
+import './App.css';
 const BASE_URL = "http://127.0.0.1:5000";
 
 function AHPAnalysis() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
   const [isNew, setIsNew] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+
   const fetchHistory = () => {
     fetch(`${BASE_URL}/ahp_history`)
       .then(response => response.json())
       .then(data => setHistory(data))
       .catch(error => console.error('Error:', error));
   };
-  // 获取历史记录
+
   useEffect(() => {
     fetchHistory();
   }, []);
@@ -55,46 +56,51 @@ function AHPAnalysis() {
       <h1>AHP Decision System</h1>
       {!isNew ? (
         <div className="centered-table-container">
-          
-          <h2>历史记录</h2>
-          <button className="green-button"  onClick={handleNewClick}>新增</button>
-          <table border="1" className="centered-table">
-            <thead>
-              <tr>
-                <th>记录 ID</th>
-                <th>准则</th>
-                <th>备选方案</th>
-                <th>最佳选择</th>
-                <th>创建时间</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((record, index) => {
-                const responseData = JSON.parse(record.response_data);
-                return ( <tr key={index}>
-                  <td>{record.id}</td>
-                  <td>{record.criteria_names}</td>
-                  <td>{record.alternative_names}</td>
-                  <td>{responseData.best_choice_name}</td>
-                  <td>{new Date(record.created_at).toLocaleString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: false
-                  })}</td>
-                  <td>
-                    <button className="green-button" onClick={() => handleDetailsClick(record)}>详情</button>
-                    <button className="red-button" onClick={() => handleDelete(record.id)}>删除</button>
-                  </td>
-                </tr>);
 
-              })}
-            </tbody>
-          </table>
+          <div className="table-container">
+            <div className="table-controls">
+              <h2>历史记录</h2>
+              <button className="green-button add-button" onClick={handleNewClick}>新增</button>
+            </div>
+            <table border="1" className="centered-table">
+              <thead>
+                <tr>
+                  <th>记录 ID</th>
+                  <th>准则</th>
+                  <th>备选方案</th>
+                  <th>最佳选择</th>
+                  <th>创建时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.map((record, index) => {
+                  const responseData = JSON.parse(record.response_data);
+                  return (
+                    <tr key={index}>
+                      <td>{record.id}</td>
+                      <td>{record.criteria_names}</td>
+                      <td>{record.alternative_names}</td>
+                      <td>{responseData.best_choice_name}</td>
+                      <td>{new Date(record.created_at).toLocaleString('zh-CN', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                      })}</td>
+                      <td>
+                        <button className="green-button" onClick={() => handleDetailsClick(record)}>详情</button>
+                        <button className="red-button" onClick={() => handleDelete(record.id)}>删除</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <PairwiseComparison

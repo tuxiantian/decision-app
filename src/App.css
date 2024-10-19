@@ -78,17 +78,38 @@
   color: #ffffff; /* 悬停时文字颜色变为白色 */
 }
 
-
-.centered-table-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
 .centered-table {
   margin: 0 auto;
 }
+.centered-table-container {
+  width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.add-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
 .green-button {
   background-color: #28a745; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
 }
