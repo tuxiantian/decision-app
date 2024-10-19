@@ -33,7 +33,7 @@ function App() {
     <Router>
       <div className="App">
         <Navbar bg="dark" variant="dark" expand="lg" style={{ marginBottom: '20px' }}>
-          <Navbar.Brand as={Link} to="/">Dicision Decision</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">Dicision App</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
