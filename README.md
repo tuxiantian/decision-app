@@ -11,3 +11,7 @@ npm run build
 npm start
 ```
 运行前端app
+卸载一些没有用到的引用
+```
+npm uninstall markdown-it-mathjax3 marked mathjax-full  --legacy-peer-deps
+```

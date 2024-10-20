@@ -3,6 +3,8 @@ import axios from 'axios';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
+import MarkdownViewer from './MarkdownViewer';
+import '../App.css';
 
 const ArticleViewer = () => {
     const { id } = useParams();
@@ -28,7 +30,8 @@ const ArticleViewer = () => {
             <h2>{article.title}</h2>
             <p><strong>Author:</strong> {article.author} <strong>Tags:</strong> {article.tags} <strong>Updated At:</strong> {new Date(article.updated_at).toLocaleString()}</p>
             <p><strong>Keywords:</strong> {article.keywords}</p>
-            <Viewer initialValue={article.content} />
+            {/* <Viewer initialValue={article.content}  plugins={[mathPlugin]}/> */}
+            <MarkdownViewer markdownContent={article.content} />
             {/* 返回文章列表的按钮 */}
             <button onClick={() => navigate('/articles')} style={{ marginTop: '20px' }} className='green-button'>
                 Back to Articles List
