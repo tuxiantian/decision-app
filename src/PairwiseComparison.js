@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';  // 引入 CSS 文件
-
-// 定义基础 URL 前缀
-const BASE_URL = "http://127.0.0.1:5000";
+import { API_BASE_URL } from './config'; 
 
 // 封装 fetch 请求
 const fetchWithPrefix = (endpoint, options = {}) => {
-  return fetch(`${BASE_URL}${endpoint}`, options);
+  return fetch(`${API_BASE_URL}${endpoint}`, options);
 };
 
 function PairwiseComparison({ data, onBack }) {

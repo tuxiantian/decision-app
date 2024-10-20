@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from './config'; 
 
 const QuestionFlow = () => {
   const questions = [
@@ -48,7 +49,7 @@ const QuestionFlow = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/save_decision', {
+      await axios.post(`${API_BASE_URL}/save_decision`, {
         user_id: 1,  // replace with actual user_id
         decision_name: decisionName,
         answers: answers,

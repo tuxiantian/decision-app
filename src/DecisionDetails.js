@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from './config'; 
 
 const DecisionDetails = () => {
   const { decisionId } = useParams();
@@ -8,7 +9,7 @@ const DecisionDetails = () => {
 
   const fetchDecisionDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/decision_details/${decisionId}`);
+      const response = await axios.get(`${API_BASE_URL}/decision_details/${decisionId}`);
       setDecisionDetails(response.data);
     } catch (error) {
       console.error('Error fetching decision details', error);

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
 
 const ChecklistList = () => {
   const [checklists, setChecklists] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/checklists')
+    axios.get(`${API_BASE_URL}/checklists`)
       .then(response => {
         setChecklists(response.data);
       })

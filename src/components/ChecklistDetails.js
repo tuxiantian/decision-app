@@ -4,6 +4,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
+import { API_BASE_URL } from '../config'; 
 
 const ChecklistDetails = () => {
   const { decisionId } = useParams();
@@ -15,7 +16,7 @@ const ChecklistDetails = () => {
   useEffect(() => {
     const fetchDecisionDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/checklist_answers/1/details/${decisionId}`);
+        const response = await axios.get(`${API_BASE_URL}/checklist_answers/1/details/${decisionId}`);
         setDecisionDetails(response.data);
       } catch (error) {
         console.error('Error fetching decision details', error);
@@ -29,7 +30,7 @@ const ChecklistDetails = () => {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const fetchReviews = () => {
-    axios.get(`http://localhost:5000/reviews/${decisionId}`)
+    axios.get(`${API_BASE_URL}/reviews/${decisionId}`)
       .then(response => setReviews(response.data))
       .catch(error => console.error('Error fetching reviews:', error));
   };
@@ -41,7 +42,7 @@ const ChecklistDetails = () => {
 
   const handleViewArticle = async (articleId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/articles/${articleId}`);
+      const response = await axios.get(`${API_BASE_URL}/articles/${articleId}`);
       setSelectedArticle(response.data);
       setShowArticleModal(true);
     } catch (error) {

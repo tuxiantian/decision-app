@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
 import './BalancedDecisionMaker.css';
 
 function BalancedDecisionMaker() {
@@ -169,7 +170,7 @@ function BalancedDecisionMaker() {
     };
 
     try {
-      await axios.post('http://localhost:5000/api/save_decision', decisionData);
+      await axios.post(`${API_BASE_URL}/api/save_decision`, decisionData);
       alert('Decision data saved successfully!');
     } catch (error) {
       console.error('Error saving decision data:', error);

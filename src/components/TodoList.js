@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -26,7 +27,7 @@ const TodoList = () => {
   }, [completedPage]);
 
   const fetchTodos = () => {
-    axios.get('http://localhost:5000/todos')
+    axios.get(`${API_BASE_URL}/todos`)
       .then(response => {
         setTodos(response.data);
       })
@@ -36,7 +37,7 @@ const TodoList = () => {
   };
 
   const fetchCompletedTodos = (page) => {
-    axios.get('http://localhost:5000/todos/completed', {
+    axios.get(`${API_BASE_URL}/todos/completed`, {
       params: {
         page,
         page_size: pageSize
@@ -98,7 +99,7 @@ const TodoList = () => {
         status: 'in_progress'
       };
 
-      axios.post('http://localhost:5000/todos', newTodo)
+      axios.post('${API_BASE_URL}/todos', newTodo)
         .then(response => {
           setTodos([...todos, response.data]);
           setNewTodoName('');
@@ -116,7 +117,7 @@ const TodoList = () => {
   };
 
   const handleTodoCompletion = (id) => {
-    axios.put(`http://localhost:5000/todos/${id}`, { status: 'completed' })
+    axios.put(`${API_BASE_URL}/todos/${id}`, { status: 'completed' })
       .then(() => {
         // 更新状态后的操作，刷新待办列表和已完成列表
         fetchTodos(); // 更新待办事项列表
@@ -128,7 +129,7 @@ const TodoList = () => {
   };
 
   const handleRemoveTodo = (id) => {
-    axios.delete(`http://localhost:5000/todos/${id}`)
+    axios.delete(`${API_BASE_URL}/todos/${id}`)
       .then(() => {
         fetchTodos(); // 更新待办事项列表
         fetchCompletedTodos(completedPage); // 更新已完成事项列表

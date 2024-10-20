@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
 
 const ChecklistUpdate = () => {
   const { checklistId } = useParams();
@@ -10,7 +11,7 @@ const ChecklistUpdate = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/checklists/${checklistId}`)
+    axios.get(`${API_BASE_URL}/checklists/${checklistId}`)
       .then(response => {
         const data = response.data;
         setChecklist(data);
@@ -47,7 +48,7 @@ const ChecklistUpdate = () => {
       questions
     };
 
-    axios.put(`http://localhost:5000/checklists/${checklistId}`, updatedData)
+    axios.put(`${API_BASE_URL}/checklists/${checklistId}`, updatedData)
       .then(() => {
         navigate('/checklists');
       })

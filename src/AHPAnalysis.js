@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PairwiseComparison from './PairwiseComparison';
 import { Link, useNavigate } from 'react-router-dom';
 import './App.css';
-const BASE_URL = "http://127.0.0.1:5000";
+import { API_BASE_URL } from './config'; 
 
 function AHPAnalysis() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ function AHPAnalysis() {
   const [selectedData, setSelectedData] = useState(null);
 
   const fetchHistory = () => {
-    fetch(`${BASE_URL}/ahp_history`)
+    fetch(`${API_BASE_URL}/ahp_history`)
       .then(response => response.json())
       .then(data => setHistory(data))
       .catch(error => console.error('Error:', error));
@@ -32,7 +32,7 @@ function AHPAnalysis() {
   };
 
   const handleDelete = (id) => {
-    fetch(`${BASE_URL}/ahp_delete?id=${id}`, {
+    fetch(`${API_BASE_URL}/ahp_delete?id=${id}`, {
       method: 'GET'
     })
       .then(response => response.json())

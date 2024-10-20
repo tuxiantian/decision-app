@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
 
 const ChecklistAnswerHistory = () => {
   const [checklistDecisions, setChecklistDecisions] = useState([]);
@@ -8,7 +9,7 @@ const ChecklistAnswerHistory = () => {
 
   const fetchChecklistDecisions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/checklist_answers/1');
+      const response = await axios.get(`${API_BASE_URL}/checklist_answers/1`);
       setChecklistDecisions(response.data);
     } catch (error) {
       console.error('Error fetching checklist decisions', error);
@@ -25,7 +26,7 @@ const ChecklistAnswerHistory = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/checklist_answers/${id}`);
+      await axios.delete(`${API_BASE_URL}/checklist_answers/${id}`);
       await fetchChecklistDecisions();
     } catch (error) {
       console.error('Error deleting checklist decision', error);

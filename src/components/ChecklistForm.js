@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import mermaid from 'mermaid';
+import { API_BASE_URL } from '../config'; 
 import './ChecklistForm.css';
 
 // 初始化 Mermaid 配置
@@ -74,7 +75,7 @@ const ChecklistForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/checklists', {
+      const response = await axios.post(`${API_BASE_URL}/checklists`, {
         name: checklistName,
         description,
         questions,

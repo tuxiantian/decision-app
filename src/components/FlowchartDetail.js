@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import mermaid from 'mermaid';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config'; 
 
 const FlowchartDetail = () => {
   const { checklistId } = useParams(); // 获取 checklistId 参数
@@ -11,7 +12,7 @@ const FlowchartDetail = () => {
     // 获取清单详情，包括流程图代码
     const fetchChecklist = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/checklists/${checklistId}`);
+        const response = await axios.get(`${API_BASE_URL}/checklists/${checklistId}`);
         setChecklist(response.data);
       } catch (error) {
         console.error('Error fetching checklist:', error);
@@ -47,7 +48,7 @@ const FlowchartDetail = () => {
 
   const handleDownload = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/generate-mermaid', {
+      const response = await axios.post(`${API_BASE_URL}/generate-mermaid`, {
         mermaid_code: checklist.mermaid_code
       }, {
         responseType: 'blob'

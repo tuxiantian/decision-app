@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import PersonalStateCheck from './PersonalStateCheck';
+import { API_BASE_URL } from '../config'; 
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
 Modal.setAppElement('#root');
@@ -28,7 +29,7 @@ const ChecklistDetail = () => {
   useEffect(() => {
     const fetchChecklistDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/checklists/${checklistId}`);
+        const response = await axios.get(`${API_BASE_URL}/checklists/${checklistId}`);
         setQuestions(response.data.questions);
       } catch (error) {
         console.error('Error fetching checklist details', error);
@@ -63,7 +64,7 @@ const ChecklistDetail = () => {
 
   const fetchArticles = async (page = 1) => {
     try {
-      const response = await axios.get('http://localhost:5000/articles', {
+      const response = await axios.get(`${API_BASE_URL}/articles`, {
         params: { search: searchTerm, page, page_size: 10 },
       });
       setArticles(response.data.articles);
@@ -112,7 +113,7 @@ const ChecklistDetail = () => {
         referenced_articles: selectedArticles[questionId] || [],
       }));
 
-      await axios.post('http://localhost:5000/save_checklist_answers', {
+      await axios.post(`${API_BASE_URL}/save_checklist_answers`, {
         checklist_id: checklistId,
         decision_name: decisionName,
         final_decision: finalDecision,

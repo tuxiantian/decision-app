@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from './config'; 
 
 const DecisionsList = () => {
   const [decisions, setDecisions] = useState([]);
@@ -10,7 +11,7 @@ const DecisionsList = () => {
 
   const fetchDecisions = async (page) => {
     try {
-      const response = await axios.get(`http://localhost:5000/decisions?page=${page}&per_page=10&sort=desc`);
+      const response = await axios.get(`${API_BASE_URL}/decisions?page=${page}&per_page=10&sort=desc`);
       setDecisions(response.data.decisions);
       setCurrentPage(response.data.current_page);
       setTotalPages(response.data.pages);
@@ -46,7 +47,7 @@ const DecisionsList = () => {
   const deleteDecision = async (decisionId) => {
     if (window.confirm("确定要删除这个决策吗？")) {
       try {
-        await axios.delete(`http://localhost:5000/delete_decision/${decisionId}`);
+        await axios.delete(`${API_BASE_URL}/delete_decision/${decisionId}`);
         alert('Decision deleted successfully!');
         fetchDecisions(currentPage);
       } catch (error) {

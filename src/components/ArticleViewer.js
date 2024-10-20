@@ -4,6 +4,7 @@ import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
 import MarkdownViewer from './MarkdownViewer';
+import { API_BASE_URL } from '../config'; 
 import '../App.css';
 
 const ArticleViewer = () => {
@@ -12,7 +13,7 @@ const ArticleViewer = () => {
     const [article, setArticle] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/articles/${id}`)
+        axios.get(`${API_BASE_URL}/articles/${id}`)
             .then(response => {
                 setArticle(response.data);
             })

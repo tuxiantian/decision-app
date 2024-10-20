@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../config'; 
 import './BalancedDecisionDetail.css';
 
 function BalancedDecisionDetail() {
@@ -10,7 +11,7 @@ function BalancedDecisionDetail() {
   useEffect(() => {
     const fetchDecisionDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/get_decision/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/get_decision/${id}`);
         setDecision(response.data);
       } catch (error) {
         console.error('Error fetching decision details:', error);
