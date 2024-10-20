@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';  // 需要安装 react-icons 包
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
 import '../App.css'
 
 const ArticleList = () => {
@@ -9,6 +10,7 @@ const ArticleList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [selectedTag, setSelectedTag] = useState('');
     const pageSize = 10;
 
     const navigate = useNavigate();
@@ -23,6 +25,7 @@ const ArticleList = () => {
                 page: page,
                 page_size: pageSize,
                 search: searchTerm,
+                tag: selectedTag,
             },
         })
             .then(response => {
@@ -121,6 +124,11 @@ const ArticleList = () => {
                         />
                     )}
                 </div>
+                <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)} style={{ padding: '10px' }}>
+                    <option value="">Select Tag</option>
+                    <option value="MentalModel">Mental Model</option>
+                    <option value="CognitiveBias">Cognitive Bias</option>
+                </select>
                 <button onClick={handleSearchButton} style={{ padding: '10px' }} className='green-button'>Search</button>
                 <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }} className='green-button'>Add New Article</button>
             </div>
