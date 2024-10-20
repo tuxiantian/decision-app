@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config'; 
 import './BalancedDecisionDetail.css';
@@ -7,6 +7,7 @@ import './BalancedDecisionDetail.css';
 function BalancedDecisionDetail() {
   const { id } = useParams();
   const [decision, setDecision] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDecisionDetails = async () => {
@@ -19,6 +20,10 @@ function BalancedDecisionDetail() {
     };
     fetchDecisionDetails();
   }, [id]);
+
+  const goBack=()=>{
+    navigate('/balanced-decisions/list');
+  }
 
   if (!decision) {
     return <div>Loading...</div>;
@@ -102,6 +107,14 @@ function BalancedDecisionDetail() {
 
       <div className="result-container">
         <p>Final Decision: {decision.result}</p>
+      </div>
+      <div>
+      <button
+                  className="button details-button"
+                  onClick={() => goBack()}
+                >
+                  Go Back
+                </button>
       </div>
     </div>
   );

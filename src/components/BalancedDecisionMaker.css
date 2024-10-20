@@ -45,15 +45,11 @@ div.decision-container {
   
   .button {
     padding: 8px 12px;
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
-  
-  .button:hover {
-    background-color: #0056b3;
   }
   
   .conditions-container {
@@ -216,15 +212,11 @@ div.decision-container {
     padding: 8px 16px;
     font-size: 14px;
     cursor: pointer;
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-  }
-  
-  .details-button:hover {
-    background-color: #0056b3;
   }
   
   /* Centering table on the page */
