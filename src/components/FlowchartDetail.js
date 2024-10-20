@@ -79,17 +79,17 @@ const FlowchartDetail = () => {
         </div>
       )}
 
-      <button onClick={handleDownload} style={{ marginTop: '20px', padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-        Download Flowchart as PNG
-      </button>
-      <nav style={{ marginTop: '20px' }}>
+      <div style={{ display: 'flex', gap: '20px', marginTop: '20px', justifyContent: 'center' }}>
+        <button onClick={handleDownload} style={{ padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+          Download Flowchart as PNG
+        </button>
         <Link
           to="/checklists"
           style={{ padding: '10px 20px', textDecoration: 'none', color: 'white', background: '#007bff', borderRadius: '5px' }}
         >
           Back to Checklist List
         </Link>
-      </nav>
+      </div>
     </div>
   );
 };
