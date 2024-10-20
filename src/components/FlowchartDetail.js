@@ -45,6 +45,27 @@ const FlowchartDetail = () => {
     return <div>Loading flowchart...</div>;
   }
 
+  const handleDownload = async () => {
+    try {
+      const response = await axios.post('http://localhost:5000/generate-mermaid', {
+        mermaid_code: checklist.mermaid_code
+      }, {
+        responseType: 'blob'
+      });
+
+      // Create a link to download the generated PNG
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'mermaid-diagram.png');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating Mermaid diagram:', error);
+    }
+  };
+
   return (
     <div className="flowchart-detail" style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '20px' }}>
       <h2>{checklist.name} - Flowchart</h2>
@@ -57,6 +78,10 @@ const FlowchartDetail = () => {
           {checklist.mermaid_code}
         </div>
       )}
+
+      <button onClick={handleDownload} style={{ marginTop: '20px', padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+        Download Flowchart as PNG
+      </button>
       <nav style={{ marginTop: '20px' }}>
         <Link
           to="/checklists"
