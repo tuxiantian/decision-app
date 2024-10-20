@@ -126,7 +126,7 @@ const ArticleList = () => {
                 </div>
                 <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)} style={{ padding: '10px' }}>
                     <option value="">Select Tag</option>
-                    <option value="MentalModel">Mental Model</option>
+                    <option value="ThinkingModel">Thinking Model</option>
                     <option value="CognitiveBias">Cognitive Bias</option>
                 </select>
                 <button onClick={handleSearchButton} style={{ padding: '10px' }} className='green-button'>Search</button>
