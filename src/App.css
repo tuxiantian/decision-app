@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -39,48 +40,64 @@
 
 /* 为导航栏设置 hover 样式 */
 .navbar-nav .nav-link {
-  color: #ffffff; /* 默认文本颜色 */
-  transition: background-color 0.3s ease, color 0.3s ease; /* 添加平滑过渡效果 */
+  color: #ffffff;
+  /* 默认文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* 添加平滑过渡效果 */
 }
 
 .navbar-nav .nav-link:hover {
-  background-color: #007bff; /* Hover 时背景变为蓝色 */
-  color: #ffffff; /* 文字颜色在 hover 时保持白色 */
+  background-color: #007bff;
+  /* Hover 时背景变为蓝色 */
+  color: #ffffff;
+  /* 文字颜色在 hover 时保持白色 */
 }
 
 .navbar-nav .nav-dropdown-item {
-  color: #000; /* 默认下拉项的文本颜色 */
-  transition: background-color 0.3s ease, color 0.3s ease; /* 添加过渡效果 */
+  color: #000;
+  /* 默认下拉项的文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* 添加过渡效果 */
 }
 
 .navbar-nav .nav-dropdown-item:hover {
-  background-color: #f0f0f0; /* 下拉项在 hover 时背景变为灰色 */
-  color: #007bff; /* 在 hover 时文字颜色变为蓝色 */
-  border-radius: 4px; /* 给 hover 状态下的项加个边角圆滑的效果 */
+  background-color: #f0f0f0;
+  /* 下拉项在 hover 时背景变为灰色 */
+  color: #007bff;
+  /* 在 hover 时文字颜色变为蓝色 */
+  border-radius: 4px;
+  /* 给 hover 状态下的项加个边角圆滑的效果 */
 }
 
 .navbar-dark .navbar-toggler {
-  border-color: rgba(255, 255, 255, 0.5); /* 为 navbar toggler 设置 hover 边框颜色 */
+  border-color: rgba(255, 255, 255, 0.5);
+  /* 为 navbar toggler 设置 hover 边框颜色 */
 }
 
 /* 使下拉项之间的间距更清晰 */
-.navbar-nav .nav-item + .nav-item {
+.navbar-nav .nav-item+.nav-item {
   margin-left: 15px;
 }
+
 /* 为 NavDropdown.Item 增加 hover 样式 */
 .nav-dropdown-item {
-  color: #000; /* 默认文本颜色 */
-  transition: background-color 0.3s ease, color 0.3s ease; /* 添加平滑的过渡效果 */
+  color: #000;
+  /* 默认文本颜色 */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  /* 添加平滑的过渡效果 */
 }
 
 .nav-dropdown-item:hover {
-  background-color: #007bff; /* 悬停时背景变为蓝色 */
-  color: #ffffff; /* 悬停时文字颜色变为白色 */
+  background-color: #007bff;
+  /* 悬停时背景变为蓝色 */
+  color: #ffffff;
+  /* 悬停时文字颜色变为白色 */
 }
 
 .centered-table {
   margin: 0 auto;
 }
+
 .centered-table-container {
   width: 800px;
   margin: 0 auto;
@@ -111,14 +128,35 @@
 }
 
 .green-button {
-  background-color: #28a745; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
+  background-color: #28a745;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-right: 10px;
 }
+
 .red-button {
-  background-color: red; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-right: 10px;
 }
+
 .blue-button {
-  background-color: #007bff; color: white; padding: 5px 10px; border: none; cursor: pointer;border-radius: 8px;margin-right: 10px;
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-right: 10px;
 }
+
 .custom-button {
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   border: none;
@@ -145,68 +183,94 @@
 
 .nav-link {
   margin-right: 15px;
-  text-decoration: none;     /* 移除链接下划线 */
-  color: #ffffff;            /* 链接文字颜色为白色 */
-  font-weight: bold;         /* 字体加粗 */
-  transition: color 0.3s ease; /* 过渡效果：颜色 */
+  text-decoration: none;
+  /* 移除链接下划线 */
+  color: #ffffff;
+  /* 链接文字颜色为白色 */
+  font-weight: bold;
+  /* 字体加粗 */
+  transition: color 0.3s ease;
+  /* 过渡效果：颜色 */
 }
 
 .nav-link:hover {
-  color: #ffa500;           /* 悬停时的文字颜色变化 */
+  color: #ffa500;
+  /* 悬停时的文字颜色变化 */
 }
 
 .nav-link:last-child {
-  margin-right: 0;          /* 最后一个链接不需要右边距 */
+  margin-right: 0;
+  /* 最后一个链接不需要右边距 */
 }
 
 .no-bullets {
   list-style-type: none;
   padding: 0;
 }
+
 .no-bullets li {
-  margin-bottom: 5px; /* 增加底部边距 */
-  padding: 5px 0; /* 增加上下的 padding */
+  margin-bottom: 5px;
+  /* 增加底部边距 */
+  padding: 5px 0;
+  /* 增加上下的 padding */
 }
 
 /* 适用于编辑器的内容区域 */
 .toastui-editor-contents {
-  text-align: left !important; /* 设置内容区域的文本为左对齐 */
+  text-align: left !important;
+  /* 设置内容区域的文本为左对齐 */
+  font-family: 'Arial', sans-serif  !important;
+  /* 字体 */
+  font-size: 16px  !important;
+  /* 字体大小 */
+  color: #333333  !important;
+  /* 字体颜色 */
+  line-height: 1.8 !important;
+  /* 行高 */
 }
+
 /* 强制编辑器内容左对齐 */
 .toastui-editor-contents,
 .ProseMirror {
-  text-align: left !important;   /* 确保内容居左对齐 */
+  text-align: left !important;
+  /* 确保内容居左对齐 */
 }
 
 /* 避免编辑器默认的居中行为 */
 .toastui-editor {
   display: block;
-  justify-content: flex-start !important;  /* 强制内容区域靠左 */
+  justify-content: flex-start !important;
+  /* 强制内容区域靠左 */
 }
 
 
 .centered-table {
-  border-collapse: collapse; /* 去掉双重边框 */
+  border-collapse: collapse;
+  /* 去掉双重边框 */
   width: 100%;
   max-width: 800px;
   margin: 20px auto;
 }
 
-.centered-table th, .centered-table td {
-  border: 1px solid #ddd; /* 添加单线边框 */
+.centered-table th,
+.centered-table td {
+  border: 1px solid #ddd;
+  /* 添加单线边框 */
   padding: 10px;
   text-align: center;
 }
 
 .centered-table th {
-  background-color: #f2f2f2; /* 表头背景颜色 */
+  background-color: #f2f2f2;
+  /* 表头背景颜色 */
   color: #333;
 }
 
 .centered-table td input {
   width: 100%;
   padding: 5px;
-  box-sizing: border-box; /* 使 padding 不影响 input 的大小 */
+  box-sizing: border-box;
+  /* 使 padding 不影响 input 的大小 */
 }
 
 .matrix-instructions {
@@ -221,7 +285,8 @@
   text-align: center;
   margin: 10px 0;
   padding: 15px;
-  background-color: #f9f9f9; /* 提示信息的背景颜色 */
-  border: 1px solid #ddd; 
+  background-color: #f9f9f9;
+  /* 提示信息的背景颜色 */
+  border: 1px solid #ddd;
   border-radius: 5px;
 }
