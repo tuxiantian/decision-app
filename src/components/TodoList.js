@@ -99,7 +99,7 @@ const TodoList = () => {
         status: 'in_progress'
       };
 
-      axios.post('${API_BASE_URL}/todos', newTodo)
+      axios.post(`${API_BASE_URL}/todos`, newTodo)
         .then(response => {
           setTodos([...todos, response.data]);
           setNewTodoName('');

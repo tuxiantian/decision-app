@@ -85,9 +85,9 @@ const ChecklistUpdate = () => {
             <button onClick={() => handleRemoveQuestion(index)} style={{ backgroundColor: 'red', color: 'white' }}>Remove</button>
           </div>
         ))}
-        <button onClick={handleAddQuestion} style={{ marginTop: '10px' }}>Add Question</button>
+        <button className='green-button' onClick={handleAddQuestion} style={{ marginTop: '10px' }}>Add Question</button>
       </div>
-      <button onClick={handleUpdateChecklist} style={{ marginTop: '20px' }}>Update Checklist</button>
+      <button className='green-button' onClick={handleUpdateChecklist} style={{ marginTop: '20px' }}>Update Checklist</button>
     </div>
   );
 };

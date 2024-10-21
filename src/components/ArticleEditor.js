@@ -155,7 +155,7 @@ const ArticleEditor = () => {
                 />
                 <select value={tags || "ThinkingModel"} onChange={(e) => setTags(e.target.value)} style={{ flex: 1, padding: '10px' }}>
                     <option value="">Select Tag</option>
-                    <option value="ThinkingModel">Mental Model</option>
+                    <option value="ThinkingModel">Thinking Model</option>
                     <option value="CognitiveBias">Cognitive Bias</option>
                 </select>
                 <div style={{ flex: 2, display: 'flex', alignItems: 'center' }}>

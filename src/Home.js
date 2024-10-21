@@ -21,7 +21,7 @@ const Home = () => {
             <li><strong>决策报告生成</strong>：提供决策的详细报告，完整展示用户在决策过程中每个步骤的问题和回答，以及最终的决策结果。这种详尽的报告帮助用户明确自己在做出决策时的逻辑，方便对整个过程的追溯和反思。</li>
             <li><strong>决策列表管理</strong>：用户可以查看所有创建过的决策，支持分页浏览、删除、查看详情和生成报告等操作。用户可以轻松管理自己做出的多个决策，随时回顾或修改。</li>
             <li><strong>逐步问题引导</strong>：提供一系列系统化的问题引导，帮助用户从不同角度全面分析待决策的事项。通过一系列关键问题的回答，用户能够更加清晰地梳理出决策过程中的逻辑和影响因素。
-            这些问题包括“是否符合我一贯的原则？”、“是否会有不好的后果？”等，帮助用户在决策时进行全面评估。</li>
+              这些问题包括“是否符合我一贯的原则？”、“是否会有不好的后果？”等，帮助用户在决策时进行全面评估。</li>
             <li><strong>最终决策支持</strong>：在回答完所有问题后，用户可以填写最终的决策结果。这一过程帮助用户结合所有回答，得出一个全面的、逻辑清晰的结论，从而形成科学的决策依据。</li>
             <li><strong>保存和共享</strong>：用户的所有决策过程和结果都可以保存下来，供后续参考或与他人分享。通过保存的决策记录，用户能够在未来面对类似情况时进行比较分析，以提升决策能力。</li>
           </ul>
@@ -56,9 +56,15 @@ const Home = () => {
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
           通过 Checklist，用户可以在纷繁复杂的决策中理清思路，系统化地分析各个因素的影响，以最科学的方式达成目标。这不仅是一个工具，更是用户科学决策的有力助手。
         </p>
-        <Link to="/checklists" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-          Manage Checklists
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/checklists" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            Manage Checklists
+          </Link>
+
+          <Link to="/checklist-form" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            Add Checklist
+          </Link>
+        </div>
       </section>
 
 
@@ -77,9 +83,14 @@ const Home = () => {
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
           AHPAnalysis 通过这些功能，帮助用户系统化地分析每个影响因素，确保决策过程科学透明，是一个非常有用的决策辅助工具。
         </p>
-        <Link to="/ahp" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-          AHP Analysis
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/ahp" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            AHP Analysis
+          </Link>
+          <Link to="/ahp-add" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            Add AHP Analysis
+          </Link>
+        </div>
       </section>
 
 
@@ -99,9 +110,14 @@ const Home = () => {
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
           通过这些功能，Article 模块帮助用户建立一个强大的知识库，方便用户在面对复杂决策时，能够依据已有的知识进行深入分析和推理。这不仅提升了决策的科学性和严谨性，也让用户能够更加自信地面对每一个决策挑战。
         </p>
-        <Link to="/articles" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-          Manage Articles
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/articles" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            Manage Articles
+          </Link>
+          <Link to="/add-article" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            Add Article
+          </Link>
+        </div>
       </section>
 
 
@@ -143,7 +159,10 @@ const Home = () => {
           BalancedDecisionMaker 通过这些功能，帮助用户在面对复杂选择时，系统地分析每一个影响因素，确保决策更加科学和公正。
         </p>
         <img src="/images/balanced_decision_decription.png" alt='BalancedDecisionMaker flowchart' style={{ display: 'block', margin: '20px auto', maxWidth: '100%', height: 'auto' }} />
-        <Link to="/balanced-decisions/list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>BalancedDecisionList</Link>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/balanced-decisions/list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>BalancedDecisionList</Link>
+          <Link to="/balanced-decisions" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Balanced Decision Maker</Link>
+        </div>
       </section>
     </div>
 
