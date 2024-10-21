@@ -53,8 +53,66 @@ function BalancedDecisionMaker() {
     });
   };
 
+  // 新增：矛盾检测函数
+  const checkForContradictions = (comparisons) => {
+    const graph = {};
+    const visited = {};
+
+    // 构建图
+    comparisons.forEach((comp) => {
+      if (comp.moreImportant) {
+        const { conditionA, conditionB } = comp.moreImportant === comp.conditionA 
+          ? { conditionA: comp.conditionA, conditionB: comp.conditionB } 
+          : { conditionA: comp.conditionB, conditionB: comp.conditionA };
+        if (!graph[conditionA.id]) {
+          graph[conditionA.id] = [];
+        }
+        graph[conditionA.id].push(conditionB.id);
+      }
+    });
+
+    // DFS 检查是否有环
+    const dfs = (node, stack) => {
+      if (stack.includes(node)) {
+        return true; // 有环
+      }
+
+      if (visited[node]) {
+        return false; // 已经访问，无环
+      }
+
+      visited[node] = true;
+      stack.push(node);
+
+      if (graph[node]) {
+        for (const neighbor of graph[node]) {
+          if (dfs(neighbor, stack)) {
+            return true;
+          }
+        }
+      }
+
+      stack.pop();
+      return false;
+    };
+
+    // 检查所有节点是否有环
+    for (const node in graph) {
+      if (dfs(node, [])) {
+        return true; // 发现矛盾
+      }
+    }
+
+    return false; // 无矛盾
+  };
+
   // Step 4: Sort conditions based on comparisons
   const sortConditions = () => {
+    // 在排序之前检查是否有矛盾
+    if (checkForContradictions(comparisons)) {
+      alert('存在矛盾的条件对比，无法继续排序。请检查正面和负面的条件比较。');
+      return;
+    }
     const positiveConditions = [...conditions.positive];
     const negativeConditions = [...conditions.negative];
 
