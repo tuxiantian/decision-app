@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import ReactJson from 'react-json-view';
 import './App.css';  // 引入 CSS 文件
-import { API_BASE_URL } from './config'; 
+import { API_BASE_URL } from './config';
 
 // 封装 fetch 请求
 const fetchWithPrefix = (endpoint, options = {}) => {
@@ -178,7 +179,7 @@ function PairwiseComparison() {
         )
       ))}
       <br></br>
-      <button className="green-button" onClick={generateMatrices}>Generate Matrices</button>
+      <button className="green-button" style={{marginTop:'15px'}} onClick={generateMatrices}>Generate Matrices</button>
 
       <div className="matrix-instructions">
         {'矩阵表格输入提示'}
@@ -267,11 +268,24 @@ function PairwiseComparison() {
       <button className="green-button" onClick={submitMatrices}>Submit</button>
 
       {result && (
-        <div>
-          <h3>Result:</h3>
-          <pre>{JSON.stringify(result, null, 2)}</pre>
+        <div className="result-container">
+          <h3>决策分析结果:</h3>
+          <div className="result-content">
+            <div className="result-field">
+              <strong>最佳选择：</strong> {result.best_choice_name}
+            </div>
+            <div className="result-field">
+              <strong>优先级向量：</strong>
+              <ul className="priority-list">
+                {result.priority_vector.map((value, index) => (
+                  <li key={index}>{alternativeNames[index]}: {value.toFixed(4)}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
+
 
       {result && <button className="green-button" onClick={saveHistory}>Save to History</button>}
     </div>
