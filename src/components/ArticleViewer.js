@@ -22,6 +22,13 @@ const ArticleViewer = () => {
             });
     }, [id]);
 
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // 平滑滚动到页面顶部
+        });
+    };
+
     if (!article) {
         return <p>Loading...</p>;
     }
@@ -36,6 +43,10 @@ const ArticleViewer = () => {
             {/* 返回文章列表的按钮 */}
             <button onClick={() => navigate('/articles')} style={{ marginTop: '20px' }} className='green-button'>
                 Back to Articles List
+            </button>
+            {/* 返回顶部的箭头按钮 */}
+            <button onClick={scrollToTop} className="scroll-to-top-button">
+                ↑
             </button>
         </div>
     );
