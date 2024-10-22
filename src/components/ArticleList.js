@@ -159,6 +159,7 @@ const ArticleList = () => {
                                 alignItems: 'center',
                                 gap: '20px'
                             }}>
+                                <p style={{ margin: 0 }}>Reference Count: {article.reference_count}</p>
                                 <p style={{ margin: 0 }}>Tags: {article.tags}</p>
                                 <p style={{ margin: 0 }}>Updated At: {new Date(article.updated_at).toLocaleString()}</p>
                             </div>
