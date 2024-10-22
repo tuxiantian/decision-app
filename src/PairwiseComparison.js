@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import ReactJson from 'react-json-view';
 import './App.css';  // 引入 CSS 文件
 import { API_BASE_URL } from './config';
 
