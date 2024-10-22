@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';  // 引入 CSS 文件
 import { API_BASE_URL } from './config'; 
 
@@ -7,7 +8,10 @@ const fetchWithPrefix = (endpoint, options = {}) => {
   return fetch(`${API_BASE_URL}${endpoint}`, options);
 };
 
-function PairwiseComparison({ data, onBack }) {
+function PairwiseComparison() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const data = location.state?.data;
   // 加载传入的数据
   useEffect(() => {
     if (data) {
@@ -27,6 +31,10 @@ function PairwiseComparison({ data, onBack }) {
   const [alternativesMatrices, setAlternativesMatrices] = useState([]);
   const [result, setResult] = useState(null);
   const [lastRequestData, setLastRequestData] = useState(null);
+
+  const onBack = () => {
+    navigate(-1); // 返回上一页面
+  };
 
   const handleCriteriaChange = (index, value) => {
     const updatedCriteriaNames = [...criteriaNames];

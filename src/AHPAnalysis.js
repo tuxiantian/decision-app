@@ -22,13 +22,11 @@ function AHPAnalysis() {
   }, []);
 
   const handleNewClick = () => {
-    setSelectedData(null);
-    setIsNew(true);
+    navigate('/ahp-add');
   };
 
   const handleDetailsClick = (data) => {
-    setSelectedData(data);
-    setIsNew(true);
+    navigate('/ahp-add', { state: { data } });
   };
 
   const handleDelete = (id) => {
