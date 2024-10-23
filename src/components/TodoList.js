@@ -113,6 +113,13 @@ const TodoList = () => {
       if (newTodoType === 'today') {
         startDate = currentDate.toISOString();
         endDate = new Date(currentDate.setHours(23, 59, 59)).toISOString();
+      } else if (newTodoType === 'tomorrow') {
+        // 明天的开始和结束时间
+        startDate = currentDate.toISOString();
+        const tomorrow = new Date(currentDate);
+        tomorrow.setDate(currentDate.getDate() + 1); // 将日期加 1，表示明天
+        tomorrow.setHours(23, 59, 59, 999); // 设置时间为明天的 23:59:59
+        endDate = tomorrow.toISOString();
       } else if (newTodoType === 'this_week') {
         const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
         const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() + (6 - currentDate.getDay())));
@@ -128,14 +135,14 @@ const TodoList = () => {
         startDate = currentDate.toISOString();
         const oneWeekEnd = new Date(currentDate);
         oneWeekEnd.setDate(currentDate.getDate() + 6);
-        endDate = new Date(oneWeekEnd.setHours(23, 59, 59)).toISOString();
+        endDate = new Date(oneWeekEnd).toISOString();
       } else if (newTodoType === 'one_month') {
         // 从今天开始算的未来一个月的开始和结束时间
         startDate = currentDate.toISOString();
         const oneMonthEnd = new Date(currentDate);
         oneMonthEnd.setMonth(currentDate.getMonth() + 1);
         oneMonthEnd.setDate(oneMonthEnd.getDate() - 1);
-        endDate = new Date(oneMonthEnd.setHours(23, 59, 59)).toISOString();
+        endDate = new Date(oneMonthEnd).toISOString();
       } else if (newTodoType === 'custom') {
         startDate = customStartDate;
         endDate = customEndDate;
@@ -224,6 +231,7 @@ const TodoList = () => {
           style={{ marginRight: '10px' }}
         >
           <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow</option>
           <option value="this_week">This Week</option>
           <option value="this_month">This Month</option>
           <option value="one_week">One Week</option>
