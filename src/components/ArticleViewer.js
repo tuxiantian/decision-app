@@ -4,7 +4,7 @@ import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
 import MarkdownViewer from './MarkdownViewer';
-import { API_BASE_URL } from '../config'; 
+import { API_BASE_URL } from '../config';
 import '../App.css';
 
 const ArticleViewer = () => {
@@ -44,11 +44,18 @@ const ArticleViewer = () => {
             <button onClick={() => navigate('/articles')} style={{ marginTop: '20px' }} className='green-button'>
                 Back to Articles List
             </button>
-            {/* 返回顶部的箭头按钮 */}
-            <button onClick={scrollToTop} className="scroll-to-top-button">
-                ↑
-            </button>
-        </div>
+            {/* 返回顶部和返回文章列表的按钮 */}
+            <div>
+                {/* 返回文章列表的按钮 */}
+                <button onClick={() => navigate('/articles')} className='go-to-list-button'>
+                    📄
+                </button>
+                {/* 返回顶部的箭头按钮 */}
+                <button onClick={scrollToTop} className="scroll-to-top-button">
+                    ↑
+                </button>
+            </div>
+        </div >
     );
 };
 
