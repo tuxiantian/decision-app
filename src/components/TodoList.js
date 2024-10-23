@@ -108,44 +108,64 @@ const TodoList = () => {
     if (newTodoName) {
       let startDate = '';
       let endDate = '';
-      const currentDate = new Date();
+      var currentDate = new Date();
+
+      const toBeijingTimeString = (date) => {
+        return date.toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
+      };
 
       if (newTodoType === 'today') {
-        startDate = currentDate.toISOString();
-        endDate = new Date(currentDate.setHours(23, 59, 59)).toISOString();
+        // 今天的开始和结束时间
+        startDate = toBeijingTimeString(currentDate);
+        const todayEnd = new Date(currentDate);
+        todayEnd.setHours(23, 59, 59, 999);
+        endDate = toBeijingTimeString(todayEnd);
       } else if (newTodoType === 'tomorrow') {
         // 明天的开始和结束时间
-        startDate = currentDate.toISOString();
+        startDate = toBeijingTimeString(currentDate); // 开始时间为当前时间
         const tomorrow = new Date(currentDate);
-        tomorrow.setDate(currentDate.getDate() + 1); // 将日期加 1，表示明天
+        tomorrow.setDate(currentDate.getDate() + 1); // 设置为明天
         tomorrow.setHours(23, 59, 59, 999); // 设置时间为明天的 23:59:59
-        endDate = tomorrow.toISOString();
+        endDate = toBeijingTimeString(tomorrow); // 结束时间
       } else if (newTodoType === 'this_week') {
-        const startOfWeek = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
-        const endOfWeek = new Date(currentDate.setDate(currentDate.getDate() + (6 - currentDate.getDay())));
-        startDate = startOfWeek.toISOString();
-        endDate = new Date(endOfWeek.setHours(23, 59, 59)).toISOString();
+        // 本周的开始和结束时间
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(currentDate);
+        endOfWeek.setDate(currentDate.getDate() + (6 - currentDate.getDay()));
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        startDate = toBeijingTimeString(startOfWeek);
+        endDate = toBeijingTimeString(endOfWeek);
       } else if (newTodoType === 'this_month') {
+        // 本月的开始和结束时间
         const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-        startDate = startOfMonth.toISOString();
-        endDate = new Date(endOfMonth.setHours(23, 59, 59)).toISOString();
+        endOfMonth.setHours(23, 59, 59, 999);
+
+        startDate = toBeijingTimeString(startOfMonth);
+        endDate = toBeijingTimeString(endOfMonth);
+      } else if (newTodoType === 'custom') {
+        // 自定义开始和结束时间
+        startDate = toBeijingTimeString(new Date(customStartDate));
+        endDate = toBeijingTimeString(new Date(customEndDate));
       } else if (newTodoType === 'one_week') {
-        // 从今天开始算的未来一周的开始和结束时间
-        startDate = currentDate.toISOString();
+        // 从今天开始算的未来一周的开始和结束时间，保持时间一致
+        startDate = toBeijingTimeString(currentDate);
         const oneWeekEnd = new Date(currentDate);
         oneWeekEnd.setDate(currentDate.getDate() + 6);
-        endDate = new Date(oneWeekEnd).toISOString();
+        oneWeekEnd.setHours(23, 59, 59, 999); // 确保设置到当天的结束时间
+        endDate = toBeijingTimeString(oneWeekEnd);
       } else if (newTodoType === 'one_month') {
         // 从今天开始算的未来一个月的开始和结束时间
-        startDate = currentDate.toISOString();
+        startDate = toBeijingTimeString(currentDate);
         const oneMonthEnd = new Date(currentDate);
         oneMonthEnd.setMonth(currentDate.getMonth() + 1);
-        oneMonthEnd.setDate(oneMonthEnd.getDate() - 1);
-        endDate = new Date(oneMonthEnd).toISOString();
-      } else if (newTodoType === 'custom') {
-        startDate = customStartDate;
-        endDate = customEndDate;
+        oneMonthEnd.setDate(0); // 设置到下个月的最后一天
+        oneMonthEnd.setHours(23, 59, 59, 999); // 确保设置到当天的结束时间
+        endDate = toBeijingTimeString(oneMonthEnd);
       }
 
       const newTodo = {
