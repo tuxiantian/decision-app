@@ -123,6 +123,19 @@ const TodoList = () => {
         const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
         startDate = startOfMonth.toISOString();
         endDate = new Date(endOfMonth.setHours(23, 59, 59)).toISOString();
+      } else if (newTodoType === 'one_week') {
+        // 从今天开始算的未来一周的开始和结束时间
+        startDate = currentDate.toISOString();
+        const oneWeekEnd = new Date(currentDate);
+        oneWeekEnd.setDate(currentDate.getDate() + 6);
+        endDate = new Date(oneWeekEnd.setHours(23, 59, 59)).toISOString();
+      } else if (newTodoType === 'one_month') {
+        // 从今天开始算的未来一个月的开始和结束时间
+        startDate = currentDate.toISOString();
+        const oneMonthEnd = new Date(currentDate);
+        oneMonthEnd.setMonth(currentDate.getMonth() + 1);
+        oneMonthEnd.setDate(oneMonthEnd.getDate() - 1);
+        endDate = new Date(oneMonthEnd.setHours(23, 59, 59)).toISOString();
       } else if (newTodoType === 'custom') {
         startDate = customStartDate;
         endDate = customEndDate;
@@ -213,6 +226,8 @@ const TodoList = () => {
           <option value="today">Today</option>
           <option value="this_week">This Week</option>
           <option value="this_month">This Month</option>
+          <option value="one_week">One Week</option>
+          <option value="one_month">One Month</option>
           <option value="custom">Custom</option>
         </select>
         <label style={{ marginRight: '10px' }}>
