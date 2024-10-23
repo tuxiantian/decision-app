@@ -64,10 +64,16 @@ const TodoList = () => {
   };
 
   // 新增方法，获取已结束的 Todo
-  const fetchEndedTodos = () => {
-    axios.get(`${API_BASE_URL}/todos/ended`)
+  const fetchEndedTodos = (page) => {
+    axios.get(`${API_BASE_URL}/todos/ended`, {
+      params: {
+        page,
+        page_size: pageSize
+      }
+    })
       .then(response => {
         setEndedTodos(response.data.todos);
+        setTotalEndedPages(response.data.total_pages);
       })
       .catch(error => {
         console.error('There was an error fetching the ended todos!', error);
