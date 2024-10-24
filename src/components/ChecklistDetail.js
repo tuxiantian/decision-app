@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import mermaid from 'mermaid';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import PersonalStateCheck from './PersonalStateCheck';
@@ -25,18 +26,38 @@ const ChecklistDetail = () => {
   const [activeQuestionId, setActiveQuestionId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [mermaidCode, setMermaidCode] = useState(''); // 流程图代码
+  const [renderFlowchart, setRenderFlowchart] = useState(false); // 控制流程图渲染的状态
+
 
   useEffect(() => {
     const fetchChecklistDetails = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/checklists/${checklistId}`);
         setQuestions(response.data.questions);
+        setMermaidCode(response.data.mermaid_code); // 获取流程图代码
+
       } catch (error) {
         console.error('Error fetching checklist details', error);
       }
     };
     fetchChecklistDetails();
   }, [checklistId]);
+
+  // 监听步骤的变化，确保流程图在正确的步骤显示
+  useEffect(() => {
+    if (renderFlowchart && mermaidCode) {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        flowchart: { curve: 'linear' },
+        securityLevel: 'loose',
+      });
+
+      // 渲染流程图
+      mermaid.run();
+    }
+  }, [renderFlowchart, mermaidCode]);
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -113,7 +134,7 @@ const ChecklistDetail = () => {
         referenced_articles: selectedArticles[questionId] || [],
       }));
 
-      await axios.post(`${API_BASE_URL}/save_checklist_answers`, {
+      const response = await axios.post(`${API_BASE_URL}/save_checklist_answers`, {
         checklist_id: checklistId,
         decision_name: decisionName,
         final_decision: finalDecision,
@@ -121,8 +142,12 @@ const ChecklistDetail = () => {
         answers: answersArray,
       });
 
-      console.log('Checklist answers saved successfully');
-      navigate('/checklists');
+      if (response.status === 200) {
+        console.log('Checklist answers saved successfully');
+        navigate('/checklists');
+      } else {
+        console.error('Unexpected response code:', response.status);
+      }
     } catch (error) {
       console.error('Error saving checklist answers', error);
     }
@@ -142,6 +167,7 @@ const ChecklistDetail = () => {
 
   const handleAssessmentComplete = () => {
     setAssessmentComplete(true);
+    setRenderFlowchart(true); // 状态检测完成后，允许渲染流程图
   };
 
   return (
@@ -150,9 +176,43 @@ const ChecklistDetail = () => {
         <PersonalStateCheck onAssessmentComplete={handleAssessmentComplete} />
       ) : (
         <>
-          {step === 1 && (
+
+         {/* 新增步骤 - 全局预览，包括流程图和问题列表 */}
+         {step === 1 && (
             <div>
-              <h2>Step 1: Enter Decision Name</h2>
+              <h2>Step 1: Overview of Checklist</h2>
+              {mermaidCode && (
+                <div style={{ marginBottom: '20px' }}>
+                  <h3>Flowchart:</h3>
+                  <div
+                    id="mermaid-flowchart"
+                    className="mermaid"
+                    style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '5px', marginTop: '20px' }}
+                  >
+                    {mermaidCode}
+                  </div>
+                </div>
+              )}
+              <div>
+                <h3>Checklist Questions:</h3>
+                <ul>
+                  {questions.map((question) => (
+                    <li key={question.id} style={{ marginBottom: '10px' }}>
+                      {question.question}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <button onClick={() => setStep(2)} className="green-button" style={{ marginTop: '20px' }}>
+                已读，前去做决定
+              </button>
+            </div>
+          )}
+
+
+          {step === 2 && (
+            <div>
+              <h2>Step 2: Enter Decision Name</h2>
               <div style={{ marginBottom: '20px' }}>
                 <input
                   type="text"
@@ -162,15 +222,15 @@ const ChecklistDetail = () => {
                   onChange={(e) => setDecisionName(e.target.value)}
                 />
               </div>
-              <button onClick={() => setStep(2)} disabled={!decisionName} className='green-button'>
+              <button onClick={() => setStep(3)} disabled={!decisionName} className='green-button'>
                 Next
               </button>
             </div>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <div>
-              <h2>Step 2: Answer Checklist Questions</h2>
+              <h2>Step 3: Answer Checklist Questions</h2>
               {questions.length > 0 && (
                 <div key={questions[currentQuestionIndex].id} className="form-group" style={{ marginBottom: '20px' }}>
                   <label>{`Question ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`}</label>
@@ -217,7 +277,7 @@ const ChecklistDetail = () => {
                   Previous Step
                 </button>
                 <button
-                  onClick={() => setStep(3)}
+                  onClick={() => setStep(4)}
                   disabled={Object.keys(answers).length !== questions.length}
                   style={{ padding: '10px 20px' }}
                   className='green-button'
@@ -228,9 +288,9 @@ const ChecklistDetail = () => {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <div>
-              <h2>Step 3: Enter Final Decision</h2>
+              <h2>Step 4: Enter Final Decision</h2>
               <div style={{ marginBottom: '20px' }}>
                 <textarea
                   style={{ width: '100%', height: '150px', padding: '10px', fontSize: '16px' }}
