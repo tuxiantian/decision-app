@@ -162,7 +162,7 @@ const ChecklistDetail = () => {
                   onChange={(e) => setDecisionName(e.target.value)}
                 />
               </div>
-              <button onClick={() => setStep(2)} disabled={!decisionName} className='custom-button'>
+              <button onClick={() => setStep(2)} disabled={!decisionName} className='green-button'>
                 Next
               </button>
             </div>
@@ -180,7 +180,7 @@ const ChecklistDetail = () => {
                     onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
                   />
                   <button
-                    style={{ marginTop: '10px' }} className='custom-button'
+                    style={{ marginTop: '10px' }} className='green-button'
                     onClick={() => handleReferenceArticles(questions[currentQuestionIndex].id)}
                   >
                     Reference Mental Models
@@ -202,25 +202,25 @@ const ChecklistDetail = () => {
               )}
               <div style={{ marginTop: '20px' }}>
                 {currentQuestionIndex > 0 && (
-                  <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                  <button onClick={handlePreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
                     Previous Question
                   </button>
                 )}
                 {currentQuestionIndex < questions.length - 1 && (
-                  <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                  <button onClick={handleNextQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
                     Next Question
                   </button>
                 )}
               </div>
               <div style={{ marginTop: '20px' }}>
-                <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                <button onClick={() => setStep(1)} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
                   Previous Step
                 </button>
                 <button
                   onClick={() => setStep(3)}
                   disabled={Object.keys(answers).length !== questions.length}
                   style={{ padding: '10px 20px' }}
-                  className='custom-button'
+                  className='green-button'
                 >
                   Next Step
                 </button>
@@ -240,10 +240,10 @@ const ChecklistDetail = () => {
                 />
               </div>
               <div style={{ marginTop: '20px' }}>
-                <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }} className='custom-button'>
+                <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
                   Previous Step
                 </button>
-                <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }} className='custom-button'>
+                <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }} className='green-button'>
                   Submit
                 </button>
               </div>
@@ -277,7 +277,7 @@ const ChecklistDetail = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ marginRight: '10px', padding: '5px' }}
           />
-          <button onClick={handleSearch}>Search</button>
+          <button className='green-button' onClick={handleSearch}>Search</button>
         </div>
         <div style={{ textAlign: 'center' }}>
           {articles.map((article) => (
@@ -293,15 +293,15 @@ const ChecklistDetail = () => {
           ))}
         </div>
         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-          <button onClick={handlePreviousPage} disabled={currentPage === 1}>
+          <button className='green-button' onClick={handlePreviousPage} disabled={currentPage === 1}>
             Previous Page
           </button>
           <span>Page {currentPage} of {totalPages}</span>
-          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+          <button className='green-button' onClick={handleNextPage} disabled={currentPage === totalPages}>
             Next Page
           </button>
         </div>
-        <button onClick={() => setIsModalOpen(false)} style={{ marginTop: '20px' }} className='custom-button'>Done</button>
+        <button onClick={() => setIsModalOpen(false)} style={{ marginTop: '20px' }} className='green-button'>Done</button>
       </Modal>
     </div>
   );
