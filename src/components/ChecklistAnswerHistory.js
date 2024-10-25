@@ -2,11 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
+import '../App.css'
+
 
 const ChecklistAnswerHistory = () => {
   const [checklistDecisions, setChecklistDecisions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDecision, setSelectedDecision] = useState(null);
   const pageSize = 5;
   const navigate = useNavigate();
 
@@ -37,10 +41,22 @@ const ChecklistAnswerHistory = () => {
     navigate(`/checklist_answers/details/${decisionId}`);
   };
 
+  // 打开确认删除模态框
+  const openConfirmModal = (decision) => {
+    setSelectedDecision(decision);
+    setIsModalOpen(true);
+  };
+
+  const closeConfirmModal = () => {
+    setIsModalOpen(false);
+    setSelectedDecision(null);
+  };
+
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${API_BASE_URL}/checklist_answers/${id}`);
       await fetchChecklistDecisions(currentPage);
+      closeConfirmModal();
     } catch (error) {
       console.error('Error deleting checklist decision', error);
     }
@@ -58,6 +74,40 @@ const ChecklistAnswerHistory = () => {
     }
   };
 
+  // Modal Component defined within ChecklistAnswerHistory.js
+const Modal = ({ isOpen, onClose, onConfirm, decisionName }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleConfirm = () => {
+    if (inputValue === decisionName) {
+      onConfirm && onConfirm();  // 确保 onConfirm 存在并调用
+    } else {
+      alert("The entered name does not match.");
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>Confirm Deletion</h3>
+        <p>To confirm deletion, please enter the decision name: <strong>{decisionName}</strong></p>
+        <input 
+          type="text" 
+          value={inputValue} 
+          onChange={(e) => setInputValue(e.target.value)} 
+          placeholder="Enter decision name"
+        />
+        <div className="modal-buttons">
+          <button onClick={handleConfirm} className="confirm-button">Confirm</button>
+          <button onClick={onClose} className="cancel-button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
   return (
     <div className="checklist-answer-history" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>Checklist Answer History</h2>
@@ -68,7 +118,7 @@ const ChecklistAnswerHistory = () => {
             <div><strong>Version:</strong> {decision.version} <strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
             <div><strong>Final Decision:</strong> {decision.final_decision}</div>
             <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }} className='green-button'>View Details</button>
-            <button onClick={() => handleDelete(decision.decision_id)} style={{ marginRight: '10px' }} className='red-button'>Delete</button>
+            <button onClick={() => openConfirmModal(decision)} style={{ marginRight: '10px' }} className='red-button'>Delete</button>
             <button onClick={() => navigate(`/checklist/${decision.decision_id}/review`)} className='green-button'>Add Review</button>
 
           </li>
@@ -82,6 +132,13 @@ const ChecklistAnswerHistory = () => {
       <nav style={{ marginTop: '20px' }}>
         <Link to="/checklists">Back to Checklists</Link>
       </nav>
+      {/* 模态框 */}
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={closeConfirmModal} 
+        onConfirm={selectedDecision ? () => handleDelete(selectedDecision.decision_id) : () => {}}  // 始终传递有效函数
+        decisionName={selectedDecision ? selectedDecision.decision_name : ""}
+      />
     </div>
   );
 };
