@@ -154,7 +154,7 @@ const ChecklistForm = () => {
           </div>
           <div className="questions-group">
             {questions.map((question, index) => (
-              <div key={index} className="form-group">
+              <div key={index} className="form-group question-item">
                 <label>{`Question ${index + 1}:`}</label>
                 <input
                   type="text"
