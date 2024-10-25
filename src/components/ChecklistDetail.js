@@ -131,7 +131,8 @@ const ChecklistDetail = () => {
       const answersArray = Object.keys(answers).map((questionId) => ({
         question_id: parseInt(questionId, 10),
         answer: answers[questionId]?.answer || '',
-        referenced_articles: selectedArticles[questionId] || [],
+        referenced_articles: selectedArticles[questionId] 
+        ? selectedArticles[questionId].map(article => article.id): [],
       }));
 
       const response = await axios.post(`${API_BASE_URL}/save_checklist_answers`, {
