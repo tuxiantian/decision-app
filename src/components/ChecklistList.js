@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { API_BASE_URL } from '../config'; 
+import { API_BASE_URL } from '../config';
 
 const ChecklistList = () => {
   const [checklists, setChecklists] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 5;
   const navigate = useNavigate();
 
+  const fetchChecklists = async (page) => {
+    const response = await axios.get(`${API_BASE_URL}/checklists`, {
+      params: {
+        page: page,
+        page_size: pageSize
+      }
+    });
+
+    if (response.data) {
+      const { checklists, total_pages } = response.data;
+      setChecklists(checklists);
+      setTotalPages(total_pages);
+    }
+  }
+
   useEffect(() => {
-    axios.get(`${API_BASE_URL}/checklists`)
-      .then(response => {
-        setChecklists(response.data);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the checklists!', error);
-      });
-  }, []);
+    fetchChecklists(currentPage);
+  }, [currentPage]);
 
   const handleUpdateClick = (checklistId) => {
     navigate(`/checklist/update/${checklistId}`);
@@ -27,6 +39,18 @@ const ChecklistList = () => {
 
   const handleViewFlowchartClick = (checklistId) => {
     navigate(`/checklist/flowchart/${checklistId}`);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
   };
 
   return (
@@ -53,11 +77,17 @@ const ChecklistList = () => {
                 <button onClick={() => handleUpdateClick(checklist.id)} className='green-button'>Update Version</button>
               )}
               <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>Make Decision</button>
-              <button onClick={() => handleViewFlowchartClick(checklist.id)}   className='green-button'>View Flowchart</button>
+              <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>View Flowchart</button>
             </div>
           </li>
         ))}
       </ul>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+        <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
+        <p>Page {currentPage} of {totalPages}</p>
+        <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
+      </div>
     </div>
   );
 };
