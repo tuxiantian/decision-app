@@ -59,7 +59,7 @@ const ChecklistList = () => {
       <ul style={{ listStyle: 'none', padding: 0, width: '80%' }}>
         {checklists.map(checklist => (
           <li key={checklist.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc' }}>
-            <div>
+            <div style={{textAlign:'left',maxWidth:'600px'}}>
               <strong>{checklist.name}</strong> - Version: {checklist.version}
               <div>{checklist.description}</div>
               {checklist.versions && checklist.versions.length > 0 && (
