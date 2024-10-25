@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';  // 需要安装 react-icons 包
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config'; 
+import { API_BASE_URL } from '../config';
 import '../App.css'
 
 const ArticleList = () => {
@@ -11,6 +11,8 @@ const ArticleList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [selectedTag, setSelectedTag] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedArticle, setSelectedArticle] = useState(null);
     const pageSize = 10;
 
     const navigate = useNavigate();
@@ -45,6 +47,7 @@ const ArticleList = () => {
             .then(() => {
                 const updatedArticles = articles.filter(article => article.id !== id);
                 setArticles(updatedArticles);
+                closeConfirmModal();
             })
             .catch(error => {
                 console.error('There was an error deleting the article!', error);
@@ -95,6 +98,51 @@ const ArticleList = () => {
         if (currentPage > 1) {
             setCurrentPage(prevPage => prevPage - 1);
         }
+    };
+
+    // 打开确认删除模态框
+    const openConfirmModal = (article) => {
+        setSelectedArticle(article);
+        setIsModalOpen(true);
+    };
+
+    const closeConfirmModal = () => {
+        setIsModalOpen(false);
+        setSelectedArticle(null);
+    };
+
+    const Modal = ({ isOpen, onClose, onConfirm, title }) => {
+        const [inputValue, setInputValue] = useState("");
+
+        const handleConfirm = () => {
+            if (inputValue === title) {
+                onConfirm && onConfirm();  // 确保 onConfirm 存在并调用
+            } else {
+                alert("The entered title does not match.");
+            }
+        };
+
+        if (!isOpen) return null;
+
+        return (
+            <div className="modal-overlay">
+                <div className="modal-content">
+                    <h3>Confirm Deletion</h3>
+                    <p>To confirm deletion, please enter the title: </p>
+                    <div><strong>{title}</strong></div>
+                    <input
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Enter title"
+                    />
+                    <div className="modal-buttons">
+                        <button onClick={handleConfirm} className="confirm-button">Confirm</button>
+                        <button onClick={onClose} className="cancel-button">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -175,7 +223,7 @@ const ArticleList = () => {
                         <div style={{ flex: 1, textAlign: 'right' }}>
                             <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }} className='green-button'>View</button>
                             <button onClick={() => handleEdit(article.id)} style={{ marginRight: '10px' }} className='green-button'>Edit</button>
-                            <button onClick={() => handleDelete(article.id)} className='green-button'>Delete</button>
+                            <button onClick={() => openConfirmModal(article)} className='red-button'>Delete</button>
                         </div>
                     </li>
                 ))}
@@ -185,6 +233,13 @@ const ArticleList = () => {
                 <p>Page {currentPage} of {totalPages}</p>
                 <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
             </div>
+            {/* 模态框 */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={closeConfirmModal}
+                onConfirm={selectedArticle ? () => handleDelete(selectedArticle.id) : () => { }}  // 始终传递有效函数
+                title={selectedArticle ? selectedArticle.title : ""}
+            />
         </div>
     );
 };

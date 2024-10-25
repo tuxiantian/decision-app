@@ -75,38 +75,39 @@ const ChecklistAnswerHistory = () => {
   };
 
   // Modal Component defined within ChecklistAnswerHistory.js
-const Modal = ({ isOpen, onClose, onConfirm, decisionName }) => {
-  const [inputValue, setInputValue] = useState("");
+  const Modal = ({ isOpen, onClose, onConfirm, decisionName }) => {
+    const [inputValue, setInputValue] = useState("");
 
-  const handleConfirm = () => {
-    if (inputValue === decisionName) {
-      onConfirm && onConfirm();  // 确保 onConfirm 存在并调用
-    } else {
-      alert("The entered name does not match.");
-    }
-  };
+    const handleConfirm = () => {
+      if (inputValue === decisionName) {
+        onConfirm && onConfirm();  // 确保 onConfirm 存在并调用
+      } else {
+        alert("The entered name does not match.");
+      }
+    };
 
-  if (!isOpen) return null;
+    if (!isOpen) return null;
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h3>Confirm Deletion</h3>
-        <p>To confirm deletion, please enter the decision name: <strong>{decisionName}</strong></p>
-        <input 
-          type="text" 
-          value={inputValue} 
-          onChange={(e) => setInputValue(e.target.value)} 
-          placeholder="Enter decision name"
-        />
-        <div className="modal-buttons">
-          <button onClick={handleConfirm} className="confirm-button">Confirm</button>
-          <button onClick={onClose} className="cancel-button">Cancel</button>
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3>Confirm Deletion</h3>
+          <p>To confirm deletion, please enter the decision name: </p>
+          <div><strong>{decisionName}</strong></div>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Enter decision name"
+          />
+          <div className="modal-buttons">
+            <button onClick={handleConfirm} className="confirm-button">Confirm</button>
+            <button onClick={onClose} className="cancel-button">Cancel</button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   return (
     <div className="checklist-answer-history" style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -133,10 +134,10 @@ const Modal = ({ isOpen, onClose, onConfirm, decisionName }) => {
         <Link to="/checklists">Back to Checklists</Link>
       </nav>
       {/* 模态框 */}
-      <Modal 
-        isOpen={isModalOpen} 
-        onClose={closeConfirmModal} 
-        onConfirm={selectedDecision ? () => handleDelete(selectedDecision.decision_id) : () => {}}  // 始终传递有效函数
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeConfirmModal}
+        onConfirm={selectedDecision ? () => handleDelete(selectedDecision.decision_id) : () => { }}  // 始终传递有效函数
         decisionName={selectedDecision ? selectedDecision.decision_name : ""}
       />
     </div>
