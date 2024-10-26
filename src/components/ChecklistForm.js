@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import mermaid from 'mermaid';
-import { API_BASE_URL } from '../config'; 
+import { API_BASE_URL } from '../config';
 import './ChecklistForm.css';
 
 // 初始化 Mermaid 配置
@@ -21,7 +21,7 @@ mermaid.initialize({
 const ChecklistForm = () => {
   const [checklistName, setChecklistName] = useState('');
   const [description, setDescription] = useState('');
-  const [questions, setQuestions] = useState(['']);
+  const [questions, setQuestions] = useState([{ question: '', description: '' }]);
   const [mermaidCode, setMermaidCode] = useState('');
   const [activeTab, setActiveTab] = useState('flowchart');
   const [renderError, setRenderError] = useState(null);
@@ -55,7 +55,7 @@ const ChecklistForm = () => {
   }, [mermaidCode]);
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, '']);
+    setQuestions([...questions, { question: '', description: '' }]);
   };
 
   const handleRemoveQuestion = (index) => {
@@ -65,7 +65,13 @@ const ChecklistForm = () => {
 
   const handleQuestionChange = (index, value) => {
     const newQuestions = [...questions];
-    newQuestions[index] = value;
+    newQuestions[index].question = value;
+    setQuestions(newQuestions);
+  };
+
+  const handleDescriptionChange = (index, value) => {
+    const newQuestions = [...questions];
+    newQuestions[index].description = value;
     setQuestions(newQuestions);
   };
 
@@ -85,7 +91,7 @@ const ChecklistForm = () => {
       setQuestions(newQuestions);
     }
   };
-  
+
   const moveQuestionDown = (index) => {
     if (index < questions.length - 1) {
       const newQuestions = [...questions];
@@ -93,7 +99,7 @@ const ChecklistForm = () => {
       setQuestions(newQuestions);
     }
   };
-  
+
 
   const handleSubmit = async () => {
     try {
@@ -181,14 +187,21 @@ const ChecklistForm = () => {
                 <input
                   type="text"
                   placeholder={`Enter question ${index + 1}`}
-                  value={question}
+                  value={question.question}
                   onChange={(e) => handleQuestionChange(index, e.target.value)}
                 />
-                <button onClick={() => handleRemoveQuestion(index)} className="remove-btn">
-                  Remove
-                </button>
-                <button onClick={() => moveQuestionUp(index)} disabled={index === 0} className="move-btn">Move Up</button>
-                <button onClick={() => moveQuestionDown(index)} disabled={index === questions.length - 1} className="move-btn">Move Down</button>
+                <textarea
+                  placeholder="Enter description (max 255 characters)"
+                  maxLength={255}
+                  value={question.description}
+                  onChange={(e) => handleDescriptionChange(index, e.target.value)}
+                  className="description-textarea"
+                />
+                <div className="button-group">
+                  <button onClick={() => handleRemoveQuestion(index)} className="remove-btn">Remove</button>
+                  <button onClick={() => moveQuestionUp(index)} disabled={index === 0} className="move-btn">Move Up</button>
+                  <button onClick={() => moveQuestionDown(index)} disabled={index === questions.length - 1} className="move-btn">Move Down</button>
+                </div>
               </div>
             ))}
             <button onClick={handleAddQuestion} className="add-btn">Add Question</button>

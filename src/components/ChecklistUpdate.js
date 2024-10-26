@@ -16,7 +16,10 @@ const ChecklistUpdate = () => {
         const data = response.data;
         setChecklist(data);
         setDescription(data.description);
-        setQuestions(data.questions.map(question => question.question));
+        setQuestions(data.questions.map(q => ({
+          question: q.question,
+          description: q.description || '',
+        })));
       })
       .catch(error => {
         console.error('There was an error fetching the checklist details!', error);
@@ -29,7 +32,13 @@ const ChecklistUpdate = () => {
 
   const handleQuestionChange = (index, value) => {
     const updatedQuestions = [...questions];
-    updatedQuestions[index] = value;
+    updatedQuestions[index].question = value;
+    setQuestions(updatedQuestions);
+  };
+
+  const handleQuestionDescriptionChange = (index, value) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[index].description = value;
     setQuestions(updatedQuestions);
   };
 
@@ -55,7 +64,7 @@ const ChecklistUpdate = () => {
   };
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, '']);
+    setQuestions([...questions, { question: '', description: '' }]);
   };
 
   const handleUpdateChecklist = () => {
@@ -91,16 +100,25 @@ const ChecklistUpdate = () => {
       <div style={{ width: '60%' }}>
         <h3>Questions:</h3>
         {questions.map((question, index) => (
-          <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div key={index} style={{ marginBottom: '10px', display: 'flex', flexDirection: 'column' }}>
             <input
               type="text"
-              value={question}
+              value={question.question}
               onChange={(e) => handleQuestionChange(index, e.target.value)}
-              style={{ width: '80%', marginRight: '10px' }}
+              style={{ width: '100%', marginBottom: '5px' }}
             />
-            <button onClick={() => handleRemoveQuestion(index)} style={{ backgroundColor: 'red', color: 'white' }}>Remove</button>
-            <button onClick={() => moveQuestionUp(index)} disabled={index === 0} className="move-btn">Move Up</button>
-            <button onClick={() => moveQuestionDown(index)} disabled={index === questions.length - 1} className="move-btn">Move Down</button>
+             <textarea
+              value={question.description}
+              onChange={(e) => handleQuestionDescriptionChange(index, e.target.value)}
+              placeholder="Enter description (max 255 characters)"
+              maxLength={255}
+              style={{ width: '100%', height: '60px', marginBottom: '10px' }}
+            />
+           <div style={{ display: 'flex', gap: '5px' }}>
+              <button onClick={() => handleRemoveQuestion(index)} style={{ backgroundColor: 'red', color: 'white' }}>Remove</button>
+              <button onClick={() => moveQuestionUp(index)} disabled={index === 0} className="move-btn">Move Up</button>
+              <button onClick={() => moveQuestionDown(index)} disabled={index === questions.length - 1} className="move-btn">Move Down</button>
+            </div>
           </div>
         ))}
         <button className='green-button' onClick={handleAddQuestion} style={{ marginTop: '10px' }}>Add Question</button>

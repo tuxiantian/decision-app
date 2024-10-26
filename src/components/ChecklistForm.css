@@ -29,6 +29,29 @@
   .questions-group {
     margin-bottom: 15px;
   }
+
+  .question-item input {
+    display: block;
+    width: 100%; /* 占据整个宽度 */
+    margin-top: 5px;
+  }
+  
+  .description-textarea {
+    display: block;
+    width: 100%; /* 占据整个宽度 */
+    margin-top: 10px; /* 与上方输入框保持间距 */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;  /* 允许用户垂直调整大小 */
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
   
   .add-btn,
   .submit-btn {
@@ -132,17 +155,3 @@
     background-color: #45a049;
   }
   
-  .question-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .question-item label {
-    margin-right: 10px;
-  }
-  
-  .question-item input {
-    flex: 1;  /* 让输入框占据剩余空间 */
-    margin-right: 10px;
-  }

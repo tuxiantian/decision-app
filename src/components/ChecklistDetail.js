@@ -14,6 +14,7 @@ const ChecklistDetail = () => {
   const navigate = useNavigate();
   const [assessmentComplete, setAssessmentComplete] = useState(false); // 增加一个状态来判断评估是否完成
   const [step, setStep] = useState(1);
+  const [latestChecklistId,setLatestChecklistId] = useState(null); 
   const [decisionName, setDecisionName] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
@@ -36,7 +37,7 @@ const ChecklistDetail = () => {
         const response = await axios.get(`${API_BASE_URL}/checklists/${checklistId}`);
         setQuestions(response.data.questions);
         setMermaidCode(response.data.mermaid_code); // 获取流程图代码
-
+        setLatestChecklistId(response.data.id);
       } catch (error) {
         console.error('Error fetching checklist details', error);
       }
@@ -141,7 +142,7 @@ const ChecklistDetail = () => {
       }));
 
       const response = await axios.post(`${API_BASE_URL}/save_checklist_answers`, {
-        checklist_id: checklistId,
+        checklist_id: latestChecklistId,
         decision_name: decisionName,
         final_decision: finalDecision,
         user_id: 1,
@@ -150,7 +151,7 @@ const ChecklistDetail = () => {
 
       if (response.status === 200) {
         console.log('Checklist answers saved successfully');
-        navigate('/checklists');
+        navigate('/history');
       } else {
         console.error('Unexpected response code:', response.status);
       }
@@ -243,6 +244,7 @@ const ChecklistDetail = () => {
                   <textarea
                     style={{ width: '80%', padding: '10px', fontSize: '16px', height: '80px' }}
                     value={answers[questions[currentQuestionIndex].id]?.answer || ''}
+                    placeholder={questions[currentQuestionIndex].description}
                     onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
                   />
                   <button
