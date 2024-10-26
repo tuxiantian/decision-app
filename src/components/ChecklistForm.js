@@ -168,6 +168,7 @@ const ChecklistForm = () => {
             <input
               type="text"
               placeholder="Enter checklist name"
+              maxLength={100}
               value={checklistName}
               onChange={(e) => setChecklistName(e.target.value)}
             />
@@ -176,6 +177,7 @@ const ChecklistForm = () => {
             <label>Description:</label>
             <textarea
               placeholder="Enter checklist description"
+              maxLength={255}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -187,6 +189,7 @@ const ChecklistForm = () => {
                 <input
                   type="text"
                   placeholder={`Enter question ${index + 1}`}
+                  maxLength={255}
                   value={question.question}
                   onChange={(e) => handleQuestionChange(index, e.target.value)}
                 />

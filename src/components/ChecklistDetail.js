@@ -225,6 +225,7 @@ const ChecklistDetail = () => {
                   type="text"
                   style={{ width: '100%', padding: '10px', fontSize: '16px' }}
                   placeholder="Enter decision name"
+                  maxLength={100}
                   value={decisionName}
                   onChange={(e) => setDecisionName(e.target.value)}
                 />

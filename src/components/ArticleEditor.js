@@ -61,6 +61,10 @@ const ArticleEditor = () => {
     };
 
     const handleAddKeyword = () => {
+        if (keywords.length >= 10) {
+            alert("You can only add up to 10 keywords.");
+            return;
+        }
         if (keywordInput.trim()) {
             setKeywords([...keywords, keywordInput.trim()]);
             setKeywordInput('');
@@ -139,6 +143,7 @@ const ArticleEditor = () => {
                 <input
                     type="text"
                     placeholder="Title"
+                    maxLength={255}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     style={{ width: '100%', padding: '10px', fontSize: '1.2em' }} // 标题占据整行，宽度更大
@@ -148,6 +153,7 @@ const ArticleEditor = () => {
             <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
                 <input
                     type="text"
+                    maxLength={50}
                     placeholder="Author"
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
@@ -162,6 +168,7 @@ const ArticleEditor = () => {
                     <input
                         type="text"
                         placeholder="Add a keyword"
+                        maxLength={25}
                         value={keywordInput}
                         onChange={(e) => setKeywordInput(e.target.value)}
                         style={{ flex: 1, padding: '10px' }}
