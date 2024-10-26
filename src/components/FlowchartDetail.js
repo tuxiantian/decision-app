@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import mermaid from 'mermaid';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
-import { API_BASE_URL } from '../config'; 
+import { API_BASE_URL } from '../config';
 
 const FlowchartDetail = () => {
   const { checklistId } = useParams(); // 获取 checklistId 参数
@@ -28,7 +28,12 @@ const FlowchartDetail = () => {
       mermaid.initialize({
         startOnLoad: false,
         theme: 'default',
-        flowchart: { curve: 'linear' },
+        themeCSS: `
+        .nodeLabel  p {
+          white-space: pre-wrap;         /* 强制长文本换行 */
+        }
+        `,
+        flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'linear' },
         securityLevel: 'loose',
       });
 

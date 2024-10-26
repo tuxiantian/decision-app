@@ -50,6 +50,11 @@ const ChecklistDetail = () => {
       mermaid.initialize({
         startOnLoad: false,
         theme: 'default',
+        themeCSS: `
+        .nodeLabel  p {
+          white-space: pre-wrap;         /* 强制长文本换行 */
+        }
+        `,
         flowchart: { curve: 'linear' },
         securityLevel: 'loose',
       });
