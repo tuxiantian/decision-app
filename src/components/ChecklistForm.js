@@ -78,6 +78,23 @@ const ChecklistForm = () => {
     }
   };
 
+  const moveQuestionUp = (index) => {
+    if (index > 0) {
+      const newQuestions = [...questions];
+      [newQuestions[index - 1], newQuestions[index]] = [newQuestions[index], newQuestions[index - 1]];  // 交换顺序
+      setQuestions(newQuestions);
+    }
+  };
+  
+  const moveQuestionDown = (index) => {
+    if (index < questions.length - 1) {
+      const newQuestions = [...questions];
+      [newQuestions[index + 1], newQuestions[index]] = [newQuestions[index], newQuestions[index + 1]];  // 交换顺序
+      setQuestions(newQuestions);
+    }
+  };
+  
+
   const handleSubmit = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/checklists`, {
@@ -170,6 +187,8 @@ const ChecklistForm = () => {
                 <button onClick={() => handleRemoveQuestion(index)} className="remove-btn">
                   Remove
                 </button>
+                <button onClick={() => moveQuestionUp(index)} disabled={index === 0} className="move-btn">Move Up</button>
+                <button onClick={() => moveQuestionDown(index)} disabled={index === questions.length - 1} className="move-btn">Move Down</button>
               </div>
             ))}
             <button onClick={handleAddQuestion} className="add-btn">Add Question</button>

@@ -1,5 +1,5 @@
 .checklist-form {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     border: 1px solid #ccc;
@@ -54,6 +54,24 @@
     background-color: #dc3545;
     margin-left: 10px;
     line-height: 1;  /* 控制 line-height 以确保居中 */
+  }
+  .move-btn {
+    padding: 5px 10px;
+    margin-left: 5px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .move-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .move-btn[disabled] {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
   
   .add-btn {
