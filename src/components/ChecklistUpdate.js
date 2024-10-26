@@ -33,6 +33,22 @@ const ChecklistUpdate = () => {
     setQuestions(updatedQuestions);
   };
 
+  const moveQuestionUp = (index) => {
+    if (index > 0) {
+      const newQuestions = [...questions];
+      [newQuestions[index - 1], newQuestions[index]] = [newQuestions[index], newQuestions[index - 1]];  // 交换顺序
+      setQuestions(newQuestions);
+    }
+  };
+  
+  const moveQuestionDown = (index) => {
+    if (index < questions.length - 1) {
+      const newQuestions = [...questions];
+      [newQuestions[index + 1], newQuestions[index]] = [newQuestions[index], newQuestions[index + 1]];  // 交换顺序
+      setQuestions(newQuestions);
+    }
+  };
+
   const handleRemoveQuestion = (index) => {
     const updatedQuestions = questions.filter((_, i) => i !== index);
     setQuestions(updatedQuestions);
@@ -83,6 +99,8 @@ const ChecklistUpdate = () => {
               style={{ width: '80%', marginRight: '10px' }}
             />
             <button onClick={() => handleRemoveQuestion(index)} style={{ backgroundColor: 'red', color: 'white' }}>Remove</button>
+            <button onClick={() => moveQuestionUp(index)} disabled={index === 0} className="move-btn">Move Up</button>
+            <button onClick={() => moveQuestionDown(index)} disabled={index === questions.length - 1} className="move-btn">Move Down</button>
           </div>
         ))}
         <button className='green-button' onClick={handleAddQuestion} style={{ marginTop: '10px' }}>Add Question</button>
