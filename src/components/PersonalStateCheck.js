@@ -37,7 +37,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
     if (isRested) {
       setCurrentState(states.MOOD_CHECK);
     } else {
-      setModalMessage('请先休息后再继续');
+      setModalMessage('人在疲惫的状态下，深度思考的能力不足，容易做出非理智的决定，请饱饱的睡一觉再考虑做决定。');
       setModalCallback(null); // 无需特殊操作，只是关闭弹窗
       setShowModal(true);
     }
@@ -48,7 +48,13 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
     if (newMood === '平静') {
       setCurrentState(states.PERSUADED_CHECK);
     } else if (newMood === '愤怒' || newMood === '悲伤') {
-      setCurrentState(states.CALM_DOWN);
+      if(newMood === '愤怒'){
+        setModalMessage('人在愤怒的状态下，容易冲动做出不理智的行动，去让自己平静下来。')
+      }else if(newMood === '悲伤'){
+        setModalMessage('人在悲观的状态下，对事情的看法偏向负面，态度偏向消极，往往会做出不理智的行动，去让自己平静下来。')     
+      }
+      setShowModal(true);
+      setModalCallback(() => () => setCurrentState(states.CALM_DOWN));
     } else if (newMood === '兴奋') {
       setCurrentState(states.DELIBERATE_CHECK);
     }
@@ -62,7 +68,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
     if (isDeliberate) {
       setCurrentState(states.PERSUADED_CHECK);
     } else {
-      setModalMessage('当前状态可能不够理性，请推迟做决定');
+      setModalMessage('人在兴奋的状态下，往往对事情的看法过于乐观，往往看不到事情背后的风险，当前状态可能不够理性，请推迟做决定');
       setModalCallback(() => () => navigate('/checklists'));
       setShowModal(true);
     }
@@ -70,7 +76,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
 
   const handlePersuaded = (isPersuaded) => {
     if (isPersuaded) {
-      setModalMessage('当前状态下，建议推迟做决定，直到更加理性');
+      setModalMessage('人在被说服的状态下，看待问题的角度很单一，容易做出事后后悔的决定。这个时候最好的做法是找朋友、家人沟通自己的想法，或者给自己一个冷静期，待冷静期后再做决定。');
       setModalCallback(() => () => navigate('/checklists'));
       setShowModal(true);
     } else {
@@ -135,7 +141,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
             textAlign: 'center',
           }}
         >
-          <p>{modalMessage}</p>
+          <p style={{textAlign: 'left'}}>{modalMessage}</p>
           <button
             onClick={handleCloseModal}
             style={{
