@@ -6,12 +6,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import QuestionFlow from './QuestionFlow';
-import DecisionsList from './DecisionsList';
-import DecisionDetails from './DecisionDetails';
 import AHPAnalysis from './AHPAnalysis';
 import PairwiseComparison from './PairwiseComparison';
-import DecisionReport from './DecisionReport';
 import ChecklistList from './components/ChecklistList';
 import ChecklistDetail from './components/ChecklistDetail';
 import ChecklistForm from './components/ChecklistForm';
@@ -52,10 +48,6 @@ function App() {
                 <NavDropdown.Item as={Link} to="/articles"  className="nav-dropdown-item">Article List</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/add-article"  className="nav-dropdown-item">Add Article</NavDropdown.Item>
               </NavDropdown>
-              <NavDropdown title="Decisions" id="decisions-dropdown">
-                <NavDropdown.Item as={Link} to="/decisions"  className="nav-dropdown-item">Decisions List</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/question-flow"  className="nav-dropdown-item">Question Flow</NavDropdown.Item>
-              </NavDropdown>
               <NavDropdown title="AHP Analysis" id="ahp-analysis-dropdown">
                 <NavDropdown.Item as={Link} to="/ahp"  className="nav-dropdown-item">AHP Analysis</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/ahp-add"  className="nav-dropdown-item">Add AHP Analysis</NavDropdown.Item>
@@ -70,10 +62,6 @@ function App() {
           <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
           <Route path="/balanced-decisions/list" element={<BalancedDecisionList />} />
           <Route path="/balanced-decisions/:id" element={<BalancedDecisionDetail />} />
-          <Route path="/question-flow" element={<QuestionFlow />} />
-          <Route path="/decisions" element={<DecisionsList />} />
-          <Route path="/decision/:decisionId" element={<DecisionDetails />} />
-          <Route path="/decision-report/:decisionId" element={<DecisionReport />} />
           <Route path="/ahp" element={<AHPAnalysis />} />
           <Route path="/ahp-add" element={<PairwiseComparison />} />
           <Route path="/checklist-form" element={<ChecklistForm />} />

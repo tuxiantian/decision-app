@@ -10,35 +10,6 @@ const Home = () => {
         <p>Make informed decisions by using our structured checklist and analysis tools.</p>
       </header>
 
-      <div className="home-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-        <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>科学决策模块功能介绍</h2>
-          <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
-            科学决策模块是 Decision App 的核心功能之一，通过面临决断-理解事情-认识自己-做出决断这样四个部分一套固定的问题模板，旨在为用户做出重大决断时提供系统化的科学决策辅助。以下是科学决策模块的主要功能介绍：
-          </p>
-          <ul style={{ lineHeight: '1.8', color: '#555', paddingLeft: '20px', textAlign: 'left' }}>
-            <li><strong>决策详情展示</strong>：展示每一个决策的详细信息，包括每个步骤的问题和回答。用户可以回顾整个决策过程，查看当初的考虑因素和所做的选择，帮助反思和优化未来的决策。</li>
-            <li><strong>决策报告生成</strong>：提供决策的详细报告，完整展示用户在决策过程中每个步骤的问题和回答，以及最终的决策结果。这种详尽的报告帮助用户明确自己在做出决策时的逻辑，方便对整个过程的追溯和反思。</li>
-            <li><strong>决策列表管理</strong>：用户可以查看所有创建过的决策，支持分页浏览、删除、查看详情和生成报告等操作。用户可以轻松管理自己做出的多个决策，随时回顾或修改。</li>
-            <li><strong>逐步问题引导</strong>：提供一系列系统化的问题引导，帮助用户从不同角度全面分析待决策的事项。通过一系列关键问题的回答，用户能够更加清晰地梳理出决策过程中的逻辑和影响因素。
-              这些问题包括“是否符合我一贯的原则？”、“是否会有不好的后果？”等，帮助用户在决策时进行全面评估。</li>
-            <li><strong>最终决策支持</strong>：在回答完所有问题后，用户可以填写最终的决策结果。这一过程帮助用户结合所有回答，得出一个全面的、逻辑清晰的结论，从而形成科学的决策依据。</li>
-            <li><strong>保存和共享</strong>：用户的所有决策过程和结果都可以保存下来，供后续参考或与他人分享。通过保存的决策记录，用户能够在未来面对类似情况时进行比较分析，以提升决策能力。</li>
-          </ul>
-          <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
-            科学决策模块通过这些功能，帮助用户在复杂的环境中做出更加理性和科学的选择。它不仅提供了决策过程的指导，也通过详细记录和报告，让用户能够不断反思和提升自己的决策能力，从而在未来的决策中表现得更加自信和果断。
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-            <Link to="/question-flow" className="home-link-button" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-              Start a New Decision
-            </Link>
-            <Link to="/history" className="home-link-button" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-              View Decision History
-            </Link>
-          </div>
-        </section>
-      </div>
-
       <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Checklist 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
