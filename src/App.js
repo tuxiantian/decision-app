@@ -13,7 +13,6 @@ import ChecklistDetail from './components/ChecklistDetail';
 import ChecklistForm from './components/ChecklistForm';
 import ChecklistAnswerHistory from './components/ChecklistAnswerHistory';
 import ChecklistDetails from './components/ChecklistDetails';
-import ChecklistUpdate from './components/ChecklistUpdate';
 import TodoList from './components/TodoList';
 import ArticleList from './components/ArticleList';
 import ArticleEditor from './components/ArticleEditor';
