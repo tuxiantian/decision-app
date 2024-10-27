@@ -56,7 +56,6 @@
   .add-btn,
   .submit-btn {
     display: inline-block;
-    margin-top: 10px;
     padding: 8px 12px;
     font-size: 14px;
     color: #fff;
@@ -101,15 +100,23 @@
     background-color: #28a745;
   }
   
-  .submit-btn {
-    background-color: #007bff;
-    width: 100%;
+  .buttons-group {
+    display: flex;
+    gap: 10px; /* 按钮之间的间距 */
+    margin-top: 20px;
   }
   
-  .add-btn:hover,
-  .remove-btn:hover,
-  .submit-btn:hover {
-    opacity: 0.9;
+  .submit-btn, .cancel-btn{
+    background-color: #4CAF50; /* 提交按钮颜色 */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-btn:hover, .submit-btn:hover, .cancel-btn:hover {
+    opacity: 0.8;
   }
   
   .tabs-container {

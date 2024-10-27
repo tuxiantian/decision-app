@@ -69,7 +69,7 @@ function App() {
           <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
           <Route path="/history" element={<ChecklistAnswerHistory />} />
           <Route path="/checklist_answers/details/:decisionId" element={<ChecklistDetails />} />
-          <Route path="/checklist/update/:checklistId" element={<ChecklistUpdate />} />
+          <Route path="/checklist/update/:checklistId" element={<ChecklistForm />} />
           <Route path="/todos" element={<TodoList />} />
           <Route path="/articles" element={<ArticleList />} />
           <Route path="/add-article" element={<ArticleEditor />} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import mermaid from 'mermaid';
 import { API_BASE_URL } from '../config';
 import './ChecklistForm.css';
@@ -19,6 +19,7 @@ mermaid.initialize({
 });
 
 const ChecklistForm = () => {
+  const { checklistId } = useParams();  // 获取路由中的 checklistId 参数
   const [checklistName, setChecklistName] = useState('');
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([{ question: '', description: '' }]);
@@ -28,9 +29,29 @@ const ChecklistForm = () => {
   const mermaidContainerRef = useRef(null);
   const navigate = useNavigate();
 
+  // 根据 checklistId 判断是否为更新模式，并在组件加载时获取数据
+  useEffect(() => {
+    if (checklistId) {
+      axios.get(`${API_BASE_URL}/checklists/${checklistId}`)
+        .then(response => {
+          const data = response.data;
+          setChecklistName(data.name);
+          setDescription(data.description);
+          setMermaidCode(data.mermaid_code);
+          setQuestions(data.questions.map(q => ({
+            question: q.question,
+            description: q.description || '',
+          })));
+        })
+        .catch(error => {
+          console.error('There was an error fetching the checklist details!', error);
+        });
+    }
+  }, [checklistId]);
+
   // 独立函数处理 Mermaid 渲染
   const renderMermaid = async () => {
-    if (mermaidCode.trim() && mermaidContainerRef.current) {
+    if (mermaidCode && mermaidCode.trim() && mermaidContainerRef.current) {
       try {
         setRenderError(null); // 清除之前的错误信息
 
@@ -47,7 +68,7 @@ const ChecklistForm = () => {
   };
 
   useEffect(() => {
-    if (mermaidCode.trim()) {
+    if (mermaidCode && mermaidCode.trim()) {
       setTimeout(() => {
         renderMermaid();
       }, 100);
@@ -76,7 +97,7 @@ const ChecklistForm = () => {
   };
 
   const handlePreviewFlowchart = () => {
-    if (mermaidCode.trim()) {
+    if (mermaidCode && mermaidCode.trim()) {
       setRenderError(null); // 清除之前的错误信息
       renderMermaid(); // 触发渲染逻辑
     } else {
@@ -103,14 +124,22 @@ const ChecklistForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/checklists`, {
+      const requestData = {
         name: checklistName,
         description,
         questions,
         mermaid_code: mermaidCode,
         user_id: 1,
-      });
-      console.log('Checklist saved:', response.data);
+      }
+      if (checklistId) {
+        // 更新模式
+        await axios.put(`${API_BASE_URL}/checklists/${checklistId}`, requestData);
+        console.log('Checklist updated successfully');
+      } else {
+        // 新增模式
+        await axios.post(`${API_BASE_URL}/checklists`, requestData);
+        console.log('Checklist created successfully');
+      }
       navigate('/checklists');
     } catch (error) {
       console.error('Error saving checklist:', error);
@@ -119,7 +148,7 @@ const ChecklistForm = () => {
 
   return (
     <div className="checklist-form">
-      <h2>Create Checklist</h2>
+      <h2>{checklistId ? 'Update Checklist' : 'Create Checklist'}</h2>
       <div className="tabs-container">
         <div className="tabs">
           <div
@@ -209,7 +238,11 @@ const ChecklistForm = () => {
             ))}
             <button onClick={handleAddQuestion} className="add-btn">Add Question</button>
           </div>
-          <button onClick={handleSubmit} className="submit-btn">Submit Checklist</button>
+          <div className="buttons-group">
+            <button onClick={handleSubmit} className="submit-btn">Submit Checklist</button>
+            <button onClick={() => navigate('/checklists')} className="cancel-btn">Back to List</button>
+          </div>
+
         </div>
       )}
     </div>
