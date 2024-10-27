@@ -13,13 +13,14 @@ const Home = () => {
       <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Checklist 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
-          Checklist 是我们 Decision App 的核心功能，帮助用户系统化地规划和执行复杂的决策过程。无论是个人生活还是工作中的各种决策，Checklist 都能让每一个步骤清晰明了、易于执行。它的主要功能包括：
+          Checklist 是我们 Decision App 的核心功能，帮助用户系统化地规划和执行复杂的决策过程。在决策清单里面列举了人们在做决定之前要考虑到的重大问题，每当人们要做决定前要按照决策清单中的问题思考一遍，这样能避免人们做出临时随性的决定，可以避免重大损失。
+          它的主要功能包括：
         </p>
         <ul style={{ lineHeight: '1.8', color: '#555', paddingLeft: '20px', textAlign: 'left' }}>
           <li><strong>创建和管理决策清单</strong>：用户可以通过简单的表单来创建新的 Checklist，定义决策的名称、描述、以及一系列需要考虑的问题，确保在决策过程中没有遗漏任何关键因素。</li>
           <li><strong>对决策清单里的问题生成按步骤决策的流程图</strong>：借助内置的 Mermaid 工具，用户可以将决策清单里的问题按步骤转换为直观的流程图。在可视化的基础上，用户能更好地理解每一步之间的关系，并进行更合理的决策。</li>
-          <li><strong>版本管理和更新</strong>：每个 Checklist 都支持多版本管理。用户可以轻松地创建新的版本、更新现有清单的内容，以适应不断变化的决策需求，同时保留所有历史版本，方便参考和回顾。</li>
-          <li><strong>状态检测与决策支持</strong>：在用户每次按照决策清单做决定之前，系统提供决策状态检查工具，帮助用户在最理性和最平静的状态下做出决定。通过逐步检测用户的状态，如是否感到疲惫、当前的情绪等，确保用户在最佳心态下执行 Checklist。同时，用户在按照决策清单做决定回答每个问题的时候，可以引用系统知识库和自己创建的知识库里的思维模型方面的文章来作为支撑自己决策的依据。</li>
+          <li><strong>版本管理和更新</strong>：每个 Checklist 都支持多版本管理。用户可以轻松地创建新的版本、更新现有清单的问题，以适应不断变化的决策需求，同时保留所有历史版本，方便参考和回顾。</li>
+          <li><strong>状态检测与决策支持</strong>：在用户每次按照决策清单做决定之前，系统提供决策状态检查工具，帮助用户在最理性和最平静的状态下做出决定。通过逐步检测用户的状态，如是否感到疲惫、当前的情绪等，确保用户在最佳心理状态下执行 Checklist。同时，用户在按照决策清单做决定回答每个问题的时候，可以引用系统知识库和自己创建的知识库里的思维模型方面的文章来作为支撑自己决策的依据。</li>
           <li><strong>可视化流程与下载</strong>：用户还可以查看并下载决策的流程图，以便在团队会议、项目汇报中展示决策思路。通过这种方式，用户可以轻松地与他人分享决策过程，获得更多的支持和建议。</li>
           <li><strong>交互和评估</strong>：Checklist 的交互设计友好，用户可以轻松地添加、移除或编辑每个问题。通过对决策清单里的问题的不断调整，用户能够进一步细化决策流程，确保所有重要细节都得到有效考虑。</li>
           <li><strong>事后复盘功能</strong>：在做出决定后，用户可以添加当初做决定的复盘，记录决策过程中的经验和教训，方便未来参考和改进。</li>
@@ -116,7 +117,8 @@ const Home = () => {
       <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>BalancedDecisionMaker 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
-          BalancedDecisionMaker 是一个帮助用户进行系统化决策的工具。它通过提供多步骤的决策制定流程，帮助用户评估不同条件的优缺点，以便做出更合理、更平衡的选择。该组件的主要功能如下：
+          BalancedDecisionMaker帮助人们在面临两难选择时，列出有利条件和不利条件，比较条件、排序组合、设置权重，权衡利弊做出最适合自己的理性选择。
+          该组件的主要功能如下：
         </p>
         <ul style={{ lineHeight: '1.8', color: '#555', paddingLeft: '20px', textAlign: 'left' }}>
           <li><strong>添加条件</strong>：用户可以添加正面和负面的条件，描述各种影响决策的因素。</li>
