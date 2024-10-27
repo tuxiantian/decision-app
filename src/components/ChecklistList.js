@@ -41,6 +41,25 @@ const ChecklistList = () => {
     navigate(`/checklist/flowchart/${checklistId}`);
   };
 
+  // 删除 Checklist 的函数
+  const handleDeleteChecklist = async (checklistId, isParent) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this checklist?");
+    if (!confirmDelete) return;
+
+    try {
+      const url = isParent
+        ? `${API_BASE_URL}/checklists/${checklistId}/delete-with-children`
+        : `${API_BASE_URL}/checklists/${checklistId}`;
+      await axios.delete(url);
+
+      // 删除后刷新列表
+      fetchChecklists(currentPage);
+    } catch (error) {
+      console.error('Error deleting checklist:', error);
+      alert('Failed to delete the checklist.');
+    }
+  };
+
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(prevPage => prevPage + 1);
@@ -59,7 +78,7 @@ const ChecklistList = () => {
       <ul style={{ listStyle: 'none', padding: 0, width: '80%' }}>
         {checklists.map(checklist => (
           <li key={checklist.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc' }}>
-            <div style={{textAlign:'left',maxWidth:'600px'}}>
+            <div style={{ textAlign: 'left', maxWidth: '600px' }}>
               <strong>{checklist.name}</strong> - Version: {checklist.version}
               <div>{checklist.description}</div>
               {checklist.versions && checklist.versions.length > 0 && (
@@ -67,6 +86,12 @@ const ChecklistList = () => {
                   {checklist.versions.map(version => (
                     <li key={version.id} style={{ marginBottom: '5px' }}>
                       <strong>{version.name}</strong> - Version: {version.version}
+                      <button
+                        onClick={() => handleDeleteChecklist(version.id, false)}
+                        style={{ marginLeft: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
+                      >
+                        Delete
+                      </button>
                     </li>
                   ))}
                 </ul>
@@ -78,6 +103,12 @@ const ChecklistList = () => {
               )}
               <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>Make Decision</button>
               <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>View Flowchart</button>
+              <button
+                onClick={() => handleDeleteChecklist(checklist.id, true)}
+                style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
+              >
+                Delete Checklist
+              </button>
             </div>
           </li>
         ))}
