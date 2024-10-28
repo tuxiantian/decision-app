@@ -1,0 +1,85 @@
+.checklist-details {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.question-section {
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.comparison-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.comparison-item {
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* 设置 gallery-container 的样式 */
+.gallery-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    width: 630px; /* 限制为3个gallery-item的宽度 */
+    margin: 20px auto;
+}
+
+/* 设置 scroll-button 的样式 */
+.scroll-button {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+
+    /* 使用 flex 居中箭头 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 左右按钮位置调整 */
+.scroll-button.left {
+    left: 0; /* 放置在 gallery-container 的左边缘 */
+}
+
+.scroll-button.right {
+    right: 0; /* 放置在 gallery-container 的右边缘 */
+}
+
+.gallery {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.gallery-item {
+    width: 200px;
+    padding: 10px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.gallery-item.selected {
+    border: 2px solid #4CAF50;
+    background-color: #e9f7e9;
+}

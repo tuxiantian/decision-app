@@ -6,10 +6,15 @@ import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 import { API_BASE_URL } from '../config';
 import api from './api.js'
+import './ChecklistDetails.css'
 
 const ChecklistDetails = () => {
   const { decisionId } = useParams();
   const [decisionDetails, setDecisionDetails] = useState(null);
+  const [selectedComparison, setSelectedComparison] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0); // 当前滑动的索引
+  const [currentIndices, setCurrentIndices] = useState({}); // 用于存储每个问题的滑动索引
+
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const navigate = useNavigate();
@@ -118,6 +123,31 @@ const ChecklistDetails = () => {
     }
   };
 
+  const toggleComparisonSelection = (answerId) => {
+    setSelectedComparison(prev =>
+      prev.includes(answerId) ? prev.filter(id => id !== answerId) : [...prev, answerId].slice(-2)
+    );
+  };
+
+  const handleScrollLeft = (questionIndex) => {
+    setCurrentIndices((prevIndices) => ({
+      ...prevIndices,
+      [questionIndex]: Math.max((prevIndices[questionIndex] || 0) - 1, 0)
+    }));
+  };
+
+  const handleScrollRight = (questionIndex, responsesLength) => {
+    setCurrentIndices((prevIndices) => {
+      const maxIndex = Math.max(responsesLength - 3, 0);
+      return {
+        ...prevIndices,
+        [questionIndex]: Math.min((prevIndices[questionIndex] || 0) + 1, maxIndex)
+      };
+    });
+  };
+
+
+
   if (!decisionDetails) return <div>Loading...</div>;
 
   return (
@@ -127,44 +157,74 @@ const ChecklistDetails = () => {
 
       <h3>Answers:</h3>
       <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-        {decisionDetails.answers.map((answer, index) => (
+        {decisionDetails.answers.map((answerData, index) => (
           <li key={index} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
-            <div style={{ textAlign: 'left' }}><strong>Q:</strong> <strong>{answer.question}</strong></div>
-            <div style={{ textAlign: 'left' }}><strong>A:</strong> {answer.answer}</div>
-            {answer.referenced_articles && answer.referenced_articles.length > 0 && (
-              <div style={{ textAlign: 'left', marginTop: '10px' }}>
-                <strong>Referenced Articles:</strong>
-                <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                  {answer.referenced_articles.map((article) => (
-                    <li key={article.id}>
-                      <button
-                        onClick={() => handleViewArticle(article.id)}
-                        style={{ textDecoration: 'underline', color: 'blue', background: 'none', border: 'none', cursor: 'pointer' }}
-                      >
-                        {article.title}
-                      </button>
-                    </li>
+            <div style={{ textAlign: 'left' }}><strong>Q:</strong> <strong>{answerData.question}</strong></div>
+
+            {answerData.responses.length === 1 && (
+              <div style={{ textAlign: 'left' }}><strong>A:</strong> {answerData.responses[0].answer}</div>
+            )}
+
+            {answerData.responses.length === 2 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                {answerData.responses.map((response) => (
+                  <div key={response.user_id} style={{ width: '48%', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
+                    <strong>{response.username}:</strong> <p>{response.answer}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {answerData.responses.length > 2 && (
+
+              <div className="gallery-container">
+                <button className="scroll-button left" onClick={() => handleScrollLeft(index)}>{"<"}</button>
+                <div
+                  className="gallery"
+                  style={{ transform: `translateX(-${(currentIndices[index] || 0) * 210}px)` }}
+                >
+                  {answerData.responses.map((response) => (
+                    <div
+                      key={response.user_id}
+                      onClick={() => toggleComparisonSelection(response.user_id)}
+                      className={`gallery-item ${selectedComparison.includes(response.user_id) ? 'selected' : ''}`}
+                    >
+                      <strong>{response.username}:</strong>
+                      <p>{response.answer}</p>
+                    </div>
                   ))}
-                </ul>
+                </div>
+                <button
+                  className="scroll-button right"
+                  onClick={() => handleScrollRight(index, answerData.responses.length)}
+                >
+                  {">"}
+                </button>
               </div>
             )}
           </li>
         ))}
       </ul>
-      
-      
+
+
+
+
       {/* 显示决策组信息 */}
-      {decisionDetails.has_group && (
-        <div>
-          <h3>Decision Group: {decisionDetails.group.name}</h3>
-          <p>Members Count: {decisionDetails.group.members_count}</p>
-        </div>
-      )}
+      {
+        decisionDetails.has_group && (
+          <div>
+            <h3>Decision Group: {decisionDetails.group.name}</h3>
+            <p>Members Count: {decisionDetails.group.members_count}</p>
+          </div>
+        )
+      }
 
       {/* 配置决策组按钮，仅在没有组的情况下显示 */}
-      {!decisionDetails.has_group && (
-        <button onClick={openGroupModal} className='green-button'>Configure Decision Group</button>
-      )}
+      {
+        !decisionDetails.has_group && (
+          <button onClick={openGroupModal} className='green-button'>Configure Decision Group</button>
+        )
+      }
 
       {/* 配置决策组弹窗 */}
       <Modal
@@ -199,12 +259,14 @@ const ChecklistDetails = () => {
       </Modal>
 
       {/* 邀请链接和查看成员按钮 */}
-      {groupId && (
-        <>
-          <button onClick={generateInviteLink} className="green-button">Generate Invite Link</button>
-          <button onClick={fetchGroupMembers} className="green-button">View Group Members</button>
-        </>
-      )}
+      {
+        groupId && (
+          <>
+            <button onClick={generateInviteLink} className="green-button">Generate Invite Link</button>
+            <button onClick={fetchGroupMembers} className="green-button">View Group Members</button>
+          </>
+        )
+      }
 
       {/* 邀请链接弹窗 */}
       <Modal
@@ -323,7 +385,7 @@ const ChecklistDetails = () => {
         )}
       </Modal>
 
-    </div>
+    </div >
   );
 };
 
