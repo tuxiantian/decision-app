@@ -137,6 +137,16 @@
   margin-right: 10px;
 }
 
+.gray-button {
+  background-color: #6c757d;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
 .red-button {
   background-color: red;
   color: white;
@@ -413,5 +423,10 @@
   color: white;
 }
 
+.error-message {
+  color: red;
+  margin-top: 15px;
+  font-weight: bold;
+}
 
 

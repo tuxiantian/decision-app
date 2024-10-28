@@ -3,6 +3,7 @@ import { FaTimes } from 'react-icons/fa';  // 需要安装 react-icons 包
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
+import api from './api.js'
 import '../App.css'
 
 const ArticleList = () => {
@@ -22,7 +23,7 @@ const ArticleList = () => {
     }, [currentPage]);
 
     const fetchArticles = (page) => {
-        axios.get(`${API_BASE_URL}/articles`, {
+        api.get(`${API_BASE_URL}/articles`, {
             params: {
                 page: page,
                 page_size: pageSize,
@@ -43,7 +44,7 @@ const ArticleList = () => {
     };
 
     const handleDelete = (id) => {
-        axios.delete(`${API_BASE_URL}/articles/${id}`)
+        api.delete(`${API_BASE_URL}/articles/${id}`)
             .then(() => {
                 const updatedArticles = articles.filter(article => article.id !== id);
                 setArticles(updatedArticles);
