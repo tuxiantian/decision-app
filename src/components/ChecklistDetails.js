@@ -14,6 +14,8 @@ const ChecklistDetails = () => {
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedUsersByQuestion, setSelectedUsersByQuestion] = useState({}); // 每个问题的选中用户ID
+  const [expandedQuestions, setExpandedQuestions] = useState({0: true}); // 控制每个问题的展开状态
+
 
   const navigate = useNavigate();
 
@@ -121,16 +123,23 @@ const ChecklistDetails = () => {
     }
   };
 
-// 切换选中用户，单独管理每个问题的选中用户状态
-const toggleUserSelection = (questionIndex, userId) => {
-  setSelectedUsersByQuestion((prev) => {
-    const selectedUsers = prev[questionIndex] || [];
-    const newSelectedUsers = selectedUsers.includes(userId)
-      ? selectedUsers.filter((id) => id !== userId)
-      : selectedUsers.length < 2 ? [...selectedUsers, userId] : [selectedUsers[1], userId];
-    return { ...prev, [questionIndex]: newSelectedUsers };
-  });
-};
+  // 切换选中用户，单独管理每个问题的选中用户状态
+  const toggleUserSelection = (questionIndex, userId) => {
+    setSelectedUsersByQuestion((prev) => {
+      const selectedUsers = prev[questionIndex] || [];
+      const newSelectedUsers = selectedUsers.includes(userId)
+        ? selectedUsers.filter((id) => id !== userId)
+        : selectedUsers.length < 2 ? [...selectedUsers, userId] : [selectedUsers[1], userId];
+      return { ...prev, [questionIndex]: newSelectedUsers };
+    });
+  };
+
+  const toggleQuestion = (questionIndex) => {
+    setExpandedQuestions((prev) => ({
+      ...prev,
+      [questionIndex]: !prev[questionIndex],
+    }));
+  };
 
   if (!decisionDetails) return <div>Loading...</div>;
 
@@ -142,11 +151,19 @@ const toggleUserSelection = (questionIndex, userId) => {
       <h3>Answers:</h3>
       {decisionDetails.answers.map((answerData, index) => (
         <div key={index} className="question-section">
-          <div><strong>Q:</strong> {answerData.question}</div>
+          <div className="question-header">
+            <strong>Q:</strong> {answerData.question}
+            <button onClick={() => toggleQuestion(index)} className="toggle-button">
+              {expandedQuestions[index] ? 'Hide Answers' : 'Show Answers'}
+            </button>
+          </div>
 
           {/* 根据答案数量显示不同布局 */}
-          {answerData.responses.length === 1 ? (
+          {answerData.responses.length === 1 && expandedQuestions[index] ? (
+
+
             <div className="single-answer">
+               
               <strong>{answerData.responses[0].username}:</strong>
               <p>{answerData.responses[0].answer}</p>
               {answerData.responses[0].referenced_articles.length > 0 && (
@@ -155,19 +172,24 @@ const toggleUserSelection = (questionIndex, userId) => {
                   <ul>
                     {answerData.responses[0].referenced_articles.map((article) => (
                       <li key={article.id}>
-                        <span 
-                              className="article-link" 
-                              onClick={() => handleViewArticle(article.id)}
-                            >
-                              {article.title}
-                            </span>
+                        <span
+                          className="article-link"
+                          onClick={() => handleViewArticle(article.id)}
+                        >
+                          {article.title}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
+           
+
             </div>
-          ) : answerData.responses.length === 2 ? (
+
+
+          ) : answerData.responses.length === 2  && expandedQuestions[index] ? (
+
             <div className="two-answers">
               {answerData.responses.map((response) => (
                 <div key={response.user_id} className="answer-item">
@@ -179,8 +201,8 @@ const toggleUserSelection = (questionIndex, userId) => {
                       <ul>
                         {response.referenced_articles.map((article) => (
                           <li key={article.id}>
-                           <span 
-                              className="article-link" 
+                            <span
+                              className="article-link"
                               onClick={() => handleViewArticle(article.id)}
                             >
                               {article.title}
@@ -191,56 +213,63 @@ const toggleUserSelection = (questionIndex, userId) => {
                     </div>
                   )}
                 </div>
+
+
               ))}
             </div>
           ) : (
 
-            <><div className="selected-answers">
-              {(selectedUsersByQuestion[index]?.length > 0
-              ? answerData.responses.filter((response) => selectedUsersByQuestion[index].includes(response.user_id))
-              : answerData.responses.slice(0, 2)
-            ).map((response) => (
-                <div key={response.user_id} className="answer-item">
-                  <strong>{response.username}:</strong>
-                  <p>{response.answer}</p>
-                  {response.referenced_articles.length > 0 && (
-                    <div className="referenced-articles">
-                      <strong>Referenced Articles:</strong>
-                      <ul>
-                        {response.referenced_articles.map((article) => (
-                          <li key={article.id}>
-                            <span 
-                              className="article-link" 
-                              onClick={() => handleViewArticle(article.id)}
-                            >
-                              {article.title}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+            <>
+              {expandedQuestions[index] && (
+                <div className="selected-answers">
+                  {(selectedUsersByQuestion[index]?.length > 0
+                    ? answerData.responses.filter((response) => selectedUsersByQuestion[index].includes(response.user_id))
+                    : answerData.responses.slice(0, 2)
+                  ).map((response) => (
+                    <div key={response.user_id} className="answer-item">
+                      <strong>{response.username}:</strong>
+                      <p>{response.answer}</p>
+                      {response.referenced_articles.length > 0 && (
+                        <div className="referenced-articles">
+                          <strong>Referenced Articles:</strong>
+                          <ul>
+                            {response.referenced_articles.map((article) => (
+                              <li key={article.id}>
+                                <span
+                                  className="article-link"
+                                  onClick={() => handleViewArticle(article.id)}
+                                >
+                                  {article.title}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  ))}
                 </div>
-              ))}
-            </div>
+              )}
 
               {/* 用户名列表，用于选择回答 */}
-              <div className="username-list">
-                <strong>Show Answers by:</strong>
-                {answerData.responses.map((response) => (
-                  <button
-                  key={response.user_id}
-                  onClick={() => toggleUserSelection(index, response.user_id)}
-                  className={
-                    selectedUsersByQuestion[index]?.includes(response.user_id)
-                      ? 'username-button selected'
-                      : 'username-button'
-                  }
-                >
-                  {response.username}
-                </button>
-                ))}
-              </div>
+              {expandedQuestions[index] && (
+                <div className="username-list">
+                  <strong>Show Answers by:</strong>
+                  {answerData.responses.map((response) => (
+                    <button
+                      key={response.user_id}
+                      onClick={() => toggleUserSelection(index, response.user_id)}
+                      className={
+                        selectedUsersByQuestion[index]?.includes(response.user_id)
+                          ? 'username-button selected'
+                          : 'username-button'
+                      }
+                    >
+                      {response.username}
+                    </button>
+                  ))}
+                </div>
+              )}
             </>
           )}
         </div>
