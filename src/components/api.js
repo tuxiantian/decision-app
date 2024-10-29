@@ -10,8 +10,10 @@ api.interceptors.response.use(
     response => response, // 对于成功响应，直接返回
     error => {
         if (error.response && error.response.status === 401) {
-            // 使用 window.location.href 替代 navigate
-            window.location.href = '/login'; 
+           // 使用当前页面路径作为重定向路径
+           const currentPath = window.location.pathname + window.location.search;
+           // 跳转到登录页面，并附加重定向参数
+           window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
         }
         return Promise.reject(error);
     }

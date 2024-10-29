@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from './components/api.js'
 import './LoginPage.css'
 
@@ -8,6 +8,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -20,8 +21,16 @@ const LoginPage = () => {
       });
 
       if (response.status === 200) {
-        // 登录成功，重定向到仪表盘或主页
-        navigate('/articles');
+        // 检查 URL 中是否有 redirect 参数
+        const params = new URLSearchParams(location.search);
+        const redirectUrl = params.get('redirect');
+        
+        // 如果有 redirect 参数，跳转到指定页面；否则跳转到默认页面
+        if (redirectUrl) {
+          navigate(redirectUrl);
+        } else {
+          navigate('/articles'); // 默认跳转路径
+        }
       }
     } catch (error) {
       // 处理登录错误
