@@ -162,3 +162,18 @@
 .toggle-button:hover {
     background-color: #0056b3;
 }
+.two-answers {
+    display: flex;
+    gap: 20px; /* 间距 */
+}
+
+.two-answers .answer-item {
+    flex: 1;
+    min-width: 0; /* 避免内容撑开 */
+    max-width: 50%; /* 确保两栏布局 */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    overflow-wrap: break-word; /* 防止长文本撑开布局 */
+}
