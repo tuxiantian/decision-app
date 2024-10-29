@@ -1,85 +1,143 @@
 .checklist-details {
     max-width: 800px;
     margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #333;
 }
 
+/* 问题部分样式 */
 .question-section {
     border-bottom: 1px solid #ccc;
-    padding: 10px 0;
-    margin-bottom: 10px;
-}
-
-.comparison-container {
-    display: flex;
-    justify-content: space-between;
+    padding: 15px 0;
     margin-bottom: 15px;
 }
 
-.comparison-item {
-    width: 48%;
-    padding: 10px;
+.question-section strong {
+    font-weight: bold;
+}
+
+/* 答案显示区域 */
+.selected-answers {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.answer-item {
+    flex: 1;
+    padding: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background-color: #f9f9f9;
+    text-align: left;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
 }
 
-/* 设置 gallery-container 的样式 */
-.gallery-container {
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    width: 630px; /* 限制为3个gallery-item的宽度 */
-    margin: 20px auto;
+.answer-item:hover {
+    transform: scale(1.02);
 }
 
-/* 设置 scroll-button 的样式 */
-.scroll-button {
-    font-size: 24px;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+/* 引用文章样式 */
+.referenced-articles {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.referenced-articles ul {
+    padding-left: 20px;
+    list-style: disc;
+    margin-top: 5px;
+}
+
+/* 用户名选择按钮区域 */
+.username-list {
+    margin-top: 10px;
+}
+
+.username-button {
+    margin-right: 5px;
+    padding: 6px 12px;
     border: none;
     background-color: #007bff;
     color: white;
-    border-radius: 50%;
-    z-index: 10;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
 
-    /* 使用 flex 居中箭头 */
+.username-button.selected {
+    background-color: #0056b3;
+}
+
+.username-button:hover {
+    background-color: #0056b3;
+}
+
+/* 引用文章链接样式 */
+.article-link {
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.article-link:hover {
+    color: #0056b3;
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
 }
 
-/* 左右按钮位置调整 */
-.scroll-button.left {
-    left: 0; /* 放置在 gallery-container 的左边缘 */
-}
-
-.scroll-button.right {
-    right: 0; /* 放置在 gallery-container 的右边缘 */
-}
-
-.gallery {
-    display: flex;
-    transition: transform 0.3s ease-in-out;
-}
-
-.gallery-item {
-    width: 200px;
-    padding: 10px;
-    margin: 0 5px;
-    border: 1px solid #ddd;
+.modal-content {
+    background: white;
+    padding: 20px;
     border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    background-color: #f9f9f9;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow-y: auto;
+    max-height: 80vh;
 }
 
-.gallery-item.selected {
-    border: 2px solid #4CAF50;
-    background-color: #e9f7e9;
+.close-button {
+    background: #d9534f;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: #c9302c;
+}
+
+/* 文章内容标题样式 */
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.modal-content p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
 }

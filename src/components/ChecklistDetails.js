@@ -11,12 +11,10 @@ import './ChecklistDetails.css'
 const ChecklistDetails = () => {
   const { decisionId } = useParams();
   const [decisionDetails, setDecisionDetails] = useState(null);
-  const [selectedComparison, setSelectedComparison] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0); // 当前滑动的索引
-  const [currentIndices, setCurrentIndices] = useState({}); // 用于存储每个问题的滑动索引
-
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedUsersByQuestion, setSelectedUsersByQuestion] = useState({}); // 每个问题的选中用户ID
+
   const navigate = useNavigate();
 
   // 配置决策组的状态
@@ -123,30 +121,16 @@ const ChecklistDetails = () => {
     }
   };
 
-  const toggleComparisonSelection = (answerId) => {
-    setSelectedComparison(prev =>
-      prev.includes(answerId) ? prev.filter(id => id !== answerId) : [...prev, answerId].slice(-2)
-    );
-  };
-
-  const handleScrollLeft = (questionIndex) => {
-    setCurrentIndices((prevIndices) => ({
-      ...prevIndices,
-      [questionIndex]: Math.max((prevIndices[questionIndex] || 0) - 1, 0)
-    }));
-  };
-
-  const handleScrollRight = (questionIndex, responsesLength) => {
-    setCurrentIndices((prevIndices) => {
-      const maxIndex = Math.max(responsesLength - 3, 0);
-      return {
-        ...prevIndices,
-        [questionIndex]: Math.min((prevIndices[questionIndex] || 0) + 1, maxIndex)
-      };
-    });
-  };
-
-
+// 切换选中用户，单独管理每个问题的选中用户状态
+const toggleUserSelection = (questionIndex, userId) => {
+  setSelectedUsersByQuestion((prev) => {
+    const selectedUsers = prev[questionIndex] || [];
+    const newSelectedUsers = selectedUsers.includes(userId)
+      ? selectedUsers.filter((id) => id !== userId)
+      : selectedUsers.length < 2 ? [...selectedUsers, userId] : [selectedUsers[1], userId];
+    return { ...prev, [questionIndex]: newSelectedUsers };
+  });
+};
 
   if (!decisionDetails) return <div>Loading...</div>;
 
@@ -156,55 +140,111 @@ const ChecklistDetails = () => {
       <div><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
 
       <h3>Answers:</h3>
-      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-        {decisionDetails.answers.map((answerData, index) => (
-          <li key={index} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
-            <div style={{ textAlign: 'left' }}><strong>Q:</strong> <strong>{answerData.question}</strong></div>
+      {decisionDetails.answers.map((answerData, index) => (
+        <div key={index} className="question-section">
+          <div><strong>Q:</strong> {answerData.question}</div>
 
-            {answerData.responses.length === 1 && (
-              <div style={{ textAlign: 'left' }}><strong>A:</strong> {answerData.responses[0].answer}</div>
-            )}
+          {/* 根据答案数量显示不同布局 */}
+          {answerData.responses.length === 1 ? (
+            <div className="single-answer">
+              <strong>{answerData.responses[0].username}:</strong>
+              <p>{answerData.responses[0].answer}</p>
+              {answerData.responses[0].referenced_articles.length > 0 && (
+                <div className="referenced-articles">
+                  <strong>Referenced Articles:</strong>
+                  <ul>
+                    {answerData.responses[0].referenced_articles.map((article) => (
+                      <li key={article.id}>
+                        <span 
+                              className="article-link" 
+                              onClick={() => handleViewArticle(article.id)}
+                            >
+                              {article.title}
+                            </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : answerData.responses.length === 2 ? (
+            <div className="two-answers">
+              {answerData.responses.map((response) => (
+                <div key={response.user_id} className="answer-item">
+                  <strong>{response.username}:</strong>
+                  <p>{response.answer}</p>
+                  {response.referenced_articles.length > 0 && (
+                    <div className="referenced-articles">
+                      <strong>Referenced Articles:</strong>
+                      <ul>
+                        {response.referenced_articles.map((article) => (
+                          <li key={article.id}>
+                           <span 
+                              className="article-link" 
+                              onClick={() => handleViewArticle(article.id)}
+                            >
+                              {article.title}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
 
-            {answerData.responses.length === 2 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <><div className="selected-answers">
+              {(selectedUsersByQuestion[index]?.length > 0
+              ? answerData.responses.filter((response) => selectedUsersByQuestion[index].includes(response.user_id))
+              : answerData.responses.slice(0, 2)
+            ).map((response) => (
+                <div key={response.user_id} className="answer-item">
+                  <strong>{response.username}:</strong>
+                  <p>{response.answer}</p>
+                  {response.referenced_articles.length > 0 && (
+                    <div className="referenced-articles">
+                      <strong>Referenced Articles:</strong>
+                      <ul>
+                        {response.referenced_articles.map((article) => (
+                          <li key={article.id}>
+                            <span 
+                              className="article-link" 
+                              onClick={() => handleViewArticle(article.id)}
+                            >
+                              {article.title}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+              {/* 用户名列表，用于选择回答 */}
+              <div className="username-list">
+                <strong>Show Answers by:</strong>
                 {answerData.responses.map((response) => (
-                  <div key={response.user_id} style={{ width: '48%', border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
-                    <strong>{response.username}:</strong> <p>{response.answer}</p>
-                  </div>
+                  <button
+                  key={response.user_id}
+                  onClick={() => toggleUserSelection(index, response.user_id)}
+                  className={
+                    selectedUsersByQuestion[index]?.includes(response.user_id)
+                      ? 'username-button selected'
+                      : 'username-button'
+                  }
+                >
+                  {response.username}
+                </button>
                 ))}
               </div>
-            )}
-
-            {answerData.responses.length > 2 && (
-
-              <div className="gallery-container">
-                <button className="scroll-button left" onClick={() => handleScrollLeft(index)}>{"<"}</button>
-                <div
-                  className="gallery"
-                  style={{ transform: `translateX(-${(currentIndices[index] || 0) * 210}px)` }}
-                >
-                  {answerData.responses.map((response) => (
-                    <div
-                      key={response.user_id}
-                      onClick={() => toggleComparisonSelection(response.user_id)}
-                      className={`gallery-item ${selectedComparison.includes(response.user_id) ? 'selected' : ''}`}
-                    >
-                      <strong>{response.username}:</strong>
-                      <p>{response.answer}</p>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  className="scroll-button right"
-                  onClick={() => handleScrollRight(index, answerData.responses.length)}
-                >
-                  {">"}
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+            </>
+          )}
+        </div>
+      ))}
 
 
 
@@ -358,8 +398,8 @@ const ChecklistDetails = () => {
           content: {
             maxWidth: '800px', // 设置弹窗的最大宽度
             width: '80%',
-            height: '80vh', // 使用视口高度
-            margin: '20px auto', // 在弹窗上下方添加适当的边距，避免紧贴顶部
+            height: '88vh', // 使用视口高度
+            margin: '10px auto', // 在弹窗上下方添加适当的边距，避免紧贴顶部
             padding: '20px',
             overflowY: 'auto', // 使弹窗内容超出时出现滚动条
           },
