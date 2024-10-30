@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import api from './components/api.js'
 import './LoginPage.css'
 
-const LoginPage = () => {
+const LoginPage = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -21,6 +21,10 @@ const LoginPage = () => {
       });
 
       if (response.status === 200) {
+        // 登录成功后设置用户名，并存储到 localStorage
+        const loggedInUsername = response.data.username;
+        localStorage.setItem('username', loggedInUsername);
+        onLogin(loggedInUsername); // 触发导航栏更新
         // 检查 URL 中是否有 redirect 参数
         const params = new URLSearchParams(location.search);
         const redirectUrl = params.get('redirect');
@@ -33,6 +37,7 @@ const LoginPage = () => {
         }
       }
     } catch (error) {
+        console.log(error);
       // 处理登录错误
       setError(error.response?.data?.message || 'Login failed');
     }

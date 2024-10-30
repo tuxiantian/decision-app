@@ -1,8 +1,8 @@
 import './App.css';
 import Home from './Home';
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import api from './components/api'; 
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes,Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -29,9 +29,40 @@ import BalancedDecisionList from './components/BalancedDecisionList';
 import AboutUs from './AboutUs';
 
 function App() {
+  const [username, setUsername] = useState(null); // 存储用户名
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // 检查用户登录状态，获取用户名
+    const fetchUserInfo = async () => {
+      try {
+        const response = await api.get('/profile'); // 假设此端点返回用户信息
+        setUsername(response.data.username);
+        localStorage.setItem('username', response.data.username); // 同步用户名到 localStorage
+      } catch (error) {
+        console.log("用户未登录");
+      }
+    };
+    // 如果 localStorage 中没有用户名，则重新获取
+    if (!username) {
+      fetchUserInfo();
+    }
+  }, []);
+
+  // 处理用户退出逻辑
+  const handleLogout = async () => {
+    try {
+      await api.post('/logout'); // 假设此端点处理退出逻辑
+      setUsername(null); // 清除用户名状态
+      localStorage.removeItem('username'); // 清除 localStorage 中的用户名
+      navigate('/login'); // 跳转到登录页面
+    } catch (error) {
+      console.log("退出失败", error);
+    }
+  };
 
   return (
-    <Router>
+   
       <div className="App">
         <Navbar bg="dark" variant="dark" expand="lg" style={{ marginBottom: '20px' }}>
           <Navbar.Brand as={Link} to="/">Dicision App</Navbar.Brand>
@@ -59,12 +90,25 @@ function App() {
               <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
               <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>
             </Nav>
+            <Nav className="ms-auto">
+              {username ? (
+                <>
+                  <Nav.Link disabled>Welcome, {username}</Nav.Link>
+                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                </>
+              ) : (
+                <>
+                  <Nav.Link as={Link} to="/login">Login</Nav.Link>
+                  <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                </>
+              )}
+            </Nav>
           </Navbar.Collapse>
         </Navbar>
         <Routes>
          
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage  onLogin={setUsername} />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/join-group/:groupId" element={<JoinGroupPage />} />
             <Route path="/questionnaire/:decisionId" element={<Questionnaire />} />
@@ -90,7 +134,7 @@ function App() {
          
         </Routes>
       </div>
-    </Router>
+    
   );
 }
 
