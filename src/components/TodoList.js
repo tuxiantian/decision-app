@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../App.css';  // 引入 CSS 文件
 import { API_BASE_URL } from '../config';
+import api from './api'; 
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -37,7 +38,7 @@ const TodoList = () => {
   }, [endedPage]);
 
   const fetchTodos = () => {
-    axios.get(`${API_BASE_URL}/todos`)
+    api.get(`${API_BASE_URL}/todos`)
       .then(response => {
         setTodos(response.data);
       })
@@ -47,7 +48,7 @@ const TodoList = () => {
   };
 
   const fetchCompletedTodos = (page) => {
-    axios.get(`${API_BASE_URL}/todos/completed`, {
+    api.get(`${API_BASE_URL}/todos/completed`, {
       params: {
         page,
         page_size: pageSize
@@ -65,7 +66,7 @@ const TodoList = () => {
 
   // 新增方法，获取已结束的 Todo
   const fetchEndedTodos = (page) => {
-    axios.get(`${API_BASE_URL}/todos/ended`, {
+    api.get(`${API_BASE_URL}/todos/ended`, {
       params: {
         page,
         page_size: pageSize
@@ -178,7 +179,7 @@ const TodoList = () => {
         status: 'in_progress'
       };
 
-      axios.post(`${API_BASE_URL}/todos`, newTodo)
+      api.post(`${API_BASE_URL}/todos`, newTodo)
         .then(response => {
           setTodos([...todos, response.data]);
           setNewTodoName('');
@@ -196,7 +197,7 @@ const TodoList = () => {
   };
 
   const handleTodoCompletion = (id) => {
-    axios.put(`${API_BASE_URL}/todos/${id}`, { status: 'completed' })
+    api.put(`${API_BASE_URL}/todos/${id}`, { status: 'completed' })
       .then(() => {
         // 更新状态后的操作，刷新待办列表和已完成列表
         fetchTodos(); // 更新待办事项列表
@@ -208,7 +209,7 @@ const TodoList = () => {
   };
 
   const handleRemoveTodo = (id) => {
-    axios.delete(`${API_BASE_URL}/todos/${id}`)
+    api.delete(`${API_BASE_URL}/todos/${id}`)
       .then(() => {
         fetchTodos(); // 更新待办事项列表
         fetchCompletedTodos(completedPage); // 更新已完成事项列表

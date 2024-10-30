@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config'; 
+import api from './api'; 
 import './BalancedDecisionMaker.css';
 
 function DecisionList() {
@@ -12,7 +13,7 @@ function DecisionList() {
     // Fetch all decisions
     const fetchDecisions = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/get_decisions`);
+        const response = await api.get(`${API_BASE_URL}/api/get_decisions`);
         setDecisions(response.data);
       } catch (error) {
         console.error('Error fetching decisions:', error);

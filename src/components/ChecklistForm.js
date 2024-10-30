@@ -24,7 +24,7 @@ const ChecklistForm = () => {
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([{ question: '', description: '' }]);
   const [mermaidCode, setMermaidCode] = useState('');
-  const [activeTab, setActiveTab] = useState('flowchart');
+  const [activeTab, setActiveTab] = useState('form');
   const [renderError, setRenderError] = useState(null);
   const mermaidContainerRef = useRef(null);
   const navigate = useNavigate();
