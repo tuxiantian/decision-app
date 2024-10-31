@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './App.css';  // 引入 CSS 文件
 import { API_BASE_URL } from './config';
+import api from './components/api.js'
 
 // 封装 fetch 请求
 const fetchWithPrefix = (endpoint, options = {}) => {
@@ -106,7 +107,7 @@ function PairwiseComparison() {
     setAlternativesMatrices(updatedMatrices);
   };
 
-  const submitMatrices = () => {
+  const submitMatrices =async () => {
     const data = {
       criteria_matrix: criteriaMatrix,
       alternative_matrices: alternativesMatrices,
@@ -117,35 +118,27 @@ function PairwiseComparison() {
     setLastRequestData(data);
 
 
-    fetchWithPrefix('/ahp_analysis', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    })
-      .then(response => response.json())
-      .then(data => setResult(data))
-      .catch(error => {
-        console.error('Error:', error);
-        setResult('Error submitting data');
-      });
+    try {
+      const response = await api.post('/ahp_analysis', data);
+      setResult(response.data);
+    } catch (error) {
+      console.error('Error:', error);
+      setResult('Error submitting data');
+    }
   };
 
-  const saveHistory = () => {
+  const saveHistory = async () => {
     const data = {
       request_data: lastRequestData,
-      response_data: result
+      response_data: result,
     };
 
-    fetchWithPrefix('/save_history', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-      .then(response => response.json())
-      .then(data => alert(data.message || 'History saved successfully!'))
-      .catch(error => console.error('Error:', error));
+    try {
+      const response = await api.post('/save_history', data);
+      alert(response.data.message || 'History saved successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (

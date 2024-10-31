@@ -3,6 +3,7 @@ import PairwiseComparison from './PairwiseComparison';
 import { Link, useNavigate } from 'react-router-dom';
 import './App.css';
 import { API_BASE_URL } from './config'; 
+import api from './components/api.js'
 
 function AHPAnalysis() {
   const navigate = useNavigate();
@@ -11,9 +12,8 @@ function AHPAnalysis() {
   const [selectedData, setSelectedData] = useState(null);
 
   const fetchHistory = () => {
-    fetch(`${API_BASE_URL}/ahp_history`)
-      .then(response => response.json())
-      .then(data => setHistory(data))
+    api.get(`${API_BASE_URL}/ahp_history`)
+      .then(response => setHistory(response.data))
       .catch(error => console.error('Error:', error));
   };
 
@@ -30,12 +30,9 @@ function AHPAnalysis() {
   };
 
   const handleDelete = (id) => {
-    fetch(`${API_BASE_URL}/ahp_delete?id=${id}`, {
-      method: 'GET'
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
+    api.get(`${API_BASE_URL}/ahp_delete`, { params: { id } })
+      .then(response => {
+        if (response.data.success) {
           fetchHistory(); // 重新获取历史记录，更新列表
         } else {
           alert('删除失败');
@@ -73,22 +70,13 @@ function AHPAnalysis() {
               </thead>
               <tbody>
                 {history.map((record, index) => {
-                  const responseData = JSON.parse(record.response_data);
                   return (
                     <tr key={index}>
                       <td>{record.id}</td>
                       <td>{record.criteria_names}</td>
                       <td>{record.alternative_names}</td>
-                      <td>{responseData.best_choice_name}</td>
-                      <td>{new Date(record.created_at).toLocaleString('zh-CN', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false
-                      })}</td>
+                      <td>{record.best_choice_name}</td>
+                      <td>{new Date(record.created_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}</td>
                       <td>
                         <button className="green-button" onClick={() => handleDetailsClick(record)}>详情</button>
                         <button className="red-button" onClick={() => handleDelete(record.id)}>删除</button>
