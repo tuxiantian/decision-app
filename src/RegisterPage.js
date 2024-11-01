@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import api from './components/api.js'
 import './RegisterPage.css'
+import './App.css'
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
@@ -91,7 +92,7 @@ const RegisterPage = () => {
         </div>
         {error && <p className="error-message">{error}</p>}
         {success && <p className="success-message">{success}</p>}
-        <button type="submit">Register</button>
+        <button type="submit" className='green-button'>Register</button>
       </form>
     </div>
   );
