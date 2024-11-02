@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import PersonalStateCheck from './PersonalStateCheck';
 import { API_BASE_URL } from '../config'; 
+import api from './api.js'
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
 Modal.setAppElement('#root');
@@ -34,7 +35,7 @@ const ChecklistDetail = () => {
   useEffect(() => {
     const fetchChecklistDetails = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/checklists/${checklistId}`);
+        const response = await api.get(`${API_BASE_URL}/checklists/${checklistId}`);
         setQuestions(response.data.questions);
         setMermaidCode(response.data.mermaid_code); // 获取流程图代码
         setLatestChecklistId(response.data.id);
@@ -91,7 +92,7 @@ const ChecklistDetail = () => {
 
   const fetchArticles = async (page = 1) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/articles`, {
+      const response = await api.get(`${API_BASE_URL}/articles`, {
         params: { search: searchTerm, page, page_size: 10 },
       });
       setArticles(response.data.articles);
@@ -141,7 +142,7 @@ const ChecklistDetail = () => {
         ? selectedArticles[questionId].map(article => article.id): [],
       }));
 
-      const response = await axios.post(`${API_BASE_URL}/save_checklist_answers`, {
+      const response = await api.post(`${API_BASE_URL}/save_checklist_answers`, {
         checklist_id: latestChecklistId,
         decision_name: decisionName,
         final_decision: finalDecision,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from '../config'; 
-import api from './api'; 
+import { API_BASE_URL } from '../config';
+import api from './api';
 import './BalancedDecisionMaker.css';
 
 function BalancedDecisionMaker() {
@@ -55,62 +55,64 @@ function BalancedDecisionMaker() {
   };
 
   // 新增：矛盾检测函数
-  const checkForContradictions = (comparisons) => {
+  function hasLogicalContradiction(data) {
+    // 构建有向图（邻接表）
     const graph = {};
-    const visited = {};
+    const nodes = new Set();
 
-    // 构建图
-    comparisons.forEach((comp) => {
-      if (comp.moreImportant) {
-        const { conditionA, conditionB } = comp.moreImportant === comp.conditionA 
-          ? { conditionA: comp.conditionA, conditionB: comp.conditionB } 
-          : { conditionA: comp.conditionB, conditionB: comp.conditionA };
-        if (!graph[conditionA.id]) {
-          graph[conditionA.id] = [];
-        }
+    // 将数据结构转换成有向边
+    data.forEach(item => {
+      const { conditionA, conditionB, moreImportant } = item;
+
+      // 如果 moreImportant 是 conditionA，表示 conditionA > conditionB
+      if (moreImportant.id === conditionA.id) {
+        if (!graph[conditionA.id]) graph[conditionA.id] = [];
         graph[conditionA.id].push(conditionB.id);
       }
+      // 如果 moreImportant 是 conditionB，表示 conditionB > conditionA
+      else if (moreImportant.id === conditionB.id) {
+        if (!graph[conditionB.id]) graph[conditionB.id] = [];
+        graph[conditionB.id].push(conditionA.id);
+      }
+
+      // 添加节点到集合中
+      nodes.add(conditionA.id);
+      nodes.add(conditionB.id);
     });
 
-    // DFS 检查是否有环
-    const dfs = (node, stack) => {
-      if (stack.includes(node)) {
-        return true; // 有环
+    // 检测环的帮助函数（使用 DFS）
+    const visited = new Set();
+    const stack = new Set();
+
+    function hasCycle(node) {
+      if (stack.has(node)) return true; // 如果节点已经在当前路径中，则存在环
+      if (visited.has(node)) return false;
+
+      visited.add(node);
+      stack.add(node);
+
+      for (const neighbor of graph[node] || []) {
+        if (hasCycle(neighbor)) return true;
       }
 
-      if (visited[node]) {
-        return false; // 已经访问，无环
-      }
-
-      visited[node] = true;
-      stack.push(node);
-
-      if (graph[node]) {
-        for (const neighbor of graph[node]) {
-          if (dfs(neighbor, stack)) {
-            return true;
-          }
-        }
-      }
-
-      stack.pop();
+      stack.delete(node);
       return false;
-    };
+    }
 
-    // 检查所有节点是否有环
-    for (const node in graph) {
-      if (dfs(node, [])) {
-        return true; // 发现矛盾
+    // 遍历所有节点，检查是否有环
+    for (const node of nodes) {
+      if (!visited.has(node)) {
+        if (hasCycle(node)) return true;
       }
     }
 
-    return false; // 无矛盾
-  };
+    return false;
+  }
 
   // Step 4: Sort conditions based on comparisons
   const sortConditions = () => {
     // 在排序之前检查是否有矛盾
-    if (checkForContradictions(comparisons)) {
+    if (hasLogicalContradiction(comparisons)) {
       alert('存在矛盾的条件对比，无法继续排序。请检查正面和负面的条件比较。');
       return;
     }
