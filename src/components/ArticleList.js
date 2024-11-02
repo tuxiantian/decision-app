@@ -14,13 +14,19 @@ const ArticleList = () => {
     const [selectedTag, setSelectedTag] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedArticle, setSelectedArticle] = useState(null);
+    const [tab, setTab] = useState('my'); // 当前选中的标签，默认为“我的”
+
     const pageSize = 10;
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchArticles(currentPage);
-    }, [currentPage]);
+        if (tab === 'my') {
+            fetchArticles(currentPage);
+        } else if (tab === 'recommended') {
+            fetchRecommendedArticles(currentPage);
+        }
+    }, [tab, currentPage]);
 
     const fetchArticles = (page) => {
         api.get(`${API_BASE_URL}/articles`, {
@@ -41,6 +47,33 @@ const ArticleList = () => {
             .catch(error => {
                 console.error('There was an error fetching the articles!', error);
             });
+    };
+
+    // 获取“推荐”文章
+    const fetchRecommendedArticles = (page) => {
+        api.get(`${API_BASE_URL}/platform_articles`, {
+            params: {
+                page,
+                page_size: pageSize,
+                search: searchTerm,
+                tag: selectedTag,
+            },
+        })
+            .then(response => {
+                if (response.data) {
+                    const { articles, total_pages } = response.data;
+                    setArticles(articles);
+                    setTotalPages(total_pages);
+                }
+            })
+            .catch(error => {
+                console.error('There was an error fetching the recommended articles!', error);
+            });
+    };
+    const handleTabChange = (newTab) => {
+        setTab(newTab);
+        setCurrentPage(1); // 切换标签时重置页码
+        setSearchTerm(''); // 切换标签时清空搜索
     };
 
     const handleDelete = (id) => {
@@ -73,13 +106,21 @@ const ArticleList = () => {
 
     const handleSearchButton = () => {
         setCurrentPage(1);
-        fetchArticles(1);
+        if (tab === 'my') {
+            fetchArticles(1);
+        } else if (tab === 'recommended') {
+            fetchRecommendedArticles(1);
+        }
     };
 
     const handleClearSearch = () => {
         setSearchTerm('');
         setCurrentPage(1);
-        fetchArticles(1);
+        if (tab === 'my') {
+            fetchArticles(1);
+        } else if (tab === 'recommended') {
+            fetchRecommendedArticles(1);
+        }
     };
 
     // 添加键盘事件的处理函数，回车键触发搜索
@@ -149,6 +190,22 @@ const ArticleList = () => {
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <h2>Articles List</h2>
+
+            <div className="tab-container">
+                <button
+                    className={`tab-button ${tab === 'my' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('my')}
+                >
+                    我的
+                </button>
+                <button
+                    className={`tab-button ${tab === 'recommended' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('recommended')}
+                >
+                    推荐
+                </button>
+            </div>
+
             <div style={{ marginBottom: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                 <div style={{ position: 'relative', flex: 1 }}>
                     <input
@@ -179,7 +236,9 @@ const ArticleList = () => {
                     <option value="CognitiveBias">Cognitive Bias</option>
                 </select>
                 <button onClick={handleSearchButton} style={{ padding: '10px' }} className='green-button'>Search</button>
-                <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }} className='green-button'>Add New Article</button>
+                {tab === 'my' && (
+                    <button onClick={handleAdd} style={{ marginLeft: '10px', padding: '10px' }} className='green-button'>Add New Article</button>
+                )}
             </div>
             <ul style={{ listStyleType: 'none', padding: 0 }}>
                 {articles.map(article => (
@@ -223,8 +282,10 @@ const ArticleList = () => {
                         </div>
                         <div style={{ flex: 1, textAlign: 'right' }}>
                             <button onClick={() => handleView(article.id)} style={{ marginRight: '10px' }} className='green-button'>View</button>
-                            <button onClick={() => handleEdit(article.id)} style={{ marginRight: '10px' }} className='green-button'>Edit</button>
-                            <button onClick={() => openConfirmModal(article)} className='red-button'>Delete</button>
+                            {tab === 'my' && (
+                                <><button onClick={() => handleEdit(article.id)} style={{ marginRight: '10px' }} className='green-button'>Edit</button>
+                                    <button onClick={() => openConfirmModal(article)} className='red-button'>Delete</button></>
+                            )}
                         </div>
                     </li>
                 ))}
