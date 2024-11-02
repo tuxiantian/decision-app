@@ -14,7 +14,7 @@ const ChecklistDetails = () => {
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedUsersByQuestion, setSelectedUsersByQuestion] = useState({}); // 每个问题的选中用户ID
-  const [expandedQuestions, setExpandedQuestions] = useState({0: true}); // 控制每个问题的展开状态
+  const [expandedQuestions, setExpandedQuestions] = useState({ 0: true }); // 控制每个问题的展开状态
 
 
   const navigate = useNavigate();
@@ -60,9 +60,13 @@ const ChecklistDetails = () => {
     fetchReviews();
   };
 
-  const handleViewArticle = async (articleId) => {
+  const handleViewArticle = async (articleId, isPlatformArticle = false) => {
     try {
-      const response = await api.get(`${API_BASE_URL}/articles/${articleId}`);
+      // 根据文章的来源选择不同的接口
+      const endpoint = isPlatformArticle
+        ? `${API_BASE_URL}/platform_articles/${articleId}`
+        : `${API_BASE_URL}/articles/${articleId}`;
+      const response = await api.get(endpoint);
       setSelectedArticle(response.data);
       setShowArticleModal(true);
     } catch (error) {
@@ -163,49 +167,79 @@ const ChecklistDetails = () => {
 
 
             <div className="single-answer">
-               
+
               <strong>{answerData.responses[0].username}:</strong>
               <p>{answerData.responses[0].answer}</p>
-              {answerData.responses[0].referenced_articles.length > 0 && (
-                <div className="referenced-articles">
-                  <strong>Referenced Articles:</strong>
-                  <ul>
-                    {answerData.responses[0].referenced_articles.map((article) => (
-                      <li key={article.id}>
-                        <span
-                          className="article-link"
-                          onClick={() => handleViewArticle(article.id)}
-                        >
-                          {article.title}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-           
+              {(answerData.responses[0].referenced_articles.length > 0 ||
+                answerData.responses[0].referenced_platform_articles.length > 0) && (
+                  <div className="referenced-articles">
+                    <strong>Referenced Articles:</strong>
+                    <ul>
+                      {/* 显示引用的用户自己的文章 */}
+                      {answerData.responses[0].referenced_articles.map((article) => (
+                        <li key={article.id}>
+                          <span
+                            className="article-link"
+                            onClick={() => handleViewArticle(article.id, false)}
+                          >
+                            {article.title}
+                          </span>
+                        </li>
+                      ))}
+
+                      {/* 显示引用的平台推荐文章 */}
+                      {answerData.responses[0].referenced_platform_articles.map((article) => (
+                        <li key={article.id}>
+                          <span
+                            className="article-link"
+                            onClick={() => handleViewArticle(article.id, true)}
+                          >
+                            {article.title} (Platform)
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+
 
             </div>
 
 
-          ) : answerData.responses.length === 2  && expandedQuestions[index] ? (
+          ) : answerData.responses.length === 2 && expandedQuestions[index] ? (
 
             <div className="two-answers">
               {answerData.responses.map((response) => (
                 <div key={response.user_id} className="answer-item">
                   <strong>{response.username}:</strong>
                   <p>{response.answer}</p>
-                  {response.referenced_articles.length > 0 && (
+
+                  {/* 检查是否有引用的文章 */}
+                  {(response.referenced_articles.length > 0 || response.referenced_platform_articles.length > 0) && (
                     <div className="referenced-articles">
                       <strong>Referenced Articles:</strong>
                       <ul>
+                        {/* 显示用户自己的引用文章 */}
                         {response.referenced_articles.map((article) => (
                           <li key={article.id}>
                             <span
                               className="article-link"
-                              onClick={() => handleViewArticle(article.id)}
+                              onClick={() => handleViewArticle(article.id, false)} // 传递 false 表示“我的文章”
                             >
                               {article.title}
+                            </span>
+                          </li>
+                        ))}
+
+                        {/* 显示平台推荐的引用文章 */}
+                        {response.referenced_platform_articles.map((article) => (
+                          <li key={article.id}>
+                            <span
+                              className="article-link"
+                              onClick={() => handleViewArticle(article.id, true)} // 传递 true 表示“平台推荐文章”
+                            >
+                              {article.title} (Platform)
                             </span>
                           </li>
                         ))}
@@ -213,9 +247,8 @@ const ChecklistDetails = () => {
                     </div>
                   )}
                 </div>
-
-
               ))}
+
             </div>
           ) : (
 
@@ -229,17 +262,31 @@ const ChecklistDetails = () => {
                     <div key={response.user_id} className="answer-item">
                       <strong>{response.username}:</strong>
                       <p>{response.answer}</p>
-                      {response.referenced_articles.length > 0 && (
+                      {/* 检查是否有引用的文章 */}
+                      {(response.referenced_articles.length > 0 || response.referenced_platform_articles.length > 0) && (
                         <div className="referenced-articles">
                           <strong>Referenced Articles:</strong>
                           <ul>
+                            {/* 显示用户自己的引用文章 */}
                             {response.referenced_articles.map((article) => (
                               <li key={article.id}>
                                 <span
                                   className="article-link"
-                                  onClick={() => handleViewArticle(article.id)}
+                                  onClick={() => handleViewArticle(article.id, false)} // 传递 false 表示“我的文章”
                                 >
                                   {article.title}
+                                </span>
+                              </li>
+                            ))}
+
+                            {/* 显示平台推荐的引用文章 */}
+                            {response.referenced_platform_articles.map((article) => (
+                              <li key={article.id}>
+                                <span
+                                  className="article-link"
+                                  onClick={() => handleViewArticle(article.id, true)} // 传递 true 表示“平台推荐文章”
+                                >
+                                  {article.title} (Platform)
                                 </span>
                               </li>
                             ))}

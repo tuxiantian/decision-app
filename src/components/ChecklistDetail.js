@@ -4,7 +4,7 @@ import mermaid from 'mermaid';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import PersonalStateCheck from './PersonalStateCheck';
-import { API_BASE_URL } from '../config'; 
+import { API_BASE_URL } from '../config';
 import api from './api.js'
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
@@ -15,7 +15,7 @@ const ChecklistDetail = () => {
   const navigate = useNavigate();
   const [assessmentComplete, setAssessmentComplete] = useState(false); // 增加一个状态来判断评估是否完成
   const [step, setStep] = useState(1);
-  const [latestChecklistId,setLatestChecklistId] = useState(null); 
+  const [latestChecklistId, setLatestChecklistId] = useState(null);
   const [decisionName, setDecisionName] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
@@ -23,6 +23,7 @@ const ChecklistDetail = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [articles, setArticles] = useState([]);
   const [selectedArticles, setSelectedArticles] = useState({});
+  const [selectedPlatformArticles, setSelectedPlatformArticles] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [activeQuestionId, setActiveQuestionId] = useState(null);
@@ -30,6 +31,8 @@ const ChecklistDetail = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [mermaidCode, setMermaidCode] = useState(''); // 流程图代码
   const [renderFlowchart, setRenderFlowchart] = useState(false); // 控制流程图渲染的状态
+  const [platformArticles, setPlatformArticles] = useState([]); // 新增状态，用于存储平台推荐的文章
+  const [tab, setTab] = useState('my'); // 新增状态，用于管理标签页
 
 
   useEffect(() => {
@@ -87,7 +90,11 @@ const ChecklistDetail = () => {
   const handleReferenceArticles = (questionId) => {
     setActiveQuestionId(questionId);
     setIsModalOpen(true);
-    fetchArticles(1); // 初始加载文章数据
+    if (tab === 'my') {
+      fetchArticles(1);
+    } else {
+      fetchPlatformArticles(1);
+    }
   };
 
   const fetchArticles = async (page = 1) => {
@@ -103,34 +110,93 @@ const ChecklistDetail = () => {
     }
   };
 
+  // Function to fetch platform recommended articles
+  const fetchPlatformArticles = async (page = 1) => {
+    try {
+      const response = await api.get(`${API_BASE_URL}/platform_articles`, {
+        params: { search: searchTerm, page, page_size: 10 },
+      });
+      setPlatformArticles(response.data.articles);
+      setTotalPages(response.data.total_pages);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Error fetching platform articles', error);
+    }
+  };
+
+  useEffect(() => {
+    if (tab === 'my') {
+      fetchArticles(1);
+    } else if (tab === 'recommended') {
+      fetchPlatformArticles(1);
+    }
+  }, [tab]);
+
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    setCurrentPage(1); // Reset to the first page
+    setSearchTerm(''); // Clear search term
+  };
+
   const handleSearch = () => {
     setCurrentPage(1); // 重置为第一页
-    fetchArticles(1);
+    if (tab === 'my') {
+      fetchArticles(1);
+    } else if (tab === 'recommended') {
+      fetchPlatformArticles(1);
+    }
   };
 
   const handleSelectArticle = (articleId) => {
     if (activeQuestionId === null) return;
+    // Handle "My Articles"
+    if (tab === 'my') {
+      const selected = selectedArticles[activeQuestionId] || [];
+      const selectedArticle = articles.find((art) => art.id === articleId);
 
-    const selected = selectedArticles[activeQuestionId] || [];
-    const selectedArticle = articles.find((art) => art.id === articleId);
-
-    if (selected.some((art) => art.id === articleId)) {
-      // 如果已经引用，取消引用（即反选）
-      setSelectedArticles({
-        ...selectedArticles,
-        [activeQuestionId]: selected.filter((art) => art.id !== articleId),
-      });
-    } else {
-      if (selected.length < 5 && selectedArticle) {
-        // 如果引用数少于 5，允许添加引用
+      if (selected.some((art) => art.id === articleId)) {
+        // 如果已经引用，取消引用（即反选）
         setSelectedArticles({
           ...selectedArticles,
-          [activeQuestionId]: [...selected, selectedArticle],
+          [activeQuestionId]: selected.filter((art) => art.id !== articleId),
         });
       } else {
-        alert("You can reference up to 5 articles only.");
+        if (selected.length < 5 && selectedArticle) {
+          // 如果引用数少于 5，允许添加引用
+          setSelectedArticles({
+            ...selectedArticles,
+            [activeQuestionId]: [...selected, selectedArticle],
+          });
+        } else {
+          alert("You can reference up to 5 articles only.");
+        }
       }
     }
+
+
+    // Handle "Platform Articles"
+    if (tab === 'recommended') {
+      const selected = selectedPlatformArticles[activeQuestionId] || [];
+      const selectedArticle = platformArticles.find((art) => art.id === articleId);
+
+      if (selected.some((art) => art.id === articleId)) {
+        // Unselect the article if it is already selected
+        setSelectedPlatformArticles({
+          ...selectedPlatformArticles,
+          [activeQuestionId]: selected.filter((art) => art.id !== articleId),
+        });
+      } else {
+        if (selected.length < 5 && selectedArticle) {
+          setSelectedPlatformArticles({
+            ...selectedPlatformArticles,
+            [activeQuestionId]: [...selected, selectedArticle],
+          });
+        } else {
+          alert("You can reference up to 5 articles only.");
+        }
+      }
+    }
+
   };
 
   const handleSubmit = async () => {
@@ -138,8 +204,9 @@ const ChecklistDetail = () => {
       const answersArray = Object.keys(answers).map((questionId) => ({
         question_id: parseInt(questionId, 10),
         answer: answers[questionId]?.answer || '',
-        referenced_articles: selectedArticles[questionId] 
-        ? selectedArticles[questionId].map(article => article.id): [],
+        referenced_articles: selectedArticles[questionId]
+          ? selectedArticles[questionId].map(article => article.id) : [],
+        referenced_platform_articles: selectedPlatformArticles[questionId]?.map((article) => article.id) || [],
       }));
 
       const response = await api.post(`${API_BASE_URL}/save_checklist_answers`, {
@@ -185,8 +252,8 @@ const ChecklistDetail = () => {
       ) : (
         <>
 
-         {/* 新增步骤 - 全局预览，包括流程图和问题列表 */}
-         {step === 1 && (
+          {/* 新增步骤 - 全局预览，包括流程图和问题列表 */}
+          {step === 1 && (
             <div>
               <h2>Step 1: Overview of Checklist</h2>
               {mermaidCode && (
@@ -255,19 +322,41 @@ const ChecklistDetail = () => {
                   >
                     Reference Mental Models
                   </button>
-                  {selectedArticles[questions[currentQuestionIndex].id] &&
-                    selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
-                      <div>
-                        <h4>Referenced Articles:</h4>
-                        <div style={{ marginLeft: '15px' }}>
-                          {selectedArticles[questions[currentQuestionIndex].id].map((article) => (
-                            <div key={article.id} style={{ marginBottom: '5px' }}>
-                              {article.title}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                  {(selectedArticles[questions[currentQuestionIndex].id] &&
+                    selectedArticles[questions[currentQuestionIndex].id].length > 0) ||
+                    (selectedPlatformArticles[questions[currentQuestionIndex].id] &&
+                      selectedPlatformArticles[questions[currentQuestionIndex].id].length > 0) ? (
+                    <div>
+                      <h4>Referenced Articles:</h4>
+
+                      {/* 显示用户自己的文章 */}
+                      {selectedArticles[questions[currentQuestionIndex].id] &&
+                        selectedArticles[questions[currentQuestionIndex].id].length > 0 && (
+                          <div style={{ marginLeft: '15px' }}>
+                            <h5>My Articles:</h5>
+                            {selectedArticles[questions[currentQuestionIndex].id].map((article) => (
+                              <div key={article.id} style={{ marginBottom: '5px' }}>
+                                {article.title}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                      {/* 显示平台推荐文章 */}
+                      {selectedPlatformArticles[questions[currentQuestionIndex].id] &&
+                        selectedPlatformArticles[questions[currentQuestionIndex].id].length > 0 && (
+                          <div style={{ marginLeft: '15px', marginTop: '10px' }}>
+                            <h5>Platform Recommended Articles:</h5>
+                            {selectedPlatformArticles[questions[currentQuestionIndex].id].map((article) => (
+                              <div key={article.id} style={{ marginBottom: '5px' }}>
+                                {article.title}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  ) : null}
+
                 </div>
               )}
               <div style={{ marginTop: '20px' }}>
@@ -339,6 +428,20 @@ const ChecklistDetail = () => {
         }}
       >
         <h2>Select Articles to Reference</h2>
+        <div className="tab-container">
+          <button
+            className={`tab-button ${tab === 'my' ? 'active' : ''}`}
+            onClick={() => handleTabChange('my')}
+          >
+            我的
+          </button>
+          <button
+            className={`tab-button ${tab === 'recommended' ? 'active' : ''}`}
+            onClick={() => handleTabChange('recommended')}
+          >
+            推荐
+          </button>
+        </div>
         <div style={{ marginBottom: '20px' }}>
           <input
             type="text"
@@ -350,11 +453,13 @@ const ChecklistDetail = () => {
           <button className='green-button' onClick={handleSearch}>Search</button>
         </div>
         <div style={{ textAlign: 'center' }}>
-          {articles.map((article) => (
+          {(tab === 'my' ? articles : platformArticles).map((article) => (
             <div key={article.id} style={{ marginBottom: '10px', textAlign: 'left' }}>
               <input
                 type="checkbox"
-                checked={selectedArticles[activeQuestionId]?.some((art) => art.id === article.id) || false}
+                checked={tab === 'my'
+                  ? selectedArticles[activeQuestionId]?.some((art) => art.id === article.id)
+                  : selectedPlatformArticles[activeQuestionId]?.some((art) => art.id === article.id) || false}
                 onChange={() => handleSelectArticle(article.id)}
                 style={{ marginRight: '5px' }}
               />
