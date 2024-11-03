@@ -11,11 +11,22 @@ function BalancedDecisionMaker() {
   const [groupComparisons, setGroupComparisons] = useState([]);
   const [decisionResult, setDecisionResult] = useState(null);
   const [decisionName, setDecisionName] = useState(""); // 新增状态用于存储决策名称
+  const [showCompareGroups, setShowCompareGroups] = useState(false); // 新增状态
 
 
+  // 检测条件是否重复
+  const isConditionDuplicate = (type, condition) => {
+    return conditions[type].some(
+      (existingCondition) => existingCondition.description === condition
+    );
+  };
   // Step 1: Add conditions (positive or negative)
   const addCondition = (type, condition) => {
     if (condition.trim() !== "") {
+      if (isConditionDuplicate(type, condition)) {
+        alert(`${type === 'positive' ? 'Positive' : 'Negative'} 条件${condition}已经存在！`);
+        return;
+      }
       setConditions((prev) => ({
         ...prev,
         [type]: [...prev[type], { description: condition, id: prev[type].length + 1 }],
@@ -29,29 +40,36 @@ function BalancedDecisionMaker() {
     const positivePairs = generatePairs(conditions.positive);
     const negativePairs = generatePairs(conditions.negative);
     const newComparisons = [...positivePairs, ...negativePairs];
-  
+
+    // 创建一个映射来保存现有的比较对及其 moreImportant 属性
+    const comparisonMap = new Map();
+    comparisons.forEach((comp) => {
+      const key1 = `${comp.conditionA.description}-${comp.conditionB.description}`;
+      const key2 = `${comp.conditionB.description}-${comp.conditionA.description}`;
+      comparisonMap.set(key1, comp.moreImportant);
+      comparisonMap.set(key2, comp.moreImportant);
+    });
+
     // 合并新生成的比较对，并保留原有的 moreImportant 属性
     const updatedComparisons = newComparisons.map((newComparison) => {
-      // 检查是否已有相同的比较对
-      const existingComparison = comparisons.find(
-        (comp) =>
-          (comp.conditionA.id === newComparison.conditionA.id &&
-            comp.conditionB.id === newComparison.conditionB.id) ||
-          (comp.conditionA.id === newComparison.conditionB.id &&
-            comp.conditionB.id === newComparison.conditionA.id)
-      );
-  
-      // 如果找到已有比较对，保留其 moreImportant 属性，否则设置为 null
+      const key = `${newComparison.conditionA.description}-${newComparison.conditionB.description}`;
+
+      // 检查是否存在对应的比较对并保留状态
+      const moreImportant = comparisonMap.get(key) || null;
+
       return {
         ...newComparison,
-        moreImportant: existingComparison ? existingComparison.moreImportant : null,
+        moreImportant,
       };
     });
-  
+
     // 更新 comparisons 状态
     setComparisons(updatedComparisons);
   };
-  
+
+
+
+
 
   // Helper function to generate pairs from a list of conditions
   const generatePairs = (conditionsList) => {
@@ -81,30 +99,29 @@ function BalancedDecisionMaker() {
   function hasLogicalContradiction(data) {
     const graph = new Map();
     const conditions = new Set();
-  
+
     // 构建图
     data.forEach(item => {
       const { conditionA, conditionB, moreImportant } = item;
       if (!moreImportant) return;
       const greater = moreImportant.description;
       const lesser = greater === conditionA.description ? conditionB.description : conditionA.description;
-  
+
       if (!graph.has(greater)) graph.set(greater, []);
       graph.get(greater).push(lesser);
-  
+
       conditions.add(greater);
       conditions.add(lesser);
     });
-  
+
     const nodes = Array.from(conditions);
-    const indexMap = new Map(nodes.map((node, index) => [node, index]));
     let index = 0;
     const indices = new Map();
     const lowLink = new Map();
     const onStack = new Map();
     const stack = [];
     let hasCycle = false;
-  
+
     function tarjan(node) {
       // 初始化当前节点的 index 和 low-link 值
       indices.set(node, index);
@@ -112,7 +129,7 @@ function BalancedDecisionMaker() {
       index++;
       stack.push(node);
       onStack.set(node, true);
-  
+
       // 遍历当前节点的邻接节点
       if (graph.has(node)) {
         for (const neighbor of graph.get(node)) {
@@ -127,7 +144,7 @@ function BalancedDecisionMaker() {
           }
         }
       }
-  
+
       // 如果当前节点的 low-link 值等于它的 index 值，说明找到了一个强连通分量
       if (lowLink.get(node) === indices.get(node)) {
         const scc = [];
@@ -137,27 +154,36 @@ function BalancedDecisionMaker() {
           onStack.set(w, false);
           scc.push(w);
         } while (w !== node);
-  
+
         // 如果强连通分量包含多个节点，则存在矛盾
         if (scc.length > 1) {
           hasCycle = true;
         }
       }
     }
-  
+
     // 对每个节点执行 Tarjan 算法
     for (const node of nodes) {
       if (!indices.has(node)) {
         tarjan(node);
       }
     }
-  
+
     return hasCycle;
   }
-  
-  
+
+  // 检查是否完成所有条件比较
+  const areComparisonsComplete = () => {
+    console.log(JSON.stringify(comparisons));
+    return comparisons.every((comparison) => comparison.moreImportant !== null);
+  };
+
   // Step 4: Sort conditions based on comparisons
   const sortConditions = () => {
+    if (!areComparisonsComplete()) {
+      alert('请完成所有条件比较之后再进行排序！');
+      return;
+    }
     // 在排序之前检查是否有矛盾
     if (hasLogicalContradiction(comparisons)) {
       alert('存在矛盾的条件对比，无法继续排序。请检查正面和负面的条件比较。');
@@ -208,6 +234,16 @@ function BalancedDecisionMaker() {
     setGroups(groups);
   };
 
+  // 检查每个组是否都设置了权重
+  const areGroupWeightsComplete = () => {
+    return groups.every(group => group.weight !== undefined && group.weight !== 0);
+  };
+
+  // 检查 Compare Groups 是否都完成了
+  const areGroupComparisonsComplete = () => {
+    return groups.every(group => group.moreImportant !== null);
+  };
+
   // Step 6: Set the weight for each group
   const setGroupWeight = (index, weight) => {
     setGroups((prevGroups) => {
@@ -219,6 +255,11 @@ function BalancedDecisionMaker() {
 
   // Step 7: Generate comparisons between groups
   const generateGroupComparisons = () => {
+    if (!areGroupWeightsComplete()) {
+      alert('请完成所有组的权重设置后再生成组比较！');
+      return;
+    }
+    setShowCompareGroups(true); // 点击后显示 Compare Groups
     const updatedGroups = groups.map((group) => ({
       ...group,
       moreImportant: null, // Add moreImportant property to store which condition is more important
@@ -237,6 +278,10 @@ function BalancedDecisionMaker() {
 
   // Step 9: Calculate final decision result
   const calculateDecisionResult = () => {
+    if (!areGroupComparisonsComplete()) {
+      alert('请完成所有组的比较后再计算决策结果！');
+      return;
+    }
     let positiveScore = 0;
     let negativeScore = 0;
 
@@ -341,17 +386,28 @@ function BalancedDecisionMaker() {
               <p>Which is more important?</p>
               <div className="comparison-options">
                 <label>
-                  <input type="radio" name={`comparison-${index}`} onChange={() => setMoreImportant(index, comparison.conditionA)} />
+                  <input
+                    type="radio"
+                    name={`comparison-${index}`}
+                    onChange={() => setMoreImportant(index, comparison.conditionA)}
+                    checked={comparison.moreImportant === comparison.conditionA} // 设置选中状态
+                  />
                   {comparison.conditionA.description}
                 </label>
                 <label>
-                  <input type="radio" name={`comparison-${index}`} onChange={() => setMoreImportant(index, comparison.conditionB)} />
+                  <input
+                    type="radio"
+                    name={`comparison-${index}`}
+                    onChange={() => setMoreImportant(index, comparison.conditionB)}
+                    checked={comparison.moreImportant === comparison.conditionB} // 设置选中状态
+                  />
                   {comparison.conditionB.description}
                 </label>
               </div>
             </div>
           ))}
         </div>
+
         <button className="button submit-button" onClick={sortConditions}>Sort Conditions</button>
       </div>
       <div className="section">
@@ -377,44 +433,49 @@ function BalancedDecisionMaker() {
         </div>
         <button className="button submit-button" onClick={generateGroupComparisons}>Generate Group Comparisons</button>
       </div>
-      <div className="section">
-        <h2 className="section-title">Compare Groups</h2>
-        <div className="comparisons-list">
-          {groups.map((group, index) => (
-            <div key={index} className="comparison-item">
-              <p>Which is more important in Group {index + 1}?</p>
-              <div className="comparison-options">
-                <label>
-                  <input
-                    type="radio"
-                    name={`group-comparison-${index}`}
-                    onChange={() => setMoreImportantGroup(index, 'positive')}
-                    checked={group.moreImportant === 'positive'}
-                  />
-                  Positive: {Array.isArray(group.positive) ? group.positive.map((item) => item.description).join(', ') : group.positive.description}
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name={`group-comparison-${index}`}
-                    onChange={() => setMoreImportantGroup(index, 'negative')}
-                    checked={group.moreImportant === 'negative'}
-                  />
-                  Negative: {Array.isArray(group.negative) ? group.negative.map((item) => item.description).join(', ') : group.negative.description}
-                </label>
-              </div>
-            </div>
-          ))}
+      {showCompareGroups && (
+        <div className="section">
+          <h2 className="section-title">Compare Groups</h2>
 
-        </div>
-        <button className="button submit-button" onClick={calculateDecisionResult}>Calculate Decision Result</button>
-        {decisionResult && (
-          <div className="decision-result">
-            <h3>Decision Result: {decisionResult}</h3>
+          <div className="comparisons-list">
+            {groups.map((group, index) => (
+              <div key={index} className="comparison-item">
+                <p>Which is more important in Group {index + 1}?</p>
+                <div className="comparison-options">
+                  <label>
+                    <input
+                      type="radio"
+                      name={`group-comparison-${index}`}
+                      onChange={() => setMoreImportantGroup(index, 'positive')}
+                      checked={group.moreImportant === 'positive'}
+                    />
+                    Positive: {Array.isArray(group.positive) ? group.positive.map((item) => item.description).join(', ') : group.positive.description}
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name={`group-comparison-${index}`}
+                      onChange={() => setMoreImportantGroup(index, 'negative')}
+                      checked={group.moreImportant === 'negative'}
+                    />
+                    Negative: {Array.isArray(group.negative) ? group.negative.map((item) => item.description).join(', ') : group.negative.description}
+                  </label>
+                </div>
+              </div>
+            ))}
+
           </div>
-        )}
-        <button className="button submit-button" onClick={saveDecisionData}>Save Decision</button>
-      </div>
+
+          <button className="button submit-button" onClick={calculateDecisionResult}>Calculate Decision Result</button>
+          {decisionResult && (
+            <div className="decision-result">
+              <h3>Decision Result: {decisionResult}</h3>
+            </div>
+          )}
+          <button className="button submit-button" onClick={saveDecisionData}>Save Decision</button>
+        </div>
+      )}
+
     </div>
   );
 }
