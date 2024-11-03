@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { API_BASE_URL } from '../config';
+import api from './api.js'
 import '../App.css'
 
 
@@ -16,7 +16,7 @@ const ChecklistAnswerHistory = () => {
 
   const fetchChecklistDecisions = async (page) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/checklist_answers/1`, {
+      const response = await api.get(`${API_BASE_URL}/checklist_answers`, {
         params: {
           page: page,
           page_size: pageSize
@@ -54,7 +54,7 @@ const ChecklistAnswerHistory = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/checklist_answers/${id}`);
+      await api.delete(`${API_BASE_URL}/checklist_answers/${id}`);
       await fetchChecklistDecisions(currentPage);
       closeConfirmModal();
     } catch (error) {

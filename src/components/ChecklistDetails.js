@@ -31,7 +31,7 @@ const ChecklistDetails = () => {
   useEffect(() => {
     const fetchDecisionDetails = async () => {
       try {
-        const response = await api.get(`${API_BASE_URL}/checklist_answers/1/details/${decisionId}`);
+        const response = await api.get(`${API_BASE_URL}/checklist_answers/details/${decisionId}`);
         setDecisionDetails(response.data);
         // 如果存在决策组信息，设置相关变量
         if (response.data.has_group && response.data.group) {

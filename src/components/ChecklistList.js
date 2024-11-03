@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { API_BASE_URL } from '../config';
+import api from './api.js'
+import '../App.css'
 
 const ChecklistList = () => {
-  const [checklists, setChecklists] = useState([]);
+  const [tab, setTab] = useState('my'); // 新增：用于管理选中的标签
+  const [myChecklists, setMyChecklists] = useState([]);
+  const [platformChecklists, setPlatformChecklists] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 5;
   const navigate = useNavigate();
 
-  const fetchChecklists = async (page) => {
-    const response = await axios.get(`${API_BASE_URL}/checklists`, {
+  const fetchMyChecklists = async (page) => {
+    const response = await api.get(`${API_BASE_URL}/checklists`, {
       params: {
         page: page,
         page_size: pageSize
@@ -20,14 +24,39 @@ const ChecklistList = () => {
 
     if (response.data) {
       const { checklists, total_pages } = response.data;
-      setChecklists(checklists);
+      setMyChecklists(checklists);
       setTotalPages(total_pages);
     }
   }
 
+  // 获取“平台推荐的Checklist”的数据
+  const fetchPlatformChecklists = async (page) => {
+    const response = await api.get(`${API_BASE_URL}/platform_checklists`, {
+      params: {
+        page: page,
+        page_size: pageSize,
+      },
+    });
+
+    if (response.data) {
+      const { checklists, total_pages } = response.data;
+      setPlatformChecklists(checklists);
+      setTotalPages(total_pages);
+    }
+  };
+
   useEffect(() => {
-    fetchChecklists(currentPage);
-  }, [currentPage]);
+    if (tab === 'my') {
+      fetchMyChecklists(currentPage);
+    } else if (tab === 'platform') {
+      fetchPlatformChecklists(currentPage);
+    }
+  }, [tab, currentPage]);
+
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    setCurrentPage(1); // 切换标签时重置页码
+  };
 
   const handleUpdateClick = (checklistId) => {
     navigate(`/checklist/update/${checklistId}`);
@@ -37,8 +66,19 @@ const ChecklistList = () => {
     navigate(`/checklist/${checklistId}`);
   };
 
-  const handleViewFlowchartClick = (checklistId) => {
-    navigate(`/checklist/flowchart/${checklistId}`);
+  const handleViewFlowchartClick = (checklistId, isPlatform) => {
+    navigate(`/checklist/flowchart/${checklistId}`, { state: { isPlatform } });
+  };
+
+  const handleCloneChecklist = async (checklistId) => {
+    try {
+      await api.post(`${API_BASE_URL}/checklists/clone`, { checklist_id: checklistId });
+      alert('Checklist cloned successfully!');
+      fetchMyChecklists(currentPage); // 重新加载“我的Checklist”
+    } catch (error) {
+      console.error('Error cloning checklist:', error);
+      alert('Failed to clone the checklist.');
+    }
   };
 
   // 删除 Checklist 的函数
@@ -50,10 +90,10 @@ const ChecklistList = () => {
       const url = isParent
         ? `${API_BASE_URL}/checklists/${checklistId}/delete-with-children`
         : `${API_BASE_URL}/checklists/${checklistId}`;
-      await axios.delete(url);
+      await api.delete(url);
 
       // 删除后刷新列表
-      fetchChecklists(currentPage);
+      fetchMyChecklists(currentPage);
     } catch (error) {
       console.error('Error deleting checklist:', error);
       alert('Failed to delete the checklist.');
@@ -75,8 +115,24 @@ const ChecklistList = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2>Checklist List</h2>
+      {/* Tab Navigation */}
+      <div className="tab-container" style={{ width: '600px' }}>
+        <button
+          className={`tab-button ${tab === 'my' ? 'active' : ''}`}
+          onClick={() => handleTabChange('my')}
+        >
+          My Checklists
+        </button>
+        <button
+          className={`tab-button ${tab === 'platform' ? 'active' : ''}`}
+          onClick={() => handleTabChange('platform')}
+        >
+          Platform Recommended
+        </button>
+      </div>
+
       <ul style={{ listStyle: 'none', padding: 0, width: '80%' }}>
-        {checklists.map(checklist => (
+        {(tab === 'my' ? myChecklists : platformChecklists).map(checklist => (
           <li key={checklist.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc' }}>
             <div style={{ textAlign: 'left', maxWidth: '600px' }}>
               <strong>{checklist.name}</strong> - Version: {checklist.version}
@@ -86,29 +142,58 @@ const ChecklistList = () => {
                   {checklist.versions.map(version => (
                     <li key={version.id} style={{ marginBottom: '5px' }}>
                       <strong>{version.name}</strong> - Version: {version.version}
-                      <button
-                        onClick={() => handleDeleteChecklist(version.id, false)}
-                        style={{ marginLeft: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
-                      >
-                        Delete
-                      </button>
+                      {tab === 'my' && (
+                        <button
+                          onClick={() => handleDeleteChecklist(version.id, false)}
+                          style={{ marginLeft: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      )}
+
+                      {tab === 'platform' && (
+                        <><button
+                          onClick={() => handleCloneChecklist(version.id)}
+                          className='green-button'
+                        >
+                          Clone
+                        </button><button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>View Flowchart</button>
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
               )}
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
-              {checklist.can_update && (
-                <button onClick={() => handleUpdateClick(checklist.id)} className='green-button'>Update Version</button>
+              {tab === 'my' && checklist.can_update && (
+                <button onClick={() => handleUpdateClick(checklist.id)} className='green-button'>
+                  Update Version
+                </button>
               )}
-              <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>Make Decision</button>
-              <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>View Flowchart</button>
-              <button
-                onClick={() => handleDeleteChecklist(checklist.id, true)}
-                style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
-              >
-                Delete Checklist
-              </button>
+              {tab === 'my' && (
+                <><button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
+                  Make Decision
+                </button><button
+                  onClick={() => handleDeleteChecklist(checklist.id, true)}
+                  style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                    Delete Checklist
+                  </button>
+                  <button onClick={() => handleViewFlowchartClick(checklist.id,false)} className='green-button'>View Flowchart</button>
+                  </>
+              )}
+              
+              {tab === 'platform' && (
+                <><button
+                  onClick={() => handleCloneChecklist(checklist.id)}
+                  className='green-button'
+                >
+                  Clone
+                </button><button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>View Flowchart</button>
+                </>
+              )}
+
             </div>
           </li>
         ))}
