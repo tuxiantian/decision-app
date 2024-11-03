@@ -79,44 +79,82 @@ function BalancedDecisionMaker() {
 
   // 新增：矛盾检测函数
   function hasLogicalContradiction(data) {
-    // 用于维护条件的顺序
-    const order = [];
+    const graph = new Map();
+    const conditions = new Set();
   
-    // 辅助函数：获取某个条件在 order 数组中的索引
-    function getIndex(condition) {
-      return order.indexOf(condition);
-    }
-  
-    // 遍历所有的比较关系
-    for (const item of data) {
+    // 构建图
+    data.forEach(item => {
       const { conditionA, conditionB, moreImportant } = item;
-      if (!moreImportant) continue; // 跳过没有选择更重要的情况
-  
+      if (!moreImportant) return;
       const greater = moreImportant.description;
       const lesser = greater === conditionA.description ? conditionB.description : conditionA.description;
   
-      const indexGreater = getIndex(greater);
-      const indexLesser = getIndex(lesser);
+      if (!graph.has(greater)) graph.set(greater, []);
+      graph.get(greater).push(lesser);
   
-      if (indexGreater === -1 && indexLesser === -1) {
-        // 如果两个条件都不在 order 中，将它们按顺序插入
-        order.push(greater, lesser);
-      } else if (indexGreater !== -1 && indexLesser === -1) {
-        // 如果 "greater" 已经在 order 中，而 "lesser" 不在，将 "lesser" 插入到 "greater" 后面
-        order.splice(indexGreater + 1, 0, lesser);
-      } else if (indexGreater === -1 && indexLesser !== -1) {
-        // 如果 "lesser" 已经在 order 中，而 "greater" 不在，将 "greater" 插入到 "lesser" 前面
-        order.splice(indexLesser-1, 0, greater);
-      } else if (indexGreater > indexLesser) {
-        console.log(order);
-        // 如果 "greater" 出现在 "lesser" 之后，则存在矛盾
-        return true;
+      conditions.add(greater);
+      conditions.add(lesser);
+    });
+  
+    const nodes = Array.from(conditions);
+    const indexMap = new Map(nodes.map((node, index) => [node, index]));
+    let index = 0;
+    const indices = new Map();
+    const lowLink = new Map();
+    const onStack = new Map();
+    const stack = [];
+    let hasCycle = false;
+  
+    function tarjan(node) {
+      // 初始化当前节点的 index 和 low-link 值
+      indices.set(node, index);
+      lowLink.set(node, index);
+      index++;
+      stack.push(node);
+      onStack.set(node, true);
+  
+      // 遍历当前节点的邻接节点
+      if (graph.has(node)) {
+        for (const neighbor of graph.get(node)) {
+          if (!indices.has(neighbor)) {
+            // 如果邻接节点没有被访问过，递归调用 Tarjan
+            tarjan(neighbor);
+            // 更新当前节点的 low-link 值
+            lowLink.set(node, Math.min(lowLink.get(node), lowLink.get(neighbor)));
+          } else if (onStack.get(neighbor)) {
+            // 如果邻接节点在栈中，更新当前节点的 low-link 值
+            lowLink.set(node, Math.min(lowLink.get(node), indices.get(neighbor)));
+          }
+        }
+      }
+  
+      // 如果当前节点的 low-link 值等于它的 index 值，说明找到了一个强连通分量
+      if (lowLink.get(node) === indices.get(node)) {
+        const scc = [];
+        let w;
+        do {
+          w = stack.pop();
+          onStack.set(w, false);
+          scc.push(w);
+        } while (w !== node);
+  
+        // 如果强连通分量包含多个节点，则存在矛盾
+        if (scc.length > 1) {
+          hasCycle = true;
+        }
       }
     }
-    console.log(order);
-    // 如果没有发现矛盾，返回 false
-    return false;
+  
+    // 对每个节点执行 Tarjan 算法
+    for (const node of nodes) {
+      if (!indices.has(node)) {
+        tarjan(node);
+      }
+    }
+  
+    return hasCycle;
   }
+  
   
   // Step 4: Sort conditions based on comparisons
   const sortConditions = () => {
