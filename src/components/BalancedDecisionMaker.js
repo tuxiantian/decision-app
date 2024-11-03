@@ -25,10 +25,33 @@ function BalancedDecisionMaker() {
 
   // Step 2: Generate pairs for comparison
   const generateComparisons = () => {
+    // 生成新的比较对
     const positivePairs = generatePairs(conditions.positive);
     const negativePairs = generatePairs(conditions.negative);
-    setComparisons([...positivePairs, ...negativePairs]);
+    const newComparisons = [...positivePairs, ...negativePairs];
+  
+    // 合并新生成的比较对，并保留原有的 moreImportant 属性
+    const updatedComparisons = newComparisons.map((newComparison) => {
+      // 检查是否已有相同的比较对
+      const existingComparison = comparisons.find(
+        (comp) =>
+          (comp.conditionA.id === newComparison.conditionA.id &&
+            comp.conditionB.id === newComparison.conditionB.id) ||
+          (comp.conditionA.id === newComparison.conditionB.id &&
+            comp.conditionB.id === newComparison.conditionA.id)
+      );
+  
+      // 如果找到已有比较对，保留其 moreImportant 属性，否则设置为 null
+      return {
+        ...newComparison,
+        moreImportant: existingComparison ? existingComparison.moreImportant : null,
+      };
+    });
+  
+    // 更新 comparisons 状态
+    setComparisons(updatedComparisons);
   };
+  
 
   // Helper function to generate pairs from a list of conditions
   const generatePairs = (conditionsList) => {
@@ -56,59 +79,45 @@ function BalancedDecisionMaker() {
 
   // 新增：矛盾检测函数
   function hasLogicalContradiction(data) {
-    // 构建有向图（邻接表）
-    const graph = {};
-    const nodes = new Set();
-
-    // 将数据结构转换成有向边
-    data.forEach(item => {
+    // 用于维护条件的顺序
+    const order = [];
+  
+    // 辅助函数：获取某个条件在 order 数组中的索引
+    function getIndex(condition) {
+      return order.indexOf(condition);
+    }
+  
+    // 遍历所有的比较关系
+    for (const item of data) {
       const { conditionA, conditionB, moreImportant } = item;
-
-      // 如果 moreImportant 是 conditionA，表示 conditionA > conditionB
-      if (moreImportant.id === conditionA.id) {
-        if (!graph[conditionA.id]) graph[conditionA.id] = [];
-        graph[conditionA.id].push(conditionB.id);
-      }
-      // 如果 moreImportant 是 conditionB，表示 conditionB > conditionA
-      else if (moreImportant.id === conditionB.id) {
-        if (!graph[conditionB.id]) graph[conditionB.id] = [];
-        graph[conditionB.id].push(conditionA.id);
-      }
-
-      // 添加节点到集合中
-      nodes.add(conditionA.id);
-      nodes.add(conditionB.id);
-    });
-
-    // 检测环的帮助函数（使用 DFS）
-    const visited = new Set();
-    const stack = new Set();
-
-    function hasCycle(node) {
-      if (stack.has(node)) return true; // 如果节点已经在当前路径中，则存在环
-      if (visited.has(node)) return false;
-
-      visited.add(node);
-      stack.add(node);
-
-      for (const neighbor of graph[node] || []) {
-        if (hasCycle(neighbor)) return true;
-      }
-
-      stack.delete(node);
-      return false;
-    }
-
-    // 遍历所有节点，检查是否有环
-    for (const node of nodes) {
-      if (!visited.has(node)) {
-        if (hasCycle(node)) return true;
+      if (!moreImportant) continue; // 跳过没有选择更重要的情况
+  
+      const greater = moreImportant.description;
+      const lesser = greater === conditionA.description ? conditionB.description : conditionA.description;
+  
+      const indexGreater = getIndex(greater);
+      const indexLesser = getIndex(lesser);
+  
+      if (indexGreater === -1 && indexLesser === -1) {
+        // 如果两个条件都不在 order 中，将它们按顺序插入
+        order.push(greater, lesser);
+      } else if (indexGreater !== -1 && indexLesser === -1) {
+        // 如果 "greater" 已经在 order 中，而 "lesser" 不在，将 "lesser" 插入到 "greater" 后面
+        order.splice(indexGreater + 1, 0, lesser);
+      } else if (indexGreater === -1 && indexLesser !== -1) {
+        // 如果 "lesser" 已经在 order 中，而 "greater" 不在，将 "greater" 插入到 "lesser" 前面
+        order.splice(indexLesser-1, 0, greater);
+      } else if (indexGreater > indexLesser) {
+        console.log(order);
+        // 如果 "greater" 出现在 "lesser" 之后，则存在矛盾
+        return true;
       }
     }
-
+    console.log(order);
+    // 如果没有发现矛盾，返回 false
     return false;
   }
-
+  
   // Step 4: Sort conditions based on comparisons
   const sortConditions = () => {
     // 在排序之前检查是否有矛盾
