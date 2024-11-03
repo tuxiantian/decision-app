@@ -363,7 +363,7 @@ const TodoList = () => {
       </div>
 
       {/* Tabs for switching between Completed and Ended Todos */}
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ margin: '20px auto', display: 'flex', justifyContent: 'center',width:'600px' }}>
         <button onClick={() => setSelectedTab('completed')} className={`tab-button ${selectedTab === 'completed' ? 'active' : ''}`}>
           Completed Todos
         </button>

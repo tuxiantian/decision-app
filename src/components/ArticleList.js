@@ -210,7 +210,7 @@ const ArticleList = () => {
                 <div style={{ position: 'relative', flex: 1 }}>
                     <input
                         type="text"
-                        placeholder="Search by title, tags, or keywords"
+                        placeholder="Search by title or keywords"
                         value={searchTerm}
                         onChange={handleSearchChange}
                         onKeyDown={handleKeyDown}  // 监听键盘事件
