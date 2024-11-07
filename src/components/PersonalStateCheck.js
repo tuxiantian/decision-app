@@ -186,7 +186,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
         <div>
           <h2>状态检查 - 请尝试平静下来</h2>
           <div >
-              <p>上帝，赐我宁静，接受无法改变的事物；</p>
+              <p>上帝，赐我平和，接受无法改变的事物；</p>
               <p>赐我勇气，去改变能改变的事物；</p>
               <p>赐我智慧，去分辨这两者。</p>
           </div>
