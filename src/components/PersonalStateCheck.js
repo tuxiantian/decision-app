@@ -48,10 +48,10 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
     if (newMood === '平静') {
       setCurrentState(states.PERSUADED_CHECK);
     } else if (newMood === '愤怒' || newMood === '悲伤') {
-      if(newMood === '愤怒'){
+      if (newMood === '愤怒') {
         setModalMessage('人在愤怒的状态下，容易冲动做出不理智的行动，去让自己平静下来。')
-      }else if(newMood === '悲伤'){
-        setModalMessage('人在悲观的状态下，对事情的看法偏向负面，态度偏向消极，往往会做出不理智的行动，去让自己平静下来。')     
+      } else if (newMood === '悲伤') {
+        setModalMessage('人在悲观的状态下，对事情的看法偏向负面，态度偏向消极，往往会做出不理智的行动，去让自己平静下来。')
       }
       setShowModal(true);
       setModalCallback(() => () => setCurrentState(states.CALM_DOWN));
@@ -141,7 +141,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
             textAlign: 'center',
           }}
         >
-          <p style={{textAlign: 'left'}}>{modalMessage}</p>
+          <p style={{ textAlign: 'left' }}>{modalMessage}</p>
           <button
             onClick={handleCloseModal}
             style={{
@@ -185,6 +185,11 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
       {currentState === states.CALM_DOWN && (
         <div>
           <h2>状态检查 - 请尝试平静下来</h2>
+          <div >
+              <p>上帝，赐我宁静，接受无法改变的事物；</p>
+              <p>赐我勇气，去改变能改变的事物；</p>
+              <p>赐我智慧，去分辨这两者。</p>
+          </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
             <button onClick={handleCalmDown} className='green-button'>已经平静</button>
           </div>
