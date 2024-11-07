@@ -26,6 +26,7 @@ import FlowchartDetail from './components/FlowchartDetail';
 import BalancedDecisionMaker from './components/BalancedDecisionMaker';
 import BalancedDecisionDetail from './components/BalancedDecisionDetail';
 import BalancedDecisionList from './components/BalancedDecisionList';
+import FactOpinionAnalyzer from './components/FactOpinionAnalyzer';
 import AboutUs from './AboutUs';
 
 function App() {
@@ -88,6 +89,7 @@ function App() {
                 <NavDropdown.Item as={Link} to="/ahp-add" className="nav-dropdown-item">Add AHP Analysis</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
+              <Nav.Link as={Link} to="/argument-evaluator">ArgumentEvaluator</Nav.Link>
               <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>
             </Nav>
             <Nav className="ms-auto">
@@ -131,7 +133,7 @@ function App() {
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
             <Route path="/checklist/flowchart/:checklistId" element={<FlowchartDetail />} />
-         
+            <Route path="/argument-evaluator" element={<FactOpinionAnalyzer />} />
         </Routes>
       </div>
     
