@@ -22,11 +22,21 @@ function FactOpinionAnalyzer() {
     // 添加逻辑错误匹配
     const handleAddLogicalError = () => {
         if (selectedFacts.length > 0 && selectedOpinion && selectedLogicalError) {
-            setAnalysisTable([...analysisTable, {
-                facts: selectedFacts,
-                opinion: selectedOpinion,
-                error: selectedLogicalError
-            }]);
+            // 检查该 selectedOpinion 和 selectedLogicalError 的组合是否已经存在于 analysisTable 中
+            const isDuplicate = analysisTable.some(item =>
+                item.opinion === selectedOpinion && item.error === selectedLogicalError
+            );
+
+            if (isDuplicate) {
+                // 如果已存在，弹出提示
+                alert("该组合的逻辑错误已经添加过了！");
+            } else {
+                setAnalysisTable([...analysisTable, {
+                    facts: selectedFacts,
+                    opinion: selectedOpinion,
+                    error: selectedLogicalError
+                }]);
+            }
         }
     };
 
@@ -53,19 +63,26 @@ function FactOpinionAnalyzer() {
     };
 
     // 处理提交数据
-    const handleSubmit = () => {
-        // 提交分析数据逻辑...
+    const handleSubmit = async () => {
+        const requestData={
+            'analysisTable':analysisTable,
+            'content':text
+        }
+
+        await api.post(`/api/save_fact_opinion_analysis`,requestData);
+
+        console.log('save_fact_opinion_analysis successfully');
     };
 
     // 显示工具提示
     const showTooltip = (error, event) => {
         const tooltipWidth = 500;  // 假设 tooltip 宽度是 300px，可以根据实际情况调整
         const screenWidth = window.innerWidth;
-    
+
         // 判断鼠标位置是否靠近屏幕右边缘，如果是，则调整 tooltip 到左侧
         const isNearRightEdge = event.pageX + tooltipWidth > screenWidth;
-    
-        const tooltipX = isNearRightEdge 
+
+        const tooltipX = isNearRightEdge
             ? event.pageX - tooltipWidth  // 如果靠近右边缘，显示到左边
             : event.pageX;  // 否则，保持鼠标位置
         setTooltip({
@@ -153,7 +170,7 @@ function FactOpinionAnalyzer() {
                         key={error.id}
                         className={`logical-error ${selectedLogicalError === error ? 'selected' : ''}`}
                         onMouseEnter={(event) => handleMouseEnter(error, event)}
-                        onMouseLeave={()=>handleMouseLeave()}
+                        onMouseLeave={() => handleMouseLeave()}
                         onClick={() => handleLogicalErrorClick(error)}
                     >
                         {error.name}
@@ -170,7 +187,7 @@ function FactOpinionAnalyzer() {
                 />
             )}
 
-            <button onClick={handleAddLogicalError} style={{margin:'10px auto'}} className='red-button'>添加逻辑错误</button>
+            <button onClick={handleAddLogicalError} style={{ margin: '10px auto' }} className='red-button'>添加逻辑错误</button>
 
             <table className="analysis-table">
                 <thead>

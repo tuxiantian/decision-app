@@ -27,6 +27,8 @@ import BalancedDecisionMaker from './components/BalancedDecisionMaker';
 import BalancedDecisionDetail from './components/BalancedDecisionDetail';
 import BalancedDecisionList from './components/BalancedDecisionList';
 import FactOpinionAnalyzer from './components/FactOpinionAnalyzer';
+import AnalysisList from './components/AnalysisList';
+import AnalysisDetail from './components/AnalysisDetail';
 import AboutUs from './AboutUs';
 
 function App() {
@@ -89,7 +91,10 @@ function App() {
                 <NavDropdown.Item as={Link} to="/ahp-add" className="nav-dropdown-item">Add AHP Analysis</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
-              <Nav.Link as={Link} to="/argument-evaluator">ArgumentEvaluator</Nav.Link>
+              <NavDropdown title="ArgumentEvaluator" id="argument-evaluator-dropdown">
+                <NavDropdown.Item as={Link} to="/argument-evaluator" className="nav-dropdown-item">Do ArgumentEvaluator</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/argument-evaluator-list" className="nav-dropdown-item">ArgumentEvaluator List</NavDropdown.Item>
+              </NavDropdown>
               <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>
             </Nav>
             <Nav className="ms-auto">
@@ -134,6 +139,8 @@ function App() {
             <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
             <Route path="/checklist/flowchart/:checklistId" element={<FlowchartDetail />} />
             <Route path="/argument-evaluator" element={<FactOpinionAnalyzer />} />
+            <Route path="/argument-evaluator-list" element={<AnalysisList />} />
+            <Route path="/analysis-detail/:id" element={<AnalysisDetail />} />
         </Routes>
       </div>
     
