@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import '../App.css';  // 引入 CSS 文件
 import { API_BASE_URL } from '../config';
-import api from './api'; 
+import api from './api';
+import TodoQuadrant from './TodoQuadrant';
 
-const TodoList = () => {
+const TodoList = ({ }) => {
   const [todos, setTodos] = useState([]);
   const [completedTodos, setCompletedTodos] = useState([]);
   const [endedTodos, setEndedTodos] = useState([]);
@@ -21,11 +21,22 @@ const TodoList = () => {
   const [customEndDate, setCustomEndDate] = useState('');
   const [importance, setImportance] = useState(false);
   const [urgency, setUrgency] = useState(false);
+  const importantAndUrgent = todos.filter(todo => todo.importance && todo.urgency && todo.status === 'in_progress');
+  const importantNotUrgent = todos.filter(todo => todo.importance && !todo.urgency && todo.status === 'in_progress');
+  const notImportantUrgent = todos.filter(todo => !todo.importance && todo.urgency && todo.status === 'in_progress');
+  const notImportantNotUrgent = todos.filter(todo => !todo.importance && !todo.urgency && todo.status === 'in_progress');
 
   useEffect(() => {
     fetchTodos();
     fetchCompletedTodos(completedPage);
     fetchEndedTodos(endedPage);
+    // 每 20 分钟刷新一次数据
+    const interval = setInterval(() => {
+      fetchTodos();
+    }, 20 * 60 * 1000); // 20 分钟 = 20 * 60 * 1000 毫秒
+
+    // 清除定时器
+    return () => clearInterval(interval);
   }, []);
 
   // 当 completedPage 发生变化时重新获取已完成的待办事项
@@ -280,90 +291,29 @@ const TodoList = () => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '20px', width: '80%', marginTop: '20px' }}>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
           <h3 style={{ backgroundColor: 'red' }}>重要且紧急</h3>
-          {todos.filter(todo => todo.importance && todo.urgency && todo.status === 'in_progress').map(todo => (
-            <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <input
-                type="checkbox"
-                onChange={() => handleTodoCompletion(todo.id)}
-                style={{ marginRight: '10px' }}
-              />
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <strong style={{ marginRight: '10px' }}>{todo.name}</strong>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <small style={{ marginBottom: '5px' }}>Start: {new Date(todo.start_time).toLocaleString()}</small>
-                  <small>End: {new Date(todo.end_time).toLocaleString()}</small>
-                </div>
-              </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
-            </div>
+          <TodoQuadrant todos={importantAndUrgent} onTodoCompletion={handleTodoCompletion} onRemoveTodo={handleRemoveTodo} />
 
 
-          ))}
         </div>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
           <h3 style={{ backgroundColor: 'orange' }}>重要但不紧急</h3>
-          {todos.filter(todo => todo.importance && !todo.urgency && todo.status === 'in_progress').map(todo => (
-            <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <input
-                type="checkbox"
-                onChange={() => handleTodoCompletion(todo.id)}
-                style={{ marginRight: '10px' }}
-              />
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <strong style={{ marginRight: '10px' }}>{todo.name}</strong>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <small style={{ marginBottom: '5px' }}>Start: {new Date(todo.start_time).toLocaleString()}</small>
-                  <small>End: {new Date(todo.end_time).toLocaleString()}</small>
-                </div>
-              </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
-            </div>
-          ))}
+          <TodoQuadrant todos={importantNotUrgent} onTodoCompletion={handleTodoCompletion} onRemoveTodo={handleRemoveTodo} />
+
         </div>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
           <h3 style={{ backgroundColor: '#FFD700' }}>不重要但紧急</h3>
-          {todos.filter(todo => !todo.importance && todo.urgency && todo.status === 'in_progress').map(todo => (
-            <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <input
-                type="checkbox"
-                onChange={() => handleTodoCompletion(todo.id)}
-                style={{ marginRight: '10px' }}
-              />
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <strong style={{ marginRight: '10px' }}>{todo.name}</strong>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <small style={{ marginBottom: '5px' }}>Start: {new Date(todo.start_time).toLocaleString()}</small>
-                  <small>End: {new Date(todo.end_time).toLocaleString()}</small>
-                </div>
-              </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='green-button'>Remove</button>
-            </div>
-          ))}
+          <TodoQuadrant todos={notImportantUrgent} onTodoCompletion={handleTodoCompletion} onRemoveTodo={handleRemoveTodo} />
+
         </div>
         <div style={{ border: '1px solid #000', padding: '10px' }}>
           <h3 style={{ backgroundColor: 'green' }}>不重要也不紧急</h3>
-          {todos.filter(todo => !todo.importance && !todo.urgency && todo.status === 'in_progress').map(todo => (
-            <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <input
-                type="checkbox"
-                onChange={() => handleTodoCompletion(todo.id)}
-                style={{ marginRight: '10px' }}
-              />
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <strong style={{ marginRight: '10px' }}>{todo.name}</strong>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  <small style={{ marginBottom: '5px' }}>Start: {new Date(todo.start_time).toLocaleString()}</small>
-                  <small>End: {new Date(todo.end_time).toLocaleString()}</small>
-                </div>
-              </div>
-              <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
-            </div>
-          ))}
+          <TodoQuadrant todos={notImportantNotUrgent} onTodoCompletion={handleTodoCompletion} onRemoveTodo={handleRemoveTodo} />
+
         </div>
       </div>
 
       {/* Tabs for switching between Completed and Ended Todos */}
-      <div style={{ margin: '20px auto', display: 'flex', justifyContent: 'center',width:'600px' }}>
+      <div style={{ margin: '20px auto', display: 'flex', justifyContent: 'center', width: '600px' }}>
         <button onClick={() => setSelectedTab('completed')} className={`tab-button ${selectedTab === 'completed' ? 'active' : ''}`}>
           Completed Todos
         </button>
