@@ -72,41 +72,41 @@ function App() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/">Home</Nav.Link>
-              <NavDropdown title="Balanced Decisions" id="balanced-decisions-dropdown">
-                <NavDropdown.Item as={Link} to="/balanced-decisions" className="nav-dropdown-item">Balanced Decision Maker</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/balanced-decisions/list" className="nav-dropdown-item">Balanced Decision List</NavDropdown.Item>
+              <Nav.Link as={Link} to="/">首页</Nav.Link>
+              <NavDropdown title="平衡决策" id="balanced-decisions-dropdown">
+                <NavDropdown.Item as={Link} to="/balanced-decisions" className="nav-dropdown-item">去做平衡决策</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/balanced-decisions/list" className="nav-dropdown-item">平衡决策列表</NavDropdown.Item>
               </NavDropdown>
-              <NavDropdown title="Checklists" id="checklists-dropdown">
-                <NavDropdown.Item as={Link} to="/checklists" className="nav-dropdown-item">Checklist List</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/checklist-form" className="nav-dropdown-item">Checklist Form</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/history" className="nav-dropdown-item">Answer History</NavDropdown.Item>
+              <NavDropdown title="决策清单" id="checklists-dropdown">
+                <NavDropdown.Item as={Link} to="/checklists" className="nav-dropdown-item">我的决策清单列表</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/checklist-form" className="nav-dropdown-item">新建决策清单</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/history" className="nav-dropdown-item">我做的决定</NavDropdown.Item>
               </NavDropdown>
-              <NavDropdown title="Articles" id="articles-dropdown">
-                <NavDropdown.Item as={Link} to="/articles" className="nav-dropdown-item">Article List</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/add-article" className="nav-dropdown-item">Add Article</NavDropdown.Item>
+              <NavDropdown title="文章" id="articles-dropdown">
+                <NavDropdown.Item as={Link} to="/articles" className="nav-dropdown-item">文章列表</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/add-article" className="nav-dropdown-item">添加文章</NavDropdown.Item>
               </NavDropdown>
-              <NavDropdown title="AHP Analysis" id="ahp-analysis-dropdown">
-                <NavDropdown.Item as={Link} to="/ahp" className="nav-dropdown-item">AHP Analysis</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/ahp-add" className="nav-dropdown-item">Add AHP Analysis</NavDropdown.Item>
+              <NavDropdown title="多层次决策分析" id="ahp-analysis-dropdown">
+                <NavDropdown.Item as={Link} to="/ahp" className="nav-dropdown-item">我做过的多层次决策分析</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/ahp-add" className="nav-dropdown-item">去做多层次决策分析</NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link as={Link} to="/todos">Todo List</Nav.Link>
-              <NavDropdown title="ArgumentEvaluator" id="argument-evaluator-dropdown">
-                <NavDropdown.Item as={Link} to="/argument-evaluator" className="nav-dropdown-item">Do ArgumentEvaluator</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/argument-evaluator-list" className="nav-dropdown-item">ArgumentEvaluator List</NavDropdown.Item>
+              <Nav.Link as={Link} to="/todos">待办</Nav.Link>
+              <NavDropdown title="事实-观点" id="argument-evaluator-dropdown">
+                <NavDropdown.Item as={Link} to="/argument-evaluator" className="nav-dropdown-item">事实观点分析</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="/argument-evaluator-list" className="nav-dropdown-item">事实观点分析列表</NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link as={Link} to="/about-us">About Us</Nav.Link>
+              <Nav.Link as={Link} to="/about-us">关于我们</Nav.Link>
             </Nav>
             <Nav className="ms-auto">
               {username ? (
                 <>
                   <Nav.Link disabled>Welcome, {username}</Nav.Link>
-                  <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                  <Nav.Link onClick={handleLogout}>退出</Nav.Link>
                 </>
               ) : (
                 <>
-                  <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                  <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                  <Nav.Link as={Link} to="/login">登陆</Nav.Link>
+                  <Nav.Link as={Link} to="/register">注册</Nav.Link>
                 </>
               )}
             </Nav>
