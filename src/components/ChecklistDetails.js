@@ -461,10 +461,8 @@ const ChecklistDetails = () => {
         )}
         <button onClick={() => setIsReviewModalOpen(false)} className='green-button'>Close</button>
       </Modal>
-      <nav style={{ marginTop: '20px' }}>
-        <Link to="/history" style={{ padding: '10px 20px' }}>Back to Checklist Answer History</Link>
-      </nav>
-
+    
+      <button onClick={() => navigate('/history')} className="green-button">Back to Checklist Answer History</button>
       {/* Article Modal */}
       <Modal
         isOpen={showArticleModal}
