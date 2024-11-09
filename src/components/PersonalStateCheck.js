@@ -199,7 +199,8 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
       {currentState === states.DELIBERATE_CHECK && (
         <div>
           <h2>状态检查 - 决定是否经过深思熟虑？</h2>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <img src="/images/我深思熟虑了吗？.png" alt='我深思熟虑了吗？' style={{ display: 'block', margin: '20px auto', maxWidth: '100%', height: 'auto',transform: 'scale(1.5)' }} />
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '90px' }}>
             <button onClick={() => handleDeliberate(true)} className='green-button'>是</button>
             <button onClick={() => handleDeliberate(false)} className='green-button'>否</button>
           </div>
