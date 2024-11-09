@@ -92,6 +92,19 @@ const Home = () => {
         </div>
       </section>
 
+      {/* 事实、观点分析功能介绍部分 */}
+      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+        <h2>事实、观点分析功能</h2>
+        <p>
+          通过“事实、观点分析”功能，您可以标记和分类不同的事实和观点，并识别潜在的逻辑错误。该功能帮助您更清晰地理解信息的结构和逻辑关系，
+          为您的决策提供可靠依据。
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/argument-evaluator" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Do ArgumentEvaluator</Link>
+          <Link to="/argument-evaluator-list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>ArgumentEvaluator List</Link>
+        </div>
+        
+      </section>
 
       <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>TodoList 组件功能介绍</h2>
