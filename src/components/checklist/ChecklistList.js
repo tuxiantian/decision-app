@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config';
-import api from './api.js'
-import '../App.css'
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
+import '../../App.css'
 
 const ChecklistList = () => {
   const [tab, setTab] = useState('my'); // 新增：用于管理选中的标签

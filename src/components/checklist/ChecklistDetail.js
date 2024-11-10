@@ -3,9 +3,9 @@ import axios from 'axios';
 import mermaid from 'mermaid';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import PersonalStateCheck from './PersonalStateCheck';
-import { API_BASE_URL } from '../config';
-import api from './api.js'
+import PersonalStateCheck from './PersonalStateCheck.js';
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
 Modal.setAppElement('#root');

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import api from './api.js'
-import '../App.css'
+import api from '../api.js'
+import '../../App.css'
 
 const JoinGroupPage = () => {
   const { groupId } = useParams();  // 获取链接中的 groupId 参数

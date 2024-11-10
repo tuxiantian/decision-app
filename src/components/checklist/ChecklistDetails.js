@@ -4,8 +4,8 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
-import { API_BASE_URL } from '../config';
-import api from './api.js'
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
 import './ChecklistDetails.css'
 
 const ChecklistDetails = () => {
@@ -338,7 +338,7 @@ const ChecklistDetails = () => {
       {/* 配置决策组按钮，仅在没有组的情况下显示 */}
       {
         !decisionDetails.has_group && (
-          <button onClick={openGroupModal} className='green-button'>Configure Decision Group</button>
+          <button onClick={openGroupModal} className='green-button' style={{marginBottom:'20px'}}>Configure Decision Group</button>
         )
       }
 
@@ -417,7 +417,7 @@ const ChecklistDetails = () => {
         <button onClick={() => setIsMembersModalOpen(false)} className="gray-button">Close</button>
       </Modal>
 
-      <button onClick={openReviewModal} className='green-button'>View Reviews</button>
+      <button onClick={openReviewModal} className='green-button' style={{marginBottom:'20px'}}>View Reviews</button>
       <Modal
         isOpen={isReviewModalOpen}
         onRequestClose={() => setIsReviewModalOpen(false)}
@@ -462,7 +462,7 @@ const ChecklistDetails = () => {
         <button onClick={() => setIsReviewModalOpen(false)} className='green-button'>Close</button>
       </Modal>
     
-      <button onClick={() => navigate('/history')} className="green-button">Back to Checklist Answer History</button>
+      <button onClick={() => navigate('/history')} className="green-button" style={{marginBottom:'20px'}}>Back to Checklist Answer History</button>
       {/* Article Modal */}
       <Modal
         isOpen={showArticleModal}

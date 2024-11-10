@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from './api.js'
+import api from '../api.js'
 import './Questionnaire.css';  // 新增样式文件导入
 
 const Questionnaire = () => {

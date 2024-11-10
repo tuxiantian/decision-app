@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import mermaid from 'mermaid';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { API_BASE_URL } from '../config';
-import api from './api.js'
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
 
 const FlowchartDetail = () => {
   const { checklistId } = useParams(); // 获取 checklistId 参数

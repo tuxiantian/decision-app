@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import mermaid from 'mermaid';
-import { API_BASE_URL } from '../config';
-import api from './api.js'
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
 import './ChecklistForm.css';
 
 // 初始化 Mermaid 配置
