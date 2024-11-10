@@ -48,7 +48,7 @@ const AnalysisList = () => {
             <ul className="analysis-list">
                 {analyses.map((analysis) => (
                     <li key={analysis.id} className="analysis-item">
-                        <p>{analysis.content}</p>
+                        <p style={{textAlign:'left'}}>{analysis.content}</p>
                         <button onClick={() => handleViewDetails(analysis.id)} className="green-button">查看</button>
                     </li>
                 ))}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from './api';
 import './FactOpinionAnalyzer.css';
 
@@ -12,13 +13,25 @@ function FactOpinionAnalyzer() {
     const [selectedLogicalError, setSelectedLogicalError] = useState(null);
     const [analysisTable, setAnalysisTable] = useState([]);
     const [tooltip, setTooltip] = useState({ visible: false, content: '', x: 0, y: 0 });
+    const [isButtonEnabled, setIsButtonEnabled] = useState(false);
 
+
+    const navigate = useNavigate();
     useEffect(() => {
         api.get('/api/logic-errors')
             .then(response => setLogicalErrors(response.data))
             .catch(error => console.error('Error fetching logic errors:', error));
+
     }, []);
 
+    useEffect(() => {
+        // 检查所有必需条件是否满足，如果满足则启用按钮，否则禁用
+        if (selectedFacts.length > 0 && selectedOpinion && selectedLogicalError) {
+            setIsButtonEnabled(true);
+        } else {
+            setIsButtonEnabled(false);
+        }
+    }, [selectedFacts, selectedOpinion, selectedLogicalError]);
     // 添加逻辑错误匹配
     const handleAddLogicalError = () => {
         if (selectedFacts.length > 0 && selectedOpinion && selectedLogicalError) {
@@ -64,14 +77,18 @@ function FactOpinionAnalyzer() {
 
     // 处理提交数据
     const handleSubmit = async () => {
-        const requestData={
-            'analysisTable':analysisTable,
-            'content':text
+        if (isButtonEnabled) {
+            const requestData = {
+                'analysisTable': analysisTable,
+                'content': text
+            }
+
+            await api.post(`/api/save_fact_opinion_analysis`, requestData);
+
+            console.log('save_fact_opinion_analysis successfully');
+            navigate('/argument-evaluator-list');
         }
 
-        await api.post(`/api/save_fact_opinion_analysis`,requestData);
-
-        console.log('save_fact_opinion_analysis successfully');
     };
 
     // 显示工具提示
@@ -187,7 +204,8 @@ function FactOpinionAnalyzer() {
                 />
             )}
 
-            <button onClick={handleAddLogicalError} style={{ margin: '10px auto' }} className='red-button'>添加逻辑错误</button>
+            <button onClick={handleAddLogicalError} disabled={!isButtonEnabled} style={{ margin: '10px auto' }}
+                className={`red-button add-logical-error-button ${isButtonEnabled ? '' : 'disabled-button'}`}>添加逻辑错误</button>
 
             <table className="analysis-table">
                 <thead>
