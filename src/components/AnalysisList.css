@@ -38,9 +38,9 @@
 /* 分页样式 */
 .pagination {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 20px auto;
 }
 
 .pagination button {
