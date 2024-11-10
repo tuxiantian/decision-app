@@ -1,30 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config'; 
-import api from './api'; 
+import { API_BASE_URL } from '../config';
+import api from './api';
 import './BalancedDecisionMaker.css';
 
 function DecisionList() {
   const [decisions, setDecisions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch all decisions
-    const fetchDecisions = async () => {
-      try {
-        const response = await api.get(`${API_BASE_URL}/api/get_decisions`);
-        setDecisions(response.data);
-      } catch (error) {
-        console.error('Error fetching decisions:', error);
-      }
-    };
+  // Fetch all decisions
+  const fetchDecisions = async (page) => {
+    try {
+      const response = await api.get(`${API_BASE_URL}/api/get_decisions`, {
+        params: {
+          page: page,
+          page_size: pageSize
+        },
+      });
+      setDecisions(response.data.decisions_list);
+      setTotalPages(response.data.total_pages);
+    } catch (error) {
+      console.error('Error fetching decisions:', error);
+    }
+  };
 
-    fetchDecisions();
-  }, []);
+  useEffect(() => {
+
+    fetchDecisions(currentPage);
+  }, [currentPage]);
 
   const viewDecisionDetails = (id) => {
     navigate(`/balanced-decisions/${id}`);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
   };
 
   return (
@@ -57,6 +78,11 @@ function DecisionList() {
           ))}
         </tbody>
       </table>
+      <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px auto' }}>
+        <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
+        <p>Page {currentPage} of {totalPages}</p>
+        <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
+      </div>
     </div>
   );
 }
