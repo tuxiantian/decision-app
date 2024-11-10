@@ -1,0 +1,63 @@
+.user-feedback-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.feedback-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feedback-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.feedback-content, .feedback-date, .status, .feedback-response, .response-date {
+    margin: 8px 0;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status.replied {
+    color: green;
+}
+
+.status.waiting {
+    color: orange;
+}
+
+.waiting-response {
+    color: #666;
+    font-style: italic;
+}
+
+.feedback-response {
+    padding-left: 10px;
+    border-left: 3px solid #007bff;
+    margin-top: 10px;
+}
+
+.response-date {
+    font-size: 0.9em;
+    color: #666;
+}
