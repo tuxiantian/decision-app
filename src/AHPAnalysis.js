@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PairwiseComparison from './PairwiseComparison';
 import { Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import { API_BASE_URL } from './config'; 
+import { API_BASE_URL } from './config';
 import api from './components/api.js'
 
 function AHPAnalysis() {
@@ -10,16 +10,26 @@ function AHPAnalysis() {
   const [history, setHistory] = useState([]);
   const [isNew, setIsNew] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
-  const fetchHistory = () => {
-    api.get(`${API_BASE_URL}/ahp_history`)
-      .then(response => setHistory(response.data))
+  const fetchHistory = (page) => {
+    api.get(`${API_BASE_URL}/ahp_history`, {
+            params: {
+                page: page,
+                page_size: pageSize },
+              })
+      .then(response => {
+        setHistory(response.data.history_list);
+        setTotalPages(response.data.total_pages);
+      })
       .catch(error => console.error('Error:', error));
   };
 
   useEffect(() => {
-    fetchHistory();
-  }, []);
+    fetchHistory(currentPage);
+  }, [currentPage]);
 
   const handleNewClick = () => {
     navigate('/ahp-add');
@@ -46,6 +56,17 @@ function AHPAnalysis() {
     fetchHistory();  // 返回到列表页时重新加载数据
   };
 
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
+  };
   return (
     <div className="App">
       <h1>AHP Decision System</h1>
@@ -86,6 +107,12 @@ function AHPAnalysis() {
                 })}
               </tbody>
             </table>
+
+            <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px auto' }}>
+              <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
+              <p>Page {currentPage} of {totalPages}</p>
+              <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
+            </div>
           </div>
         </div>
       ) : (
