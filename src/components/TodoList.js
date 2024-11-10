@@ -239,7 +239,7 @@ const TodoList = ({ }) => {
           placeholder="Todo Name"
           value={newTodoName}
           onChange={(e) => setNewTodoName(e.target.value)}
-          style={{ marginRight: '10px' }}
+          style={{ marginRight: '10px',width:'500px' }}
         />
         {newTodoType === 'custom' && (
           <>
