@@ -30,6 +30,7 @@ import FactOpinionAnalyzer from './components/FactOpinionAnalyzer';
 import AnalysisList from './components/AnalysisList';
 import AnalysisDetail from './components/AnalysisDetail';
 import AboutUs from './AboutUs';
+import FeedbackForm from './components/FeedbackForm';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -96,6 +97,7 @@ function App() {
                 <NavDropdown.Item as={Link} to="/argument-evaluator-list" className="nav-dropdown-item">事实观点分析列表</NavDropdown.Item>
               </NavDropdown>
               <Nav.Link as={Link} to="/about-us">关于我们</Nav.Link>
+              <Nav.Link as={Link} to="/feedback">反馈</Nav.Link>
             </Nav>
             <Nav className="ms-auto">
               {username ? (
@@ -141,6 +143,7 @@ function App() {
             <Route path="/argument-evaluator" element={<FactOpinionAnalyzer />} />
             <Route path="/argument-evaluator-list" element={<AnalysisList />} />
             <Route path="/analysis-detail/:id" element={<AnalysisDetail />} />
+            <Route path="/feedback" element={<FeedbackForm />} />
         </Routes>
       </div>
     

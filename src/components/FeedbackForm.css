@@ -1,0 +1,46 @@
+.feedback-form-container {
+    max-width: 500px;  /* 限制表单宽度 */
+    margin: 0 auto;  /* 居中对齐 */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    width: 100px;  /* 标签固定宽度 */
+    margin-right: 10px;
+    text-align: right;
+    font-weight: bold;
+}
+
+.form-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+textarea.form-input {
+    height: 80px;  /* 适当增加文本区域的高度 */
+    resize: vertical;  /* 用户可以调整文本区域高度 */
+}
+
+.feedback-message {
+    text-align: center;
+    color: green;
+    margin-top: 15px;
+}
