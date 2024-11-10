@@ -350,9 +350,9 @@ const TodoList = ({ }) => {
                 <button onClick={() => handleRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>Remove</button>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '20px auto' }}>
               <button onClick={handlePrevCompletedPage} disabled={completedPage === 1} className='green-button'>Previous</button>
-              <p>Page {completedPage} of {totalCompletedPages}</p>
+              <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {completedPage} of {totalCompletedPages}</p>
               <button onClick={handleNextCompletedPage} disabled={completedPage === totalCompletedPages} className='green-button'>Next</button>
             </div>
           </div>
@@ -386,9 +386,9 @@ const TodoList = ({ }) => {
               </div>
             ))}
 
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-start', margin: '20px auto' }}>
               <button onClick={handlePrevEndedPage} disabled={endedPage === 1} className='green-button'>Previous</button>
-              <p>Page {completedPage} of {totalCompletedPages}</p>
+              <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {completedPage} of {totalCompletedPages}</p>
               <button onClick={handleNextEndedPage} disabled={endedPage === totalEndedPages} className='green-button'>Next</button>
             </div>
 

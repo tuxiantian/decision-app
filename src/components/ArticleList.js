@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';  // 需要安装 react-icons 包
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import api from './api.js'
@@ -292,7 +291,7 @@ const ArticleList = () => {
             </ul>
             <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px auto' }}>
                 <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
-                <p>Page {currentPage} of {totalPages}</p>
+                <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {currentPage} of {totalPages}</p>
                 <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
             </div>
             {/* 模态框 */}
