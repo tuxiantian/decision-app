@@ -135,13 +135,13 @@ const ChecklistList = () => {
         {(tab === 'my' ? myChecklists : platformChecklists).map(checklist => (
           <li key={checklist.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc' }}>
             <div style={{ textAlign: 'left', maxWidth: '600px' }}>
-              <strong>{checklist.name}</strong> - Version: {checklist.version}
+              <strong>{checklist.name}</strong> - Version: {checklist.version} -Decision Count: {checklist.decision_count}
               <div>{checklist.description}</div>
               {checklist.versions && checklist.versions.length > 0 && (
                 <ul style={{ marginLeft: '20px', listStyle: 'circle' }}>
                   {checklist.versions.map(version => (
                     <li key={version.id} style={{ marginBottom: '5px' }}>
-                      <strong>{version.name}</strong> - Version: {version.version}
+                      <strong>{version.name}</strong> - Version: {version.version} -Decision Count: {checklist.decision_count}
                       {tab === 'my' && (
                         <button
                           onClick={() => handleDeleteChecklist(version.id, false)}
