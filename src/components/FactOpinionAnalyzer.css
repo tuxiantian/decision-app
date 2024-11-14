@@ -84,11 +84,17 @@
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000; /* 确保工具提示在其他元素上方 */
-  white-space: nowrap;
   font-size: 12px;
   pointer-events: none; /* 避免卡片阻挡鼠标事件 */
   display: block; /* 确保显示 */
   visibility: visible; /* 确保可见 */
+  max-width: 600px;
+  word-wrap: break-word; /* 允许在单词内换行 */
+  overflow-wrap: break-word; /* 允许在长单词或URL地址内换行 */
+  white-space: normal; /* 允许空白符序列被正常处理，即换行 */
+}
+.tooltip2 p,em{
+text-align: left;
 }
 
 .logical-error {
