@@ -33,6 +33,7 @@ import AboutUs from './AboutUs';
 import FeedbackForm from './components/FeedbackForm';
 import MyFeedback from './components/MyFeedback';
 import KellyCalculator from './components/KellyCalculator';
+import TodoHistory from './components/todolist/TodoHistory';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -94,7 +95,11 @@ function App() {
                 <NavDropdown.Item as={Link} to="/ahp" className="nav-dropdown-item">我做过的AHP分析</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/ahp-add" className="nav-dropdown-item">去做AHP分析</NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link as={Link} to="/todos">待办</Nav.Link>
+              <NavDropdown title="待办" id="todos-dropdown">
+                <Nav.Link as={Link} to="/todos" className="nav-dropdown-item">添加待办事项</Nav.Link>
+                <Nav.Link as={Link} to="/history-todos" className="nav-dropdown-item">完成的待办事项</Nav.Link>
+              </NavDropdown>
+
               <Nav.Link as={Link} to="/kelly">凯利计算器</Nav.Link>
               <NavDropdown title="事实-观点" id="argument-evaluator-dropdown">
                 <NavDropdown.Item as={Link} to="/argument-evaluator" className="nav-dropdown-item">事实观点分析</NavDropdown.Item>
@@ -142,6 +147,7 @@ function App() {
         <Route path="/checklist_answers/details/:decisionId" element={<ChecklistDetails />} />
         <Route path="/checklist/update/:checklistId" element={<ChecklistForm />} />
         <Route path="/todos" element={<TodoList />} />
+        <Route path="/history-todos" element={<TodoHistory />} />
         <Route path='/kelly' element={<KellyCalculator />} />
         <Route path="/articles" element={<ArticleList />} />
         <Route path="/add-article" element={<ArticleEditor />} />
