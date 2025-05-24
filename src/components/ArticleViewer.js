@@ -41,7 +41,7 @@ const ArticleViewer = () => {
             {/* <Viewer initialValue={article.content}  plugins={[mathPlugin]}/> */}
             <MarkdownViewer markdownContent={article.content} />
             {/* 返回文章列表的按钮 */}
-            <button onClick={() => navigate('/articles')} style={{ marginTop: '20px' }} className='green-button'>
+            <button onClick={() => navigate('/articles')} style={{ margin: '20px auto' }} className='green-button'>
                 Back to Articles List
             </button>
             {/* 返回顶部和返回文章列表的按钮 */}
