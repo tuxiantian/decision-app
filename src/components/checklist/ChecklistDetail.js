@@ -278,7 +278,7 @@ const ChecklistDetail = () => {
                   ))}
                 </ul>
               </div>
-              <button onClick={() => setStep(2)} className="green-button" style={{ marginTop: '20px' }}>
+              <button onClick={() => setStep(2)} className="green-button" style={{ margin: '20px auto' }}>
                 已读，前去做决定
               </button>
             </div>
@@ -308,7 +308,7 @@ const ChecklistDetail = () => {
             <div>
               <h2>Step 3: Answer Checklist Questions</h2>
               {questions.length > 0 && (
-                <div key={questions[currentQuestionIndex].id} className="form-group" style={{ marginBottom: '20px' }}>
+                <div key={questions[currentQuestionIndex].id} className="checklist-form-group" style={{ marginBottom: '20px' }}>
                   <label>{`Question ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`}</label>
                   <textarea
                     style={{ width: '80%', padding: '10px', fontSize: '16px', height: '80px' }}
