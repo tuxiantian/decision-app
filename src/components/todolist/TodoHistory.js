@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../../App.css';  // 引入 CSS 文件
 import { API_BASE_URL } from '../../config';
 import api from '../api';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const TodoHistory = ({ }) => {
 
@@ -13,20 +15,23 @@ const TodoHistory = ({ }) => {
     const [totalCompletedPages, setTotalCompletedPages] = useState(1);
     const [totalEndedPages, setTotalEndedPages] = useState(1);
     const pageSize = 10;
-
-    useEffect(() => {
-        fetchCompletedTodos(completedPage);
-        fetchEndedTodos(endedPage);
-    }, []);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
 
     // 当 completedPage 发生变化时重新获取已完成的待办事项
     useEffect(() => {
-        fetchCompletedTodos(completedPage);
-    }, [completedPage]);
+        if(selectedTab === 'completed'){
+            fetchCompletedTodos(completedPage);
+        }
+
+    }, [selectedTab,completedPage, startTime, endTime]);
 
     useEffect(() => {
-        fetchEndedTodos(endedPage);
-    }, [endedPage]);
+        if(selectedTab === 'ended'){
+            fetchEndedTodos(endedPage);
+        }
+
+    }, [selectedTab,endedPage, startTime, endTime]);
 
     const handleRemoveTodo = (id) => {
         api.delete(`${API_BASE_URL}/todos/${id}`)
@@ -38,12 +43,25 @@ const TodoHistory = ({ }) => {
             });
     };
 
+    const handleResetDate = () => {
+        setStartTime(null);
+        setEndTime(null);
+    };
+
     const fetchCompletedTodos = (page) => {
+        const params = {
+            page,
+            page_size: pageSize
+        };
+        
+        if (startTime) {
+            params.start_time = startTime.toISOString();
+        }
+        if (endTime) {
+            params.end_time = endTime.toISOString();
+        }
         api.get(`${API_BASE_URL}/todos/completed`, {
-            params: {
-                page,
-                page_size: pageSize
-            }
+            params
         })
             .then(response => {
                 setCompletedTodos(response.data.todos);
@@ -57,11 +75,19 @@ const TodoHistory = ({ }) => {
 
     // 新增方法，获取已结束的 Todo
     const fetchEndedTodos = (page) => {
+        const params = {
+            page,
+            page_size: pageSize
+        };
+        
+        if (startTime) {
+            params.start_time = startTime.toISOString();
+        }
+        if (endTime) {
+            params.end_time = endTime.toISOString();
+        }
         api.get(`${API_BASE_URL}/todos/ended`, {
-            params: {
-                page,
-                page_size: pageSize
-            }
+            params
         })
             .then(response => {
                 setEndedTodos(response.data.todos);
@@ -104,6 +130,39 @@ const TodoHistory = ({ }) => {
                 </button>
                 <button onClick={() => setSelectedTab('ended')} className={`tab-button ${selectedTab === 'ended' ? 'active' : ''}`}>
                     Ended Todos
+                </button>
+            </div>
+             {/* 日期筛选器 */}
+             <div style={{ margin: '20px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div>
+                    <label>Start Date: </label>
+                    <DatePicker
+                        selected={startTime}
+                        onChange={(date) => setStartTime(date)}
+                        selectsStart
+                        startDate={startTime}
+                        endDate={endTime}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select start date"
+                        className="date-picker"
+                    />
+                </div>
+                <div>
+                    <label>End Date: </label>
+                    <DatePicker
+                        selected={endTime}
+                        onChange={(date) => setEndTime(date)}
+                        selectsEnd
+                        startDate={startTime}
+                        endDate={endTime}
+                        minDate={startTime}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select end date"
+                        className="date-picker"
+                    />
+                </div>
+                <button onClick={handleResetDate} className="green-button">
+                    Reset
                 </button>
             </div>
             {selectedTab === 'completed' && (
