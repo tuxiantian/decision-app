@@ -1,16 +1,74 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
 const Home = () => {
+
+  const [activeSection, setActiveSection] = useState(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = document.querySelectorAll('.home-section');
+      let currentSection = '';
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.scrollY >= sectionTop - 100) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+
+      setActiveSection(currentSection);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // 导航项数据
+  const navItems = [
+    { id: 'checklist', label: '决策清单' },
+    { id: 'ahp', label: 'AHP分析' },
+    { id: 'articles', label: '知识文章' },
+    { id: 'argument', label: '观点分析' },
+    { id: 'todos', label: '待办事项' },
+    { id: 'balanced', label: '平衡决策' }
+  ];
+
+
   return (
+
     <div className="home-container">
+      {/* 固定导航栏 */}
+      <nav className="sticky-nav">
+        <ul>
+          {navItems.map(item => (
+            <li
+              key={item.id}
+              className={activeSection === item.id ? 'active' : ''}
+              onClick={() => scrollToSection(item.id)}
+            >
+              {item.label}
+            </li>
+          ))}
+        </ul>
+      </nav>
       <header className="home-header">
         <h1>Welcome to Decision App</h1>
         <p>Make informed decisions by using our structured checklist and analysis tools.</p>
       </header>
 
-      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section id="checklist" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Checklist 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
           Checklist 是我们 Decision App 的核心功能，帮助用户系统化地规划和执行复杂的决策过程。在决策清单里面列举了人们在做决定之前要考虑到的重大问题，每当人们要做决定前要按照决策清单中的问题思考一遍，这样能避免人们做出临时随性的决定，可以避免重大损失。
@@ -40,7 +98,7 @@ const Home = () => {
       </section>
 
 
-      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section id="ahp" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>AHPAnalysis 功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
           AHPAnalysis 是一个基于层次分析法（AHP）的工具组件，用于帮助用户系统地做出复杂的多准则决策。该组件提供了用户友好的界面，允许用户添加和比较不同的决策准则和备选方案。以下是 AHPAnalysis 组件的主要功能：
@@ -66,7 +124,7 @@ const Home = () => {
       </section>
 
 
-      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section id="articles" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Article 模块功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
           Article 模块是 Decision App 中的重要组成部分，旨在帮助用户创建、管理和查看与决策相关的文章。这些文章可以作为决策过程中的背景资料、思维框架或知识支撑，帮助用户更全面地了解每一个决策的影响因素。以下是 Article 模块的主要功能：
@@ -93,7 +151,7 @@ const Home = () => {
       </section>
 
       {/* 事实、观点分析功能介绍部分 */}
-      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section id="argument" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2>事实、观点分析功能</h2>
         <p>
           通过“事实、观点分析”功能，您可以标记和分类不同的事实和观点，并识别潜在的逻辑错误。该功能帮助您更清晰地理解信息的结构和逻辑关系，
@@ -103,10 +161,10 @@ const Home = () => {
           <Link to="/argument-evaluator" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Do ArgumentEvaluator</Link>
           <Link to="/argument-evaluator-list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>ArgumentEvaluator List</Link>
         </div>
-        
+
       </section>
 
-      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section  id="todos" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>TodoList 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
           TodoList 组件是一个全面的任务管理工具，帮助用户组织、创建和跟踪待办事项。它具有直观的用户界面，支持多种任务分类和优先级管理。以下是 TodoList 组件的主要功能：
@@ -127,7 +185,7 @@ const Home = () => {
         </Link>
       </section>
 
-      <section className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section id="balanced" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>BalancedDecisionMaker 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
           BalancedDecisionMaker帮助人们在面临两难选择时，列出有利条件和不利条件，比较条件、排序组合、设置权重，权衡利弊做出最适合自己的理性选择。
@@ -153,6 +211,6 @@ const Home = () => {
     </div>
 
   );
-};
+}
 
 export default Home;
