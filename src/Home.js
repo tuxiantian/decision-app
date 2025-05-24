@@ -64,8 +64,8 @@ const Home = () => {
         </ul>
       </nav>
       <header className="home-header">
-        <h1>Welcome to Decision App</h1>
-        <p>Make informed decisions by using our structured checklist and analysis tools.</p>
+        <h1>欢迎来到 Decision App</h1>
+        <p>通过我们结构化的清单和分析工具，做出明智决策。</p>
       </header>
 
       <section id="checklist" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
@@ -88,11 +88,11 @@ const Home = () => {
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
           <Link to="/checklists" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-            Manage Checklists
+            管理决策清单
           </Link>
 
           <Link to="/checklist-form" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-            Add Checklist
+            添加决策清单
           </Link>
         </div>
       </section>
@@ -115,10 +115,10 @@ const Home = () => {
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
           <Link to="/ahp" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-            AHP Analysis
+            我做的AHP分析
           </Link>
           <Link to="/ahp-add" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-            Add AHP Analysis
+            去做AHP分析
           </Link>
         </div>
       </section>
@@ -142,10 +142,10 @@ const Home = () => {
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
           <Link to="/articles" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-            Manage Articles
+            管理文章
           </Link>
           <Link to="/add-article" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-            Add Article
+            添加文章
           </Link>
         </div>
       </section>
@@ -158,8 +158,8 @@ const Home = () => {
           为您的决策提供可靠依据。
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-          <Link to="/argument-evaluator" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Do ArgumentEvaluator</Link>
-          <Link to="/argument-evaluator-list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>ArgumentEvaluator List</Link>
+          <Link to="/argument-evaluator" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>去做观点-事实分析</Link>
+          <Link to="/argument-evaluator-list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>我做的观点-事实分析</Link>
         </div>
 
       </section>
@@ -181,7 +181,7 @@ const Home = () => {
           TodoList 组件通过以上功能，帮助用户系统化地管理日常任务和目标，确保他们能够根据任务的重要性和紧急性进行优先级处理，从而更加有效率地完成任务和管理时间。
         </p>
         <Link to="/todos" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-          TodoList
+          任务代办清单
         </Link>
       </section>
 
@@ -204,8 +204,8 @@ const Home = () => {
         </p>
         <img src="/images/balanced_decision_decription.png" alt='BalancedDecisionMaker flowchart' style={{ display: 'block', margin: '20px auto', maxWidth: '100%', height: 'auto' }} />
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
-          <Link to="/balanced-decisions/list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>BalancedDecisionList</Link>
-          <Link to="/balanced-decisions" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>Balanced Decision Maker</Link>
+          <Link to="/balanced-decisions/list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>我做的平衡决策</Link>
+          <Link to="/balanced-decisions" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>去做平衡决策</Link>
         </div>
       </section>
     </div>
