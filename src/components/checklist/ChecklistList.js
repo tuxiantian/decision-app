@@ -158,8 +158,8 @@ const ChecklistList = () => {
                           onClick={() => handleCloneChecklist(version.id)}
                           className='green-button'
                         >
-                          Clone
-                        </button><button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>View Flowchart</button>
+                          克隆
+                        </button><button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>查看流程图</button>
                         </>
                       )}
                     </li>
@@ -170,19 +170,19 @@ const ChecklistList = () => {
             <div style={{ display: 'flex', gap: '10px' }}>
               {tab === 'my' && checklist.can_update && (
                 <button onClick={() => handleUpdateClick(checklist.id)} className='green-button'>
-                  Update Version
+                  更新版本
                 </button>
               )}
               {tab === 'my' && (
                 <><button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
-                  Make Decision
+                  做决定
                 </button><button
                   onClick={() => handleDeleteChecklist(checklist.id, true)}
                   style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                     <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                   </button>
-                  <button onClick={() => handleViewFlowchartClick(checklist.id,false)} className='green-button'>View Flowchart</button>
+                  <button onClick={() => handleViewFlowchartClick(checklist.id,false)} className='green-button'>查看流程图</button>
                   </>
               )}
               
@@ -191,8 +191,8 @@ const ChecklistList = () => {
                   onClick={() => handleCloneChecklist(checklist.id)}
                   className='green-button'
                 >
-                  Clone
-                </button><button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>View Flowchart</button>
+                  克隆
+                </button><button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>查看流程图</button>
                 </>
               )}
 
