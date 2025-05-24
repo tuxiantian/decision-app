@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import '../App.css';  // 引入 CSS 文件
-import { API_BASE_URL } from '../config';
-import api from './api';
+import '../../App.css';  // 引入 CSS 文件
+import { API_BASE_URL } from '../../config';
+import api from '../api';
 import TodoQuadrant from './TodoQuadrant';
 
 const TodoList = ({ }) => {
