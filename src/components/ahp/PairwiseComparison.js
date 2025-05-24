@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../App.css';  // 引入 CSS 文件
-import { API_BASE_URL } from '../config.js';
-import api from './api.js'
+import '../../App.css';  // 引入 CSS 文件
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
 
 // 封装 fetch 请求
 const fetchWithPrefix = (endpoint, options = {}) => {

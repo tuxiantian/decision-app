@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import PairwiseComparison from './PairwiseComparison';
+import PairwiseComparison from './PairwiseComparison.js';
 import { Link, useNavigate } from 'react-router-dom';
-import '../App.css';
-import { API_BASE_URL } from '../config.js';
-import api from './api.js'
+import '../../App.css';
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
 
 function AHPAnalysis() {
   const navigate = useNavigate();
