@@ -213,15 +213,17 @@ const ChecklistForm = () => {
           </div>
           <div className="questions-group">
             {questions.map((question, index) => (
-              <div key={index} className="form-group question-item">
-                <label>{`Question ${index + 1}:`}</label>
-                <input
-                  type="text"
-                  placeholder={`Enter question ${index + 1}`}
-                  maxLength={255}
-                  value={question.question}
-                  onChange={(e) => handleQuestionChange(index, e.target.value)}
-                />
+              <div key={index} className="checklist-form-group question-item">
+                <div className="question-row">
+                  <label>{`Question ${index + 1}:`}</label>
+                  <input
+                    type="text"
+                    placeholder={`Enter question ${index + 1}`}
+                    maxLength={255}
+                    value={question.question}
+                    onChange={(e) => handleQuestionChange(index, e.target.value)}
+                  />
+                </div>
                 <textarea
                   placeholder="Enter description (max 255 characters)"
                   maxLength={255}
