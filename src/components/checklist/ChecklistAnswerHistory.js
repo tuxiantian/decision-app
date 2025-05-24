@@ -118,9 +118,9 @@ const ChecklistAnswerHistory = () => {
             <div><strong>Decision Name:</strong> {decision.decision_name}</div>
             <div><strong>Version:</strong> {decision.version} <strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
             <div><strong>Final Decision:</strong> {decision.final_decision}</div>
-            <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }} className='green-button'>View Details</button>
-            <button onClick={() => openConfirmModal(decision)} style={{ marginRight: '10px' }} className='red-button'>Delete</button>
-            <button onClick={() => navigate(`/checklist/${decision.decision_id}/review`)} className='green-button'>Add Review</button>
+            <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }} className='green-button'>查看</button>
+            <button onClick={() => openConfirmModal(decision)} style={{ marginRight: '10px' }} className='red-button'>删除</button>
+            <button onClick={() => navigate(`/checklist/${decision.decision_id}/review`)} className='green-button'>复盘</button>
 
           </li>
         ))}
@@ -130,7 +130,7 @@ const ChecklistAnswerHistory = () => {
         <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {currentPage} of {totalPages}</p>
         <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
       </div>
-      <nav style={{ marginTop: '20px' }}>
+      <nav style={{ margin: '20px auto' }}>
         <Link to="/checklists">Back to Checklists</Link>
       </nav>
       {/* 模态框 */}
