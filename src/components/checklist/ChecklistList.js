@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
@@ -145,9 +147,9 @@ const ChecklistList = () => {
                       {tab === 'my' && (
                         <button
                           onClick={() => handleDeleteChecklist(version.id, false)}
-                          style={{ marginLeft: '10px', backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
+                          style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
                         >
-                          Delete
+                          <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                         </button>
                       )}
 
@@ -176,9 +178,9 @@ const ChecklistList = () => {
                   Make Decision
                 </button><button
                   onClick={() => handleDeleteChecklist(checklist.id, true)}
-                  style={{ backgroundColor: '#f44336', color: 'white', border: 'none', padding: '5px', borderRadius: '4px', cursor: 'pointer' }}
+                  style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                    Delete Checklist
+                    <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                   </button>
                   <button onClick={() => handleViewFlowchartClick(checklist.id,false)} className='green-button'>View Flowchart</button>
                   </>

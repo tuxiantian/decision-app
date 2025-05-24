@@ -1,4 +1,6 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const TodoQuadrant = ({ todos, onTodoCompletion, onRemoveTodo }) => {
     return (
@@ -30,7 +32,7 @@ const TodoQuadrant = ({ todos, onTodoCompletion, onRemoveTodo }) => {
                             style={{
                                 width: '40px',
                                 height: '40px',
-                                borderRadius: '50%',                               
+                                borderRadius: '50%',
                                 background: `conic-gradient(
                                     green ${remainingPercent}%,
                                     red ${remainingPercent}% 100%
@@ -39,14 +41,14 @@ const TodoQuadrant = ({ todos, onTodoCompletion, onRemoveTodo }) => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 fontSize: '0.8em',
-                                color:'white',
+                                color: 'white',
                                 marginLeft: '10px',
                             }}
                         >
                             {remainingPercent.toFixed(0)}%
                         </div>
-                        <button onClick={() => onRemoveTodo(todo.id)} style={{ marginLeft: '10px' }} className='red-button'>
-                            Remove
+                        <button onClick={() => onRemoveTodo(todo.id)} style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                            <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                         </button>
                     </div>
                 );
