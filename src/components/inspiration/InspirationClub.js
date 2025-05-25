@@ -1,15 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../../config';
 import api from '../api';
+import QuoteContent from './QuoteContent';
 import './InspirationClub.css';
-
-const inspirationData = [
-    { id: 1, type: 'text', content: "真正的发现之旅不在于寻找新大陆，而在于用新的眼光看待事物。" },
-    { id: 2, type: 'image', content: "http://192.168.10.105:64253/api/v1/download-shared-object/aHR0cDovLzEyNy4wLjAuMTo5MDAwL2RlY2lzaW9uLWFpZC1idWNrZXQvJUU0JUJBJUJBJUU5JTk5JTg1JUU0JUJBJUE0JUU1JUJFJTgwJUU3JTlBJTg0JUU1JTg3JTg2JUU1JTg4JTk5LmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUtLVUxPSU1KOFozNlVKT1YyVzRDJTJGMjAyNTA1MjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNTI1VDAyNDgzMFomWC1BbXotRXhwaXJlcz00MzIwMCZYLUFtei1TZWN1cml0eS1Ub2tlbj1leUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaFkyTmxjM05MWlhraU9pSkxTMVZNVDBsTlNqaGFNelpWU2s5V01sYzBReUlzSW1WNGNDSTZNVGMwT0RFNE5ETTFNaXdpY0dGeVpXNTBJam9pYldsdWFXOWhaRzFwYmlKOS5sT0NPaEJmYWJvQ3NGOUlvOXgyb2RtZnJZYkVIRGRsUzFCZUZMLXMwTlNJYUlWcW11dDF2d3dacEFzLXJuTkRSNnJFeEJMaE9PS2gtRk5yeE1kenpFZyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmdmVyc2lvbklkPW51bGwmWC1BbXotU2lnbmF0dXJlPThiM2QzZTFkMDc3NmUzOWJhMmZjZDBjZWNkMmFmNWRkMTQzZWM1M2YwMjNlYjdhY2Y5Y2M1NzJhMjUwOTEzMjg" },
-    { id: 3, type: 'text', content: "当你改变看待世界的方式时，你所看到的世界也会改变。" },
-    { id: 4, type: 'image', content: "http://192.168.10.105:64253/api/v1/download-shared-object/aHR0cDovLzEyNy4wLjAuMTo5MDAwL2RlY2lzaW9uLWFpZC1idWNrZXQvJUU1JUI4JTgyJUU1JTlDJUJBJUU1JTkxJUE4JUU2JTlDJTlGLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUtLVUxPSU1KOFozNlVKT1YyVzRDJTJGMjAyNTA1MjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNTI1VDAyNDkzOFomWC1BbXotRXhwaXJlcz00MzE5OCZYLUFtei1TZWN1cml0eS1Ub2tlbj1leUpoYkdjaU9pSklVelV4TWlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKaFkyTmxjM05MWlhraU9pSkxTMVZNVDBsTlNqaGFNelpWU2s5V01sYzBReUlzSW1WNGNDSTZNVGMwT0RFNE5ETTFNaXdpY0dGeVpXNTBJam9pYldsdWFXOWhaRzFwYmlKOS5sT0NPaEJmYWJvQ3NGOUlvOXgyb2RtZnJZYkVIRGRsUzFCZUZMLXMwTlNJYUlWcW11dDF2d3dacEFzLXJuTkRSNnJFeEJMaE9PS2gtRk5yeE1kenpFZyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QmdmVyc2lvbklkPW51bGwmWC1BbXotU2lnbmF0dXJlPTI0OGVmMWFjNDRjMjMzNzFjMmRlZmY1MmRiNWIxODgwODg5ZjRhYzFmOWJmMWRjYjE0ODU2YzUxYzY2M2QxNjM" },
-    { id: 5, type: 'text', content: "创新就是把不同的事物连接起来。" }
-];
 
 export default function InspirationClub() {
     const [currentPage, setCurrentPage] = useState(0);
@@ -169,7 +162,7 @@ export default function InspirationClub() {
                                     <img src={card.content} alt="启发图片" />
                                 </div>
                             ) : (
-                                <p className="quote">{card.content}</p>
+                                <QuoteContent content={card.content} /> 
                             )}
                             <div className="card-buttons">
                                 <button className="write-btn" onClick={() => setActiveCard(card.id)}>
