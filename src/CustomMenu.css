@@ -1,0 +1,129 @@
+.custom-menu {
+  background-color: #343a40;
+  color: white;
+  padding: 0 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-main {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.menu-item {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menu-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 8px 15px;
+  display: block;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.menu-link:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-arrow {
+  font-size: 0.7em;
+  margin-left: 5px;
+  transition: transform 0.3s ease;
+  /* 添加旋转动画 */
+  display: inline-block;
+  /* 确保transform能生效 */
+}
+
+/* Sub-menu styles */
+.sub-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #343a40;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  min-width: 200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  z-index: 1000;
+}
+
+.has-children:hover>.sub-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Depth levels */
+.sub-menu.depth-1 {
+  top: 100%;
+  left: 0;
+}
+
+.sub-menu.depth-2 {
+  top: 0;
+  left: 100%;
+}
+
+/* User info and logout */
+.user-info {
+  margin-left: auto;
+  padding-right: 15px;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .custom-menu {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu-main {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .menu-item {
+    width: 100%;
+    height: auto;
+  }
+
+  .sub-menu {
+    position: static;
+    display: none;
+  }
+
+  .has-children:hover>.sub-menu,
+  .has-children:active>.sub-menu {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: none;
+  }
+
+}

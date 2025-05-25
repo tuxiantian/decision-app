@@ -182,7 +182,7 @@ export default function InspirationClub() {
                                 value={reflections[card.id] || ''}
                                 onChange={(e) => setReflections({ ...reflections, [card.id]: e.target.value })}
                             />
-                            <div className="button-group">
+                            <div className="inspiration-button-group">
                                 <button className="cancel-btn" onClick={() => setActiveCard(null)}>
                                     取消
                                 </button>

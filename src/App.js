@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CustomMenu from './CustomMenu';
 
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
@@ -69,68 +70,129 @@ function App() {
     }
   };
 
+    // 定义菜单结构
+    const menuItems = [
+      {
+        title: '首页',
+        path: '/'
+      },
+      {
+        title: '平衡决策',
+        children: [
+          {
+            title: '去做平衡决策',
+            path: '/balanced-decisions'
+          },
+          {
+            title: '平衡决策列表',
+            path: '/balanced-decisions/list'
+          }
+        ]
+      },
+      {
+        title: '决策清单',
+        children: [
+          {
+            title: '我的决策清单列表',
+            path: '/checklists'
+          },
+          {
+            title: '新建决策清单',
+            path: '/checklist-form'
+          },
+          {
+            title: '我做的决定',
+            path: '/history'
+          }
+        ]
+      },
+      {
+        title: '文章',
+        children: [
+          {
+            title: '文章列表',
+            path: '/articles'
+          },
+          {
+            title: '添加文章',
+            path: '/add-article'
+          }
+        ]
+      },
+      {
+        title: 'AHP分析',
+        children: [
+          {
+            title: '我做过的AHP分析',
+            path: '/ahp'
+          },
+          {
+            title: '去做AHP分析',
+            path: '/ahp-add'
+          }
+        ]
+      },
+      {
+        title: '待办',
+        children: [
+          {
+            title: '添加待办事项',
+            path: '/todos'
+          },
+          {
+            title: '完成的待办事项',
+            path: '/history-todos'
+          }
+        ]
+      },
+      
+      {
+        title: '启发俱乐部',
+        path: '/inspiration'
+      },
+      {
+        title: '更多',
+        children: [
+          {
+            title: '事实-观点',
+            children: [
+              {
+                title: '事实观点分析',
+                path: '/argument-evaluator'
+              },
+              {
+                title: '事实观点分析列表',
+                path: '/argument-evaluator-list'
+              }
+            ]
+          },{
+            title: '凯利计算器',
+            path: '/kelly'
+          },
+          {
+            title: '反馈',
+            path: '/feedback'
+          },
+          {
+            title: '我的反馈',
+            path: '/myfeedback'
+          },
+          {
+            title: '关于我们',
+            path: '/about-us'
+          }
+        ]
+      }
+    ];
+
   return (
 
     <div className="App">
-      <Navbar bg="dark" variant="dark" expand="lg" style={{ marginBottom: '20px' }}>
-
-        <Navbar.Brand as={Link} to="/">Dicision App</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">首页</Nav.Link>
-            <NavDropdown title="平衡决策" id="balanced-decisions-dropdown">
-              <NavDropdown.Item as={Link} to="/balanced-decisions" className="nav-dropdown-item">去做平衡决策</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/balanced-decisions/list" className="nav-dropdown-item">平衡决策列表</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="决策清单" id="checklists-dropdown">
-              <NavDropdown.Item as={Link} to="/checklists" className="nav-dropdown-item">我的决策清单列表</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/checklist-form" className="nav-dropdown-item">新建决策清单</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/history" className="nav-dropdown-item">我做的决定</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="文章" id="articles-dropdown">
-              <NavDropdown.Item as={Link} to="/articles" className="nav-dropdown-item">文章列表</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/add-article" className="nav-dropdown-item">添加文章</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="AHP分析" id="ahp-analysis-dropdown">
-              <NavDropdown.Item as={Link} to="/ahp" className="nav-dropdown-item">我做过的AHP分析</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/ahp-add" className="nav-dropdown-item">去做AHP分析</NavDropdown.Item>
-            </NavDropdown>
-            <NavDropdown title="待办" id="todos-dropdown">
-              <Nav.Link as={Link} to="/todos" className="nav-dropdown-item">添加待办事项</Nav.Link>
-              <Nav.Link as={Link} to="/history-todos" className="nav-dropdown-item">完成的待办事项</Nav.Link>
-            </NavDropdown>
-
-            <Nav.Link as={Link} to="/kelly">凯利计算器</Nav.Link>
-            <Nav.Link as={Link} to="/inspiration">启发俱乐部</Nav.Link>
-
-
-            <NavDropdown title="更多" id="more-dropdown">
-              <NavDropdown title="事实-观点" id="argument-evaluator-dropdown" className="dropdown-submenu">
-                <NavDropdown.Item as={Link} to="/argument-evaluator" className="nav-dropdown-item">事实观点分析</NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/argument-evaluator-list" className="nav-dropdown-item">事实观点分析列表</NavDropdown.Item>
-              </NavDropdown>
-              <NavDropdown.Item as={Link} to="/feedback" className="nav-dropdown-item">反馈</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/myfeedback" className="nav-dropdown-item">我的反馈</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/about-us" className="nav-dropdown-item">关于我们</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-          <Nav className="ms-auto">
-            {username ? (
-              <>
-                <Nav.Link disabled>Welcome, {username}</Nav.Link>
-                <Nav.Link onClick={handleLogout}>退出</Nav.Link>
-              </>
-            ) : (
-              <>
-                <Nav.Link as={Link} to="/login">登陆</Nav.Link>
-                <Nav.Link as={Link} to="/register">注册</Nav.Link>
-              </>
-            )}
-          </Nav>
-        </Navbar.Collapse>
-
-      </Navbar>
+      <CustomMenu 
+        menuItems={menuItems} 
+        username={username} 
+        onLogout={handleLogout} 
+      />
       <Routes>
 
         <Route path="/" element={<Home />} />

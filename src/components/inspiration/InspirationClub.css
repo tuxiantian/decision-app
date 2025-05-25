@@ -1,6 +1,6 @@
 .inspiration-club {
     max-width: 900px;
-    margin: 0 auto;
+    margin: 10px auto;
     font-family: 'Arial', sans-serif;
 }
 
@@ -198,12 +198,12 @@
     font-family: inherit;
 }
 
-.button-group {
+.inspiration-button-group {
     display: flex;
     gap: 10px;
 }
 
-.cancel-btn,
+.inspiration-button-group .cancel-btn,
 .save-btn {
     flex: 1;
     padding: 8px;
@@ -212,12 +212,12 @@
     cursor: pointer;
 }
 
-.cancel-btn {
+.inspiration-button-group .cancel-btn {
     background: #f44336;
     color: white;
 }
 
-.save-btn {
+.inspiration-button-group .save-btn {
     background: #2196F3;
     color: white;
 }
