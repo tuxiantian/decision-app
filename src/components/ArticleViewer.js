@@ -36,7 +36,23 @@ const ArticleViewer = () => {
     return (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
             <h2>{article.title}</h2>
-            <p><strong>Author:</strong> {article.author} <strong>Reference Count:</strong> {article.reference_count} <strong>Tags:</strong> {article.tags} <strong>Updated At:</strong> {new Date(article.updated_at).toLocaleString()}</p>
+            <p>
+                {article.author && (
+                    <>
+                        <strong>Author: </strong>
+                        {article.author}   
+                        {" "}
+                    </>
+                )}
+                <strong>Reference Count: </strong>
+                {article.reference_count}
+                {" "}
+                <strong>Tags: </strong>
+                {article.tags}
+                {" "}
+                <strong>Updated At: </strong>
+                {new Date(article.updated_at).toLocaleString()}
+            </p>
             <p><strong>Keywords:</strong> {article.keywords}</p>
             {/* <Viewer initialValue={article.content}  plugins={[mathPlugin]}/> */}
             <MarkdownViewer markdownContent={article.content} />
