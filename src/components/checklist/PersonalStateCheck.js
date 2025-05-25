@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './PersonalStateCheck.css'
 
 // 定义状态的枚举对象
 const states = {
@@ -76,7 +77,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
 
   const handlePersuaded = (isPersuaded) => {
     if (isPersuaded) {
-      setModalMessage('人在被说服的状态下，看待问题的角度很单一，容易做出事后后悔的决定。这个时候最好的做法是找朋友、家人沟通自己的想法，或者给自己一个冷静期，待冷静期后再做决定。');
+      setModalMessage('人在被说服的状态下，在说服者的滤镜下看事情角度很单一，容易做出事后后悔的决定。这个时候最好的做法是找朋友、家人沟通自己的想法，或者给自己一个冷静期，待冷静期后再做决定。');
       setModalCallback(() => () => navigate('/checklists'));
       setShowModal(true);
     } else {
@@ -174,10 +175,18 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
         <div>
           <h2>状态检查 - 你现在的心情是什么样的？</h2>
           <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '15px', marginTop: '20px' }}>
-            <button onClick={() => handleMoodChange('愤怒')} className='green-button'>愤怒</button>
-            <button onClick={() => handleMoodChange('悲伤')} className='green-button'>悲伤</button>
-            <button onClick={() => handleMoodChange('兴奋')} className='green-button'>兴奋</button>
-            <button onClick={() => handleMoodChange('平静')} className='green-button'>平静</button>
+            <button onClick={() => handleMoodChange('愤怒')} className='green-button'>
+              😠 愤怒
+            </button>
+            <button onClick={() => handleMoodChange('悲伤')} className='green-button'>
+              😢 悲伤
+            </button>
+            <button onClick={() => handleMoodChange('兴奋')} className='green-button'>
+              🤩 兴奋
+            </button>
+            <button onClick={() => handleMoodChange('平静')} className='green-button'>
+              😌 平静
+            </button>
           </div>
         </div>
       )}
@@ -186,9 +195,9 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
         <div>
           <h2>状态检查 - 请尝试平静下来</h2>
           <div >
-              <p>上帝，赐我平和，接受无法改变的事物；</p>
-              <p>赐我勇气，去改变能改变的事物；</p>
-              <p>赐我智慧，去分辨这两者。</p>
+            <p>上帝，赐我平和，接受无法改变的事物；</p>
+            <p>赐我勇气，去改变能改变的事物；</p>
+            <p>赐我智慧，去分辨这两者。</p>
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
             <button onClick={handleCalmDown} className='green-button'>已经平静</button>
@@ -199,7 +208,7 @@ const PersonalStateCheck = ({ onAssessmentComplete }) => {
       {currentState === states.DELIBERATE_CHECK && (
         <div>
           <h2>状态检查 - 决定是否经过深思熟虑？</h2>
-          <img src="/images/我深思熟虑了吗？.png" alt='我深思熟虑了吗？' style={{ display: 'block', margin: '20px auto', maxWidth: '100%', height: 'auto',transform: 'scale(1.5)' }} />
+          <img src="/images/我深思熟虑了吗？.png" alt='我深思熟虑了吗？' style={{ display: 'block', margin: '20px auto', maxWidth: '100%', height: 'auto', transform: 'scale(1.5)' }} />
           <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '90px' }}>
             <button onClick={() => handleDeliberate(true)} className='green-button'>是</button>
             <button onClick={() => handleDeliberate(false)} className='green-button'>否</button>
