@@ -23,14 +23,28 @@ export default function InspirationClub() {
 
     const cardsPerPage = 2; // 每页显示2张卡片
     const [totalPages, setTotalPages] = useState(1);
-    const currentCards = inspirationData.slice(
-        currentPage * cardsPerPage,
-        (currentPage + 1) * cardsPerPage
-    );
+    const [isRandomMode, setIsRandomMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-      // 获取启发内容
-      const fetchInspirations = async (page) => {
+
+    // 新增获取随机启发内容的函数
+    const fetchRandomInspirations = async () => {
+        try {
+            setLoading(true);
+            setIsRandomMode(true); // 进入随机模式
+            const response = await api.get(`${API_BASE_URL}/api/inspirations/random`);
+            const data = await response.data;
+            setInspirations(data.inspirations);
+            setTotalPages(1); // 随机模式下不显示分页
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 获取启发内容
+    const fetchInspirations = async (page) => {
         try {
             setLoading(true);
             const response = await api.get(`${API_BASE_URL}/api/inspirations?page=${page}&per_page=${cardsPerPage}`);
@@ -65,10 +79,10 @@ export default function InspirationClub() {
     const handleSaveReflection = async (id, text) => {
         try {
             const method = reflections[id] ? 'PUT' : 'POST';
-            const url = reflections[id] 
+            const url = reflections[id]
                 ? `${API_BASE_URL}/api/reflections/${id}`
                 : `${API_BASE_URL}/api/reflections`;
-            
+
             const response = await api(url, {
                 method,
                 headers: {
@@ -79,7 +93,7 @@ export default function InspirationClub() {
                     inspiration_id: id
                 })
             });
-            
+
             // 更新本地状态
             setReflections({ ...reflections, [id]: text });
             setActiveCard(null);
@@ -150,7 +164,7 @@ export default function InspirationClub() {
                             {card.type === 'image' ? (
                                 <div
                                     className="image-container"
-                                    onClick={() => setHoveredImage(card.content)}                                   
+                                    onClick={() => setHoveredImage(card.content)}
                                 >
                                     <img src={card.content} alt="启发图片" />
                                 </div>
@@ -189,13 +203,47 @@ export default function InspirationClub() {
             </div>
 
             <div className="pagination">
-                <button disabled={currentPage === 1} onClick={() => fetchInspirations(currentPage - 1)}>
-                    ◀ 上一批
-                </button>
-                <span>第 {currentPage + 1} 页 / 共 {totalPages} 页</span>
-                <button disabled={currentPage >= totalPages} onClick={() => fetchInspirations(currentPage + 1)}>
-                    下一批 ▶
-                </button>
+                {isRandomMode ? (
+                    <>
+                        <button
+                            className="random-btn"
+                            onClick={fetchRandomInspirations}
+                        >
+                            🔄 随机换一批
+                        </button>
+                        <button
+                            className="back-btn"
+                            onClick={() => {
+                                setIsRandomMode(false);
+                                fetchInspirations(1);
+                            }}
+                        >
+                            ↩ 返回常规浏览
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => fetchInspirations(currentPage - 1)}
+                        >
+                            ◀ 上一批
+                        </button>
+                        <span>第 {currentPage} 页 / 共 {totalPages} 页</span>
+                        <button
+                            disabled={currentPage >= totalPages}
+                            onClick={() => fetchInspirations(currentPage + 1)}
+                        >
+                            下一批 ▶
+                        </button>
+                        <button
+                            className="random-btn"
+                            onClick={fetchRandomInspirations}
+                        >
+                            🔄 随机看看
+                        </button>
+                    </>
+                )}
             </div>
 
             {showTimeline && (
@@ -208,7 +256,7 @@ export default function InspirationClub() {
                                 <div key={item.id} className="timeline-item">
                                     <div className="timeline-date">{item.date}</div>
                                     <div className="timeline-content">
-                                       
+
                                         <p className="reflection">{item.text}</p>
                                     </div>
                                 </div>

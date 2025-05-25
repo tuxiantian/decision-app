@@ -328,3 +328,18 @@ blockquote {
         height: 350px;
     }
 }
+
+/* 随机按钮样式 */
+.random-btn {
+    background: #9c27b0;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.random-btn:hover {
+    background: #7b1fa2;
+}
