@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config'; 
-import api from './api.js'
+import { API_BASE_URL } from '../../config.js'; 
+import api from '../api.js'
 const ArticleEditor = () => {
     const { id } = useParams(); // 获取路由参数中的文章 ID
     const navigate = useNavigate(); // 创建导航对象

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
-import MarkdownViewer from './MarkdownViewer';
-import { API_BASE_URL } from '../config';
-import api from './api.js'
-import '../App.css';
+import MarkdownViewer from './MarkdownViewer.js';
+import { API_BASE_URL } from '../../config.js';
+import api from '../api.js'
+import '../../App.css';
 
 const ArticleViewer = () => {
     const { id } = useParams();
