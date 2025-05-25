@@ -42,6 +42,39 @@ li {
   background-color: transparent !important;
 }
 
+/* 支持三级菜单的CSS */
+.multi-level-dropdown .dropdown-submenu {
+  position: relative;
+}
+
+.multi-level-dropdown .dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+
+/* 鼠标悬停时显示 */
+.multi-level-dropdown .dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+
+/* 调整箭头方向 */
+.dropdown-submenu > a::after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #ccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+
 /* 为导航栏设置 hover 样式 */
 .navbar-nav .nav-link {
   color: #ffffff;
