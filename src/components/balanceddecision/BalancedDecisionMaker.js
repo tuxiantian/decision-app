@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { API_BASE_URL } from '../config';
-import api from './api';
+import { API_BASE_URL } from '../../config';
+import api from '../api';
 import './BalancedDecisionMaker.css';
 
 function BalancedDecisionMaker() {

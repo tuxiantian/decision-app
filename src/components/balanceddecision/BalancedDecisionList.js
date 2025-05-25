@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../config';
-import api from './api';
+import { API_BASE_URL } from '../../config';
+import api from '../api';
 import './BalancedDecisionMaker.css';
 
 function DecisionList() {

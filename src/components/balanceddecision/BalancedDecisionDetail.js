@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams,useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { API_BASE_URL } from '../config'; 
-import api from './api'; 
+import { API_BASE_URL } from '../../config'; 
+import api from '../api'; 
 import './BalancedDecisionDetail.css';
 
 function BalancedDecisionDetail() {
