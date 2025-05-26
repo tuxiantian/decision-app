@@ -14,6 +14,8 @@ export default function InspirationClub() {
     // 在组件顶部新增状态
     const [hoveredImage, setHoveredImage] = useState(null);
 
+    // 修改时间轴状态，存储当前展示的启发ID
+    const [timelineInspirationId, setTimelineInspirationId] = useState(null);
     const cardsPerPage = 2; // 每页显示2张卡片
     const [totalPages, setTotalPages] = useState(1);
     const [isRandomMode, setIsRandomMode] = useState(false);
@@ -53,42 +55,36 @@ export default function InspirationClub() {
     };
 
     // 获取感想内容
+    // 获取感想内容并存储为 {inspiration_id: reflectionsArray} 的映射
     const fetchReflections = async (inspirationId) => {
         try {
-            const response = await api.get(`${API_BASE_URL}/api/inspirations/${inspirationId}/reflections`);
-            const data = await response.data;
-            // 转换为本地状态格式 {id: reflection}
-            const reflectionsMap = data.reflections.reduce((acc, curr) => {
-                acc[curr.inspiration_id] = curr.content;
-                return acc;
-            }, {});
-            setReflections(reflectionsMap);
+            const response = await api.get(`/api/inspirations/${inspirationId}/reflections`);
+            const { reflections, inspiration_id } = response.data;
+
+            // 直接构建 {inspiration_id: reflections数组} 的映射
+            setReflections(prev => ({
+                ...prev,
+                [inspiration_id]: reflections // 存储完整的感想数组
+            }));
+
+            return reflections; // 可选：返回原始数据
         } catch (err) {
-            setError(err.message);
+            console.error('获取感想失败:', err);
+            setError(err.response?.data?.error || err.message);
+            throw err;
         }
     };
 
     // 保存感想
     const handleSaveReflection = async (id, text) => {
         try {
-            const method = reflections[id] ? 'PUT' : 'POST';
-            const url = reflections[id]
-                ? `${API_BASE_URL}/api/reflections/${id}`
-                : `${API_BASE_URL}/api/reflections`;
-
-            const response = await api(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            const response = await api(`${API_BASE_URL}/api/reflections`, {
+                method: 'POST',
+                data: {
                     content: text,
                     inspiration_id: id
-                })
+                }
             });
-
-            // 更新本地状态
-            setReflections({ ...reflections, [id]: text });
             setActiveCard(null);
             fetchReflections(id); // 刷新感想列表
         } catch (err) {
@@ -119,18 +115,21 @@ export default function InspirationClub() {
     }, []);
 
     // 生成时间轴数据
-    const timelineData = Object.entries(reflections)
-        .map(([id, text]) => {
-            const inspiration = inspirations.find(item => item.id === Number(id));
-            return {
-                id: Number(id),
-                text,
-                date: new Date().toLocaleString(), // 实际应从API获取
+    const getTimelineData = (inspirationId) => {
+        if (!inspirationId || !reflections[inspirationId]) return [];
+        
+        const inspiration = inspirations.find(item => item.id === inspirationId);
+        
+        return reflections[inspirationId]
+            .map(reflection => ({
+                id: reflection.id,
+                text: reflection.content,
+                date: new Date(reflection.updated_at).toLocaleString(),
                 content: inspiration?.content,
                 type: inspiration?.type
-            };
-        })
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
+            }))
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+    };
 
     if (loading && currentPage === 1) return <div className="loading">加载中...</div>;
     if (error) return <div className="error">错误: {error}</div>;
@@ -162,14 +161,14 @@ export default function InspirationClub() {
                                     <img src={card.content} alt="启发图片" />
                                 </div>
                             ) : (
-                                <QuoteContent content={card.content} /> 
+                                <QuoteContent content={card.content} />
                             )}
                             <div className="card-buttons">
                                 <button className="write-btn" onClick={() => setActiveCard(card.id)}>
                                     ✏️ 写感想
                                 </button>
-                                {reflections[card.id] && (
-                                    <button className="view-btn" onClick={() => setShowTimeline(true)}>
+                                {reflections[card.id] && reflections[card.id].length > 0 && (
+                                    <button className="view-btn" onClick={() => {setTimelineInspirationId(card.id);setShowTimeline(true);}}>
                                         📅 查看感想
                                     </button>
                                 )}
@@ -179,8 +178,6 @@ export default function InspirationClub() {
                         <div className="card-back">
                             <textarea
                                 placeholder="写下你的启发或感想..."
-                                value={reflections[card.id] || ''}
-                                onChange={(e) => setReflections({ ...reflections, [card.id]: e.target.value })}
                             />
                             <div className="inspiration-button-group">
                                 <button className="cancel-btn" onClick={() => setActiveCard(null)}>
@@ -245,7 +242,7 @@ export default function InspirationClub() {
                         <h3>我的启发记录 ⏳</h3>
                         <button className="close-btn" onClick={() => setShowTimeline(false)}>×</button>
                         <div className="timeline">
-                            {timelineData.map(item => (
+                            {getTimelineData(timelineInspirationId).map(item => (
                                 <div key={item.id} className="timeline-item">
                                     <div className="timeline-date">{item.date}</div>
                                     <div className="timeline-content">

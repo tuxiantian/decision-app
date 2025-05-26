@@ -36,6 +36,7 @@ import MyFeedback from './components/MyFeedback';
 import KellyCalculator from './components/KellyCalculator';
 import TodoHistory from './components/todolist/TodoHistory';
 import InspirationClub from './components/inspiration/InspirationClub';
+import MyReflections from './components/inspiration/MyReflections';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -147,8 +148,17 @@ function App() {
       },
       
       {
-        title: '启发俱乐部',
-        path: '/inspiration'
+        title: '启发',
+        children: [
+          {
+            title: '启发俱乐部',
+            path: '/inspiration'
+          },
+          {
+            title: '我的感想',
+            path: '/reflections'
+          }
+        ]
       },
       {
         title: '更多',
@@ -215,6 +225,7 @@ function App() {
         <Route path="/history-todos" element={<TodoHistory />} />
         <Route path='/kelly' element={<KellyCalculator />} />
         <Route path='/inspiration' element={<InspirationClub />} />
+        <Route path='/reflections' element={<MyReflections />} />
         <Route path="/articles" element={<ArticleList />} />
         <Route path="/add-article" element={<ArticleEditor />} />
         <Route path="/edit-article/:id" element={<ArticleEditor />} />
