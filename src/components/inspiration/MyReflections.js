@@ -6,12 +6,12 @@ import './MyReflections.css';
 
 export default function MyReflections() {
     const [currentPage, setCurrentPage] = useState(1);
-    const [cardState, setCardState] = useState({}); // {cardId: 'front'|'back'|'inspiration'|'new'}
+    const [cardState, setCardState] = useState({}); // {cardId: 'front'|'back'|'inspiration'}
     const [reflections, setReflections] = useState([]);
     const [allReflections, setAllReflections] = useState({}); // {inspirationId: [reflections]}
     const [showTimeline, setShowTimeline] = useState(null); // inspirationId or null
     const [hoveredImage, setHoveredImage] = useState(null);
-    const [newReflectionContent, setNewReflectionContent] = useState('');
+    
     const [totalPages, setTotalPages] = useState(1);
     const [isRandomMode, setIsRandomMode] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -23,11 +23,11 @@ export default function MyReflections() {
             setLoading(true);
             const response = await api.get(`${API_BASE_URL}/api/my-reflections?page=${page}&per_page=2`);
             const data = response.data;
-
+            
             setReflections(data.reflections);
             setTotalPages(data.pages);
             setCurrentPage(page);
-
+            
             // 初始化卡片状态
             const initialState = {};
             data.reflections.forEach(ref => {
@@ -48,10 +48,10 @@ export default function MyReflections() {
             setIsRandomMode(true);
             const response = await api.get(`${API_BASE_URL}/api/my-reflections/random`);
             const data = response.data;
-
+            
             setReflections(data.reflections);
             setTotalPages(1);
-
+            
             const initialState = {};
             data.reflections.forEach(ref => {
                 initialState[ref.id] = 'front';
@@ -83,32 +83,11 @@ export default function MyReflections() {
             await api.put(`${API_BASE_URL}/api/reflections/${reflectionId}`, {
                 content
             });
-
+            
             // 更新本地状态
-            setReflections(prev => prev.map(ref =>
-                ref.id === reflectionId ? { ...ref, content } : ref
+            setReflections(prev => prev.map(ref => 
+                ref.id === reflectionId ? {...ref, content} : ref
             ));
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    // 保存感想
-    const handleCreateNew = async (id, text) => {
-        try {
-            const response = await api(`${API_BASE_URL}/api/reflections`, {
-                method: 'POST',
-                data: {
-                    content: text,
-                    inspiration_id: id
-                }
-            });
-            setReflections(prev => ({
-                ...prev,
-                [id]: [...(prev[id] || []), response.data]
-            }));
-            setNewReflectionContent(''); // 清空输入框
-            flipCard(id, 'front'); // 返回感想查看面
         } catch (err) {
             setError(err.message);
         }
@@ -121,9 +100,6 @@ export default function MyReflections() {
 
     // 处理卡片翻转
     const flipCard = (reflectionId, side) => {
-        if (side === 'new') {
-            setNewReflectionContent(''); // 清空输入框
-        }
         setCardState(prev => ({
             ...prev,
             [reflectionId]: side
@@ -144,7 +120,7 @@ export default function MyReflections() {
     return (
         <div className="my-reflections">
             <h2>我的感想 ✍️</h2>
-
+            
             {/* 图片预览层 */}
             {hoveredImage && (
                 <div className="image-preview-overlay" onClick={() => setHoveredImage(null)}>
@@ -154,11 +130,11 @@ export default function MyReflections() {
                     </div>
                 </div>
             )}
-
+            
             <div className="card-container">
                 {reflections.map(reflection => (
-                    <div
-                        key={reflection.id}
+                    <div 
+                        key={reflection.id} 
                         className={`card ${cardState[reflection.id] ? 'flipped-' + cardState[reflection.id] : ''}`}
                     >
                         {/* 感想面 (默认) */}
@@ -170,19 +146,19 @@ export default function MyReflections() {
                                 </div>
                             </div>
                             <div className="card-buttons">
-                                <button
+                                <button 
                                     className="write-btn"
                                     onClick={() => flipCard(reflection.id, 'back')}
                                 >
                                     ✏️ 编辑
                                 </button>
-                                <button
+                                <button 
                                     className="view-btn"
                                     onClick={() => handleShowTimeline(reflection.inspiration.id)}
                                 >
                                     📅 查看历史
                                 </button>
-                                <button
+                                <button 
                                     className="flip-btn"
                                     onClick={() => flipCard(reflection.id, 'inspiration')}
                                 >
@@ -190,27 +166,27 @@ export default function MyReflections() {
                                 </button>
                             </div>
                         </div>
-
+                        
                         {/* 编辑面 */}
                         <div className="card-back">
                             <textarea
                                 value={reflection.content}
-                                onChange={(e) => setReflections(prev =>
-                                    prev.map(ref =>
-                                        ref.id === reflection.id
-                                            ? { ...ref, content: e.target.value }
+                                onChange={(e) => setReflections(prev => 
+                                    prev.map(ref => 
+                                        ref.id === reflection.id 
+                                            ? {...ref, content: e.target.value} 
                                             : ref
                                     )
                                 )}
                             />
                             <div className="button-group">
-                                <button
+                                <button 
                                     className="cancel-btn"
                                     onClick={() => flipCard(reflection.id, 'front')}
                                 >
                                     取消
                                 </button>
-                                <button
+                                <button 
                                     className="save-btn"
                                     onClick={() => {
                                         handleUpdateReflection(reflection.id, reflection.content);
@@ -221,7 +197,7 @@ export default function MyReflections() {
                                 </button>
                             </div>
                         </div>
-
+                        
                         {/* 启发面 */}
                         <div className="card-inspiration">
                             {reflection.inspiration.type === 'image' ? (
@@ -229,22 +205,16 @@ export default function MyReflections() {
                                     className="image-container"
                                     onClick={() => setHoveredImage(reflection.inspiration.content)}
                                 >
-                                    <img
-                                        src={reflection.inspiration.content}
-                                        alt="启发图片"
+                                    <img 
+                                        src={reflection.inspiration.content} 
+                                        alt="启发图片" 
                                     />
                                 </div>
                             ) : (
                                 <QuoteContent content={reflection.inspiration.content} />
                             )}
                             <div className="card-buttons">
-                                <button
-                                    className="new-btn"
-                                    onClick={() => flipCard(reflection.id, 'new')}
-                                >
-                                    ✍️ 新增感想
-                                </button>
-                                <button
+                                <button 
                                     className="flip-btn"
                                     onClick={() => flipCard(reflection.id, 'front')}
                                 >
@@ -252,36 +222,10 @@ export default function MyReflections() {
                                 </button>
                             </div>
                         </div>
-
-
-                        {/* 新增感想面（第四面） */}
-                        <div className="card-new">
-                            <textarea
-                                placeholder="写下你的新感想..."
-                                value={newReflectionContent}
-                                onChange={(e) => setNewReflectionContent(e.target.value)}
-                            />
-                            <div className="button-group">
-                                <button
-                                    className="cancel-btn"
-                                    onClick={() => flipCard(reflection.id, 'inspiration')}
-                                >
-                                    取消
-                                </button>
-                                <button
-                                    className="save-btn"
-                                    onClick={() => handleCreateNew(reflection.inspiration.id, newReflectionContent)}
-                                >
-                                    保存
-                                </button>
-                            </div>
-                        </div>
-
-
                     </div>
                 ))}
             </div>
-
+            
             {/* 分页控制 */}
             <div className="pagination">
                 {isRandomMode ? (
@@ -326,14 +270,14 @@ export default function MyReflections() {
                     </>
                 )}
             </div>
-
+            
             {/* 时间轴弹窗 */}
             {showTimeline && (
                 <div className="timeline-modal">
                     <div className="modal-content">
                         <h3>感想历史记录 ⏳</h3>
-                        <button
-                            className="close-btn"
+                        <button 
+                            className="close-btn" 
                             onClick={() => setShowTimeline(null)}
                         >
                             ×
