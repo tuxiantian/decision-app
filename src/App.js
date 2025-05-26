@@ -137,7 +137,7 @@ function App() {
         title: '待办',
         children: [
           {
-            title: '添加待办事项',
+            title: '待办事项',
             path: '/todos'
           },
           {
