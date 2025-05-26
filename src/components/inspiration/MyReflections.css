@@ -28,7 +28,7 @@
 }
 
 /* 卡片三面共用样式 */
-.card > div {
+.card>div {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -45,7 +45,7 @@
     background: white;
 }
 
-.reflection{
+.reflection {
     text-align: left;
 }
 
@@ -128,6 +128,7 @@
 .flip-btn {
     background-color: #FF9800;
     color: white;
+    flex: 1 1;
 }
 
 .button-group {
@@ -148,6 +149,41 @@
 .save-btn {
     background-color: #4CAF50;
     color: white;
+}
+
+/* 新增按钮样式 */
+.new-btn {
+    background-color: #9C27B0;
+    color: white;
+    flex: 1 1;
+}
+
+/* 第四面卡片样式 */
+.card-new {
+    transform: rotateY(180deg);
+    background: #f8f9fa;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card.flipped-new {
+    transform: rotateY(180deg);
+}
+
+.inspiration-preview {
+    max-height: 120px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border-left: 3px solid #4CAF50;
+    padding-left: 10px;
+}
+
+/* 按钮容器调整 */
+.card-inspiration .card-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
 }
 
 /* 图片容器样式 */
@@ -260,7 +296,9 @@
     background: #ddd;
 }
 
-.timeline-item::after {content: '';}
+.timeline-item::after {
+    content: '';
+}
 
 .timeline-item {
     position: relative;
@@ -351,12 +389,14 @@
 
 /* 滚动条样式 */
 .reflection-content::-webkit-scrollbar,
-.card-back textarea::-webkit-scrollbar {
+.card-back textarea::-webkit-scrollbar,
+.card-new textarea::-webkit-scrollbar {
     width: 6px;
 }
 
 .reflection-content::-webkit-scrollbar-thumb,
-.card-back textarea::-webkit-scrollbar-thumb {
+.card-back textarea::-webkit-scrollbar-thumb
+.card-new textarea::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
@@ -364,15 +404,24 @@
 /* 确保卡片面在翻转状态下正确显示 */
 .card.flipped-front .card-front,
 .card.flipped-back .card-back,
+.card.flipped-new .card-new,
 .card.flipped-inspiration .card-inspiration {
     display: flex;
+    justify-content: space-between;
 }
 
+/* 隐藏其他面 */
 .card.flipped-front .card-back,
 .card.flipped-front .card-inspiration,
+.card.flipped-front .card-new,
 .card.flipped-back .card-front,
 .card.flipped-back .card-inspiration,
+.card.flipped-back .card-new,
 .card.flipped-inspiration .card-front,
-.card.flipped-inspiration .card-back {
+.card.flipped-inspiration .card-back,
+.card.flipped-inspiration .card-new,
+.card.flipped-new .card-front,
+.card.flipped-new .card-back,
+.card.flipped-new .card-inspiration {
     display: none;
 }

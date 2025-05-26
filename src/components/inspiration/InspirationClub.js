@@ -9,7 +9,7 @@ export default function InspirationClub() {
     const [activeCard, setActiveCard] = useState(null);
     const [reflections, setReflections] = useState({});
     const [inspirations, setInspirations] = useState([]);
-
+    const [reflectionText, setReflectionText] = useState({}); // 存储每个卡片的感想内容
     const [showTimeline, setShowTimeline] = useState(false);
     // 在组件顶部新增状态
     const [hoveredImage, setHoveredImage] = useState(null);
@@ -86,6 +86,7 @@ export default function InspirationClub() {
                 }
             });
             setActiveCard(null);
+            setReflectionText(prev => ({ ...prev, [id]: '' }));
             fetchReflections(id); // 刷新感想列表
         } catch (err) {
             setError(err.message);
@@ -117,9 +118,9 @@ export default function InspirationClub() {
     // 生成时间轴数据
     const getTimelineData = (inspirationId) => {
         if (!inspirationId || !reflections[inspirationId]) return [];
-        
+
         const inspiration = inspirations.find(item => item.id === inspirationId);
-        
+
         return reflections[inspirationId]
             .map(reflection => ({
                 id: reflection.id,
@@ -168,7 +169,7 @@ export default function InspirationClub() {
                                     ✏️ 写感想
                                 </button>
                                 {reflections[card.id] && reflections[card.id].length > 0 && (
-                                    <button className="view-btn" onClick={() => {setTimelineInspirationId(card.id);setShowTimeline(true);}}>
+                                    <button className="view-btn" onClick={() => { setTimelineInspirationId(card.id); setShowTimeline(true); }}>
                                         📅 查看感想
                                     </button>
                                 )}
@@ -176,14 +177,17 @@ export default function InspirationClub() {
                         </div>
 
                         <div className="card-back">
-                            <textarea
+                            <textarea autoFocus value={reflectionText[card.id] || ''} onChange={(e) => setReflectionText(prev => ({
+                                ...prev,
+                                [card.id]: e.target.value
+                            }))}
                                 placeholder="写下你的启发或感想..."
                             />
                             <div className="inspiration-button-group">
-                                <button className="cancel-btn" onClick={() => setActiveCard(null)}>
+                                <button className="cancel-btn" onClick={() => {setActiveCard(null);setReflectionText(prev => ({ ...prev, [card.id]: '' }));}}>
                                     取消
                                 </button>
-                                <button className="save-btn" onClick={() => handleSaveReflection(card.id, reflections[card.id] || '')}>
+                                <button className="save-btn" onClick={() => handleSaveReflection(card.id, reflectionText[card.id] || '')}>
                                     保存
                                 </button>
                             </div>

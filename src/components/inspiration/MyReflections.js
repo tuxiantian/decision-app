@@ -11,7 +11,9 @@ export default function MyReflections() {
     const [allReflections, setAllReflections] = useState({}); // {inspirationId: [reflections]}
     const [showTimeline, setShowTimeline] = useState(null); // inspirationId or null
     const [hoveredImage, setHoveredImage] = useState(null);
-    
+    // 新增状态
+    const [newReflectionContent, setNewReflectionContent] = useState('');
+    const [editingInspiration, setEditingInspiration] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const [isRandomMode, setIsRandomMode] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -23,11 +25,11 @@ export default function MyReflections() {
             setLoading(true);
             const response = await api.get(`${API_BASE_URL}/api/my-reflections?page=${page}&per_page=2`);
             const data = response.data;
-            
+
             setReflections(data.reflections);
             setTotalPages(data.pages);
             setCurrentPage(page);
-            
+
             // 初始化卡片状态
             const initialState = {};
             data.reflections.forEach(ref => {
@@ -48,10 +50,10 @@ export default function MyReflections() {
             setIsRandomMode(true);
             const response = await api.get(`${API_BASE_URL}/api/my-reflections/random`);
             const data = response.data;
-            
+
             setReflections(data.reflections);
             setTotalPages(1);
-            
+
             const initialState = {};
             data.reflections.forEach(ref => {
                 initialState[ref.id] = 'front';
@@ -83,13 +85,52 @@ export default function MyReflections() {
             await api.put(`${API_BASE_URL}/api/reflections/${reflectionId}`, {
                 content
             });
-            
+
             // 更新本地状态
-            setReflections(prev => prev.map(ref => 
-                ref.id === reflectionId ? {...ref, content} : ref
+            setReflections(prev => prev.map(ref =>
+                ref.id === reflectionId ? { ...ref, content } : ref
             ));
         } catch (err) {
             setError(err.message);
+        }
+    };
+
+    // 新增感想处理函数
+    const handleCreateReflection = async () => {
+        if (!editingInspiration || !newReflectionContent.trim()) return;
+
+        try {
+            setLoading(true);
+            const response = await api.post(`${API_BASE_URL}/api/reflections`, {
+                content: newReflectionContent,
+                inspiration_id: editingInspiration.id
+            });
+
+        // 更新本地状态（先移除旧的，再添加新的）
+        setReflections(prev => {
+            // 过滤掉与当前编辑的启发相关的旧感想
+            const filtered = prev.filter(ref => 
+                ref.inspiration.id !== editingInspiration.id
+            );
+            
+            // 添加新感想
+            return [
+                {
+                    ...response.data,
+                    inspiration: editingInspiration
+                },
+                ...filtered
+            ];
+        });
+
+            // 重置状态
+            setNewReflectionContent('');
+            flipCard(response.data.id, 'front');
+
+        } catch (err) {
+            setError(err.response?.data?.message || err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -104,13 +145,18 @@ export default function MyReflections() {
             ...prev,
             [reflectionId]: side
         }));
+
+        // 切换到新增面时设置当前启发
+        if (side === 'new') {
+            const reflection = reflections.find(r => r.id === reflectionId);
+            setEditingInspiration(reflection?.inspiration);
+            setNewReflectionContent('');
+        }
     };
 
     // 处理显示时间轴
     const handleShowTimeline = (inspirationId) => {
-        if (!allReflections[inspirationId]) {
-            fetchAllReflections(inspirationId);
-        }
+        fetchAllReflections(inspirationId);
         setShowTimeline(inspirationId);
     };
 
@@ -120,7 +166,7 @@ export default function MyReflections() {
     return (
         <div className="my-reflections">
             <h2>我的感想 ✍️</h2>
-            
+
             {/* 图片预览层 */}
             {hoveredImage && (
                 <div className="image-preview-overlay" onClick={() => setHoveredImage(null)}>
@@ -130,11 +176,11 @@ export default function MyReflections() {
                     </div>
                 </div>
             )}
-            
+
             <div className="card-container">
                 {reflections.map(reflection => (
-                    <div 
-                        key={reflection.id} 
+                    <div
+                        key={reflection.id}
                         className={`card ${cardState[reflection.id] ? 'flipped-' + cardState[reflection.id] : ''}`}
                     >
                         {/* 感想面 (默认) */}
@@ -146,19 +192,19 @@ export default function MyReflections() {
                                 </div>
                             </div>
                             <div className="card-buttons">
-                                <button 
+                                <button
                                     className="write-btn"
                                     onClick={() => flipCard(reflection.id, 'back')}
                                 >
                                     ✏️ 编辑
                                 </button>
-                                <button 
+                                <button
                                     className="view-btn"
                                     onClick={() => handleShowTimeline(reflection.inspiration.id)}
                                 >
                                     📅 查看历史
                                 </button>
-                                <button 
+                                <button
                                     className="flip-btn"
                                     onClick={() => flipCard(reflection.id, 'inspiration')}
                                 >
@@ -166,27 +212,27 @@ export default function MyReflections() {
                                 </button>
                             </div>
                         </div>
-                        
+
                         {/* 编辑面 */}
                         <div className="card-back">
                             <textarea
                                 value={reflection.content}
-                                onChange={(e) => setReflections(prev => 
-                                    prev.map(ref => 
-                                        ref.id === reflection.id 
-                                            ? {...ref, content: e.target.value} 
+                                onChange={(e) => setReflections(prev =>
+                                    prev.map(ref =>
+                                        ref.id === reflection.id
+                                            ? { ...ref, content: e.target.value }
                                             : ref
                                     )
                                 )}
                             />
                             <div className="button-group">
-                                <button 
+                                <button
                                     className="cancel-btn"
                                     onClick={() => flipCard(reflection.id, 'front')}
                                 >
                                     取消
                                 </button>
-                                <button 
+                                <button
                                     className="save-btn"
                                     onClick={() => {
                                         handleUpdateReflection(reflection.id, reflection.content);
@@ -197,7 +243,7 @@ export default function MyReflections() {
                                 </button>
                             </div>
                         </div>
-                        
+
                         {/* 启发面 */}
                         <div className="card-inspiration">
                             {reflection.inspiration.type === 'image' ? (
@@ -205,16 +251,22 @@ export default function MyReflections() {
                                     className="image-container"
                                     onClick={() => setHoveredImage(reflection.inspiration.content)}
                                 >
-                                    <img 
-                                        src={reflection.inspiration.content} 
-                                        alt="启发图片" 
+                                    <img
+                                        src={reflection.inspiration.content}
+                                        alt="启发图片"
                                     />
                                 </div>
                             ) : (
                                 <QuoteContent content={reflection.inspiration.content} />
                             )}
                             <div className="card-buttons">
-                                <button 
+                                <button
+                                    className="new-btn"
+                                    onClick={() => flipCard(reflection.id, 'new')}
+                                >
+                                    ✍️ 新增感想
+                                </button>
+                                <button
                                     className="flip-btn"
                                     onClick={() => flipCard(reflection.id, 'front')}
                                 >
@@ -222,10 +274,36 @@ export default function MyReflections() {
                                 </button>
                             </div>
                         </div>
+
+                        <div className="card-new">
+                            <textarea
+                                placeholder="写下你的新感想..."
+                                value={newReflectionContent}
+                                onChange={(e) => setNewReflectionContent(e.target.value)}
+                                autoFocus
+                            />
+                            <div className="button-group">
+                                <button
+                                    className="cancel-btn"
+                                    onClick={() => flipCard(reflection.id, 'inspiration')}
+                                >
+                                    取消
+                                </button>
+                                <button
+                                    className="save-btn"
+                                    onClick={handleCreateReflection}
+                                    disabled={!newReflectionContent.trim()}
+                                >
+                                    保存
+                                </button>
+                            </div>
+                        </div>
+
+
                     </div>
                 ))}
             </div>
-            
+
             {/* 分页控制 */}
             <div className="pagination">
                 {isRandomMode ? (
@@ -270,14 +348,14 @@ export default function MyReflections() {
                     </>
                 )}
             </div>
-            
+
             {/* 时间轴弹窗 */}
             {showTimeline && (
                 <div className="timeline-modal">
                     <div className="modal-content">
                         <h3>感想历史记录 ⏳</h3>
-                        <button 
-                            className="close-btn" 
+                        <button
+                            className="close-btn"
                             onClick={() => setShowTimeline(null)}
                         >
                             ×
