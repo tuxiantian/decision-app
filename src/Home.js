@@ -42,7 +42,8 @@ const Home = () => {
     { id: 'articles', label: '知识文章' },
     { id: 'argument', label: '观点分析' },
     { id: 'todos', label: '待办事项' },
-    { id: 'balanced', label: '平衡决策' }
+    { id: 'balanced', label: '平衡决策' },
+    { id: 'inspiration', label: '启发俱乐部' }
   ];
 
 
@@ -206,6 +207,33 @@ const Home = () => {
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
           <Link to="/balanced-decisions/list" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>我做的平衡决策</Link>
           <Link to="/balanced-decisions" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>去做平衡决策</Link>
+        </div>
+      </section>
+
+      <section id="inspiration" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>启发俱乐部功能介绍</h2>
+        <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
+          启发俱乐部是一个创新的知识分享和灵感激发平台，旨在帮助用户收集、整理和分享有价值的启发内容。通过这个功能，用户可以：
+        </p>
+        <ul style={{ lineHeight: '1.8', color: '#555', paddingLeft: '20px', textAlign: 'left' }}>
+          <li><strong>记录启发内容</strong>：随时记录来自书籍、文章、对话或生活中的灵感片段，形成个人启发库。</li>
+          <li><strong>分类整理</strong>：为每个启发内容添加标签和分类，便于后续检索和回顾。</li>
+          <li><strong>添加个人感想</strong>：针对每个启发内容，可以记录自己的理解和应用场景，形成深度思考。</li>
+          <li><strong>分享交流</strong>：将启发内容分享给团队成员或社区，促进集体智慧的增长。</li>
+          <li><strong>定期回顾</strong>：系统会定期提醒用户回顾过去的启发内容，加深记忆和应用。</li>
+          <li><strong>关联决策</strong>：启发内容可以直接关联到具体的决策过程，为决策提供更多思考角度。</li>
+          <li><strong>知识图谱</strong>：系统会自动分析启发内容之间的关系，形成可视化的知识网络。</li>
+        </ul>
+        <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
+          启发俱乐部不仅是一个记录工具，更是一个促进持续学习和深度思考的平台。通过系统地收集和反思启发内容，用户可以不断扩展认知边界，提升决策质量。
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/inspiration" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            查看启发内容
+          </Link>
+          <Link to="/add-inspiration" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            添加新启发
+          </Link>
         </div>
       </section>
     </div>
