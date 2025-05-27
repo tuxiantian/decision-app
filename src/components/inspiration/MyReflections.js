@@ -12,12 +12,15 @@ export default function MyReflections() {
     const [showTimeline, setShowTimeline] = useState(null); // inspirationId or null
     const [hoveredImage, setHoveredImage] = useState(null);
     // 新增状态
-    const [newReflectionContent, setNewReflectionContent] = useState('');
+    const [reflectionText, setReflectionText] = useState({});
     const [editingInspiration, setEditingInspiration] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const [isRandomMode, setIsRandomMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [uploadedImages, setUploadedImages] = useState({}); // 存储每张卡片上传后的图片URL {cardId: url}
+    const [isUploading, setIsUploading] = useState(false); // 上传状态
+    const [reflectionMode, setReflectionMode] = useState({}); // 存储每张卡片的输入模式 {cardId: 'text' | 'image'}
 
     // 获取我的感想（分页）
     const fetchMyReflections = async (page) => {
@@ -82,49 +85,114 @@ export default function MyReflections() {
     // 更新感想
     const handleUpdateReflection = async (reflectionId, content) => {
         try {
-            await api.put(`${API_BASE_URL}/api/reflections/${reflectionId}`, {
-                content
+            let type = uploadedImages[reflectionId] ? 'image' : 'text';
+            content = uploadedImages[reflectionId] ? uploadedImages[reflectionId] : content;
+            const response = await api.put(`${API_BASE_URL}/api/reflections/${reflectionId}`, {
+                content, type
             });
-
+            let updated_at=response.data.updated_at;
             // 更新本地状态
             setReflections(prev => prev.map(ref =>
-                ref.id === reflectionId ? { ...ref, content } : ref
+                ref.id === reflectionId ? { ...ref, content, type,updated_at } : ref
             ));
+            setUploadedImages(prev => {
+                const newState = { ...prev }; // 浅拷贝原对象
+                delete newState[reflectionId]; // 删除指定键
+                return newState; // 返回新对象
+            });
         } catch (err) {
             setError(err.message);
         }
     };
 
-    // 新增感想处理函数
-    const handleCreateReflection = async () => {
-        if (!editingInspiration || !newReflectionContent.trim()) return;
+    const handleImageUpload = async (e, cardId) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
         try {
-            setLoading(true);
-            const response = await api.post(`${API_BASE_URL}/api/reflections`, {
-                content: newReflectionContent,
-                inspiration_id: editingInspiration.id
+            setIsUploading(true);
+            // 2. 实际上传
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-        // 更新本地状态（先移除旧的，再添加新的）
-        setReflections(prev => {
-            // 过滤掉与当前编辑的启发相关的旧感想
-            const filtered = prev.filter(ref => 
-                ref.inspiration.id !== editingInspiration.id
-            );
-            
-            // 添加新感想
-            return [
-                {
-                    ...response.data,
-                    inspiration: editingInspiration
-                },
-                ...filtered
-            ];
-        });
+            // 3. 保存服务器返回的URL
+            setUploadedImages(prev => ({ ...prev, [cardId]: response.data.url }));
+        } catch (err) {
+            setError('图片上传失败');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    // 新增感想处理函数
+    const handleCreateReflection = async (id) => {
+        if (!editingInspiration || (!uploadedImages[id] && !reflectionText[id])) return;
+
+        try {
+            let content, type;
+            if(!reflectionMode[id]){
+                alert('请选则文字感想或图片感想');
+                return;
+            }
+            if (reflectionMode[id] === 'text') {
+                content = reflectionText[id];
+                type = 'text';
+            } else {
+                if (!uploadedImages[id]) {
+                    alert('请先上传图片');
+                    return;
+                }
+                content = uploadedImages[id];
+                type = 'image';
+            }
+            setLoading(true);
+            const response = await api.post(`${API_BASE_URL}/api/reflections`, {
+                content: content,
+                inspiration_id: editingInspiration.id,
+                type: type
+            });
+
+            // 更新本地状态（先移除旧的，再添加新的）
+            setReflections(prev => {
+                // 过滤掉与当前编辑的启发相关的旧感想
+                const filtered = prev.filter(ref =>
+                    ref.inspiration.id !== editingInspiration.id
+                );
+
+                // 添加新感想
+                return [
+                    {
+                        ...response.data,
+                        inspiration: editingInspiration
+                    },
+                    ...filtered
+                ];
+            });
 
             // 重置状态
-            setNewReflectionContent('');
+            setReflectionMode(prev => {
+                const newState = { ...prev }; // 浅拷贝原对象
+                delete newState[id]; // 删除指定键
+                return newState; // 返回新对象
+            });
+            if(type === 'text'){
+                setReflectionText(prev => {
+                    const newState = { ...prev }; // 浅拷贝原对象
+                    delete newState[id]; // 删除指定键
+                    return newState; // 返回新对象
+                });
+            }else{
+                setUploadedImages(prev => {
+                    const newState = { ...prev }; // 浅拷贝原对象
+                    delete newState[id]; // 删除指定键
+                    return newState; // 返回新对象
+                });
+            }
+
             flipCard(response.data.id, 'front');
 
         } catch (err) {
@@ -150,7 +218,6 @@ export default function MyReflections() {
         if (side === 'new') {
             const reflection = reflections.find(r => r.id === reflectionId);
             setEditingInspiration(reflection?.inspiration);
-            setNewReflectionContent('');
         }
     };
 
@@ -186,7 +253,16 @@ export default function MyReflections() {
                         {/* 感想面 (默认) */}
                         <div className="card-front">
                             <div className="reflection-content">
-                                <p>{reflection.content}</p>
+                                {reflection.type === 'image' ? (
+                                    <div
+                                        className="image-container"
+                                        onClick={() => setHoveredImage(reflection.content)}
+                                    >
+                                        <img src={reflection.content} alt="感想图片" />
+                                    </div>
+                                ) : (
+                                    <QuoteContent content={reflection.content} />
+                                )}
                                 <div className="reflection-date">
                                     最后更新: {new Date(reflection.updated_at).toLocaleString()}
                                 </div>
@@ -215,16 +291,56 @@ export default function MyReflections() {
 
                         {/* 编辑面 */}
                         <div className="card-back">
-                            <textarea
-                                value={reflection.content}
-                                onChange={(e) => setReflections(prev =>
-                                    prev.map(ref =>
-                                        ref.id === reflection.id
-                                            ? { ...ref, content: e.target.value }
-                                            : ref
-                                    )
-                                )}
-                            />
+                            {/* 模式选择单选按钮 */}
+                            <div className="reflection-mode-selector">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name={`mode-edit-${reflection.id}`}
+                                        checked={reflection.type !== 'image'}
+                                    />
+                                    文字感想
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name={`mode-edit-${reflection.id}`}
+                                        checked={reflection.type === 'image'}
+                                    />
+                                    图片感想
+                                </label>
+                            </div>
+
+                            {/* 动态渲染输入区域 */}
+                            {reflection.type === 'image' ? (
+                                <div className="image-upload-container">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e, reflection.id)}
+                                        disabled={isUploading}
+                                    />
+                                    {reflection.content && (
+                                        <div className="image-preview">
+                                            {/* 优先显示新上传的图片，避免编辑时更换图片时预览不到新的图片 */}
+                                            <img src={uploadedImages[reflection.id] || reflection.content} alt="预览" />
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <textarea
+                                    autoFocus
+                                    value={uploadedImages[reflection.id] || reflection.content}
+                                    onChange={(e) => setReflections(prev =>
+                                        prev.map(ref =>
+                                            ref.id === reflection.id
+                                                ? { ...ref, content: e.target.value }
+                                                : ref
+                                        )
+                                    )}
+                                />
+                            )}
+
                             <div className="button-group">
                                 <button
                                     className="cancel-btn"
@@ -276,12 +392,52 @@ export default function MyReflections() {
                         </div>
 
                         <div className="card-new">
-                            <textarea
-                                placeholder="写下你的新感想..."
-                                value={newReflectionContent}
-                                onChange={(e) => setNewReflectionContent(e.target.value)}
-                                autoFocus
-                            />
+                            {/* 模式选择单选按钮 */}
+                            <div className="reflection-mode-selector">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name={`mode-${reflection.id}`}
+                                        onChange={() => setReflectionMode(prev => ({ ...prev, [reflection.id]: 'text' }))}
+                                    />
+                                    文字感想
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name={`mode-${reflection.id}`}
+                                        onChange={() => setReflectionMode(prev => ({ ...prev, [reflection.id]: 'image' }))}
+                                    />
+                                    图片感想
+                                </label>
+                            </div>
+
+                            {reflectionMode[reflection.id] === 'image' ? (
+                                <div className="image-upload-container">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e, reflection.id)}
+                                        disabled={isUploading}
+                                    />
+                                    {uploadedImages[reflection.id] && (
+                                        <div className="image-preview">
+                                            <img src={uploadedImages[reflection.id]} alt="预览" />
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <textarea
+                                    autoFocus
+                                    value={reflectionText[reflection.id] || ''}
+                                    onChange={(e) => setReflectionText(prev => ({
+                                        ...prev,
+                                        [reflection.id]: e.target.value
+                                    }))}
+                                    placeholder="写下你的感想..."
+                                />
+                            )}
+
                             <div className="button-group">
                                 <button
                                     className="cancel-btn"
@@ -291,10 +447,12 @@ export default function MyReflections() {
                                 </button>
                                 <button
                                     className="save-btn"
-                                    onClick={handleCreateReflection}
-                                    disabled={!newReflectionContent.trim()}
+                                    onClick={()=>handleCreateReflection(reflection.id)}
+                                    disabled={(reflectionMode[reflection.id] === 'text' && !reflectionText[reflection.id]) ||
+                                        (reflectionMode[reflection.id] === 'image' && !uploadedImages[reflection.id]) ||
+                                        isUploading}
                                 >
-                                    保存
+                                    {isUploading ? '保存中...' : '保存'}
                                 </button>
                             </div>
                         </div>
@@ -310,7 +468,7 @@ export default function MyReflections() {
                     <>
                         <button
                             className="random-btn"
-                            onClick={fetchRandomReflections}
+                            onClick={()=>fetchRandomReflections}
                         >
                             🔄 随机换一批
                         </button>
@@ -367,7 +525,17 @@ export default function MyReflections() {
                                         {new Date(reflection.created_at).toLocaleString()}
                                     </div>
                                     <div className="timeline-content">
-                                        <p className="reflection">{reflection.content}</p>
+                                        {reflection.type === 'image' ? (
+                                            <div className="image-reflection">
+                                                <img
+                                                    src={reflection.content}
+                                                    alt="感想图片"
+                                                    onClick={() => setHoveredImage(reflection.content)} // 点击可放大预览
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="text-reflection">{reflection.content}</p>
+                                        )}
                                     </div>
                                 </div>
                             ))}

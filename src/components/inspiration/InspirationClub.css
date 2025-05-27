@@ -134,11 +134,11 @@
 
 .quote.centered {
     align-items: center;
-  }
-  
-  .quote.not-centered {
+}
+
+.quote.not-centered {
     align-items: flex-start;
-  }
+}
 
 .card-front img {
     max-width: 100%;
@@ -186,6 +186,7 @@
 
 .card.flipped .card-back {
     display: flex;
+    justify-content: space-between;
 }
 
 .card-back textarea {
@@ -365,4 +366,43 @@ blockquote {
 .quote::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
+}
+
+/* InspirationClub.css 新增 */
+.reflection-mode-selector {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 15px;
+}
+
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border: 1px dashed #ccc;
+    padding: 5px;
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+    max-height: 180px;
+    object-fit: contain; 
+}
+
+.timeline-item .image-reflection {
+    margin-top: 10px;
+}
+
+.timeline-item .image-reflection img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: 4px;
+    cursor: zoom-in;
+    border: 1px solid #eee;
 }

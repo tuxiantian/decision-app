@@ -21,6 +21,38 @@ export default function InspirationClub() {
     const [isRandomMode, setIsRandomMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [uploadedImages, setUploadedImages] = useState({}); // 存储每张卡片上传后的图片URL {cardId: url}
+    const [isUploading, setIsUploading] = useState(false); // 上传状态
+    const [reflectionMode, setReflectionMode] = useState({}); // 存储每张卡片的输入模式 {cardId: 'text' | 'image'}
+
+    const handleImageUpload = async (e, cardId) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        try {
+            setIsUploading(true);
+            // 2. 实际上传
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            // 3. 保存服务器返回的URL
+            setUploadedImages(prev => ({ ...prev, [cardId]: response.data.url }));
+        } catch (err) {
+            setError('图片上传失败');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleCancel = (cardId) => {
+        setActiveCard(null);
+        setReflectionText(prev => ({ ...prev, [cardId]: '' }));
+        setUploadedImages(prev => ({ ...prev, [cardId]: null }));
+    };
 
     // 新增获取随机启发内容的函数
     const fetchRandomInspirations = async () => {
@@ -76,18 +108,30 @@ export default function InspirationClub() {
     };
 
     // 保存感想
-    const handleSaveReflection = async (id, text) => {
+    const handleSaveReflection = async (cardId) => {
         try {
-            const response = await api(`${API_BASE_URL}/api/reflections`, {
-                method: 'POST',
-                data: {
-                    content: text,
-                    inspiration_id: id
+            let content, type;
+
+            if (reflectionMode[cardId] === 'text') {
+                content = reflectionText[cardId] || '';
+                type = 'text';
+            } else {
+                if (!uploadedImages[cardId]) {
+                    throw new Error('请先上传图片');
                 }
+                content = uploadedImages[cardId];
+                type = 'image';
+            }
+
+            await api.post('/api/reflections', {
+                content,
+                type,
+                inspiration_id: cardId
             });
-            setActiveCard(null);
-            setReflectionText(prev => ({ ...prev, [id]: '' }));
-            fetchReflections(id); // 刷新感想列表
+
+            // 重置状态
+            handleCancel(cardId);
+            fetchReflections(cardId);
         } catch (err) {
             setError(err.message);
         }
@@ -126,8 +170,7 @@ export default function InspirationClub() {
                 id: reflection.id,
                 text: reflection.content,
                 date: new Date(reflection.updated_at).toLocaleString(),
-                content: inspiration?.content,
-                type: inspiration?.type
+                type: reflection?.type
             }))
             .sort((a, b) => new Date(b.date) - new Date(a.date));
     };
@@ -152,7 +195,6 @@ export default function InspirationClub() {
                     <div key={card.id} className={`card ${activeCard === card.id ? 'flipped' : ''}`}>
                         <div className="card-front">
 
-
                             {/* 卡片容器部分修改图片渲染 */}
                             {card.type === 'image' ? (
                                 <div
@@ -176,22 +218,73 @@ export default function InspirationClub() {
                             </div>
                         </div>
 
+
                         <div className="card-back">
-                            <textarea autoFocus value={reflectionText[card.id] || ''} onChange={(e) => setReflectionText(prev => ({
-                                ...prev,
-                                [card.id]: e.target.value
-                            }))}
-                                placeholder="写下你的启发或感想..."
-                            />
+                            {/* 模式选择单选按钮 */}
+                            <div className="reflection-mode-selector">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name={`mode-${card.id}`}
+                                        checked={reflectionMode[card.id] !== 'image'}
+                                        onChange={() => setReflectionMode(prev => ({ ...prev, [card.id]: 'text' }))}
+                                    />
+                                    文字感想
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name={`mode-${card.id}`}
+                                        checked={reflectionMode[card.id] === 'image'}
+                                        onChange={() => setReflectionMode(prev => ({ ...prev, [card.id]: 'image' }))}
+                                    />
+                                    图片感想
+                                </label>
+                            </div>
+
+                            {/* 动态渲染输入区域 */}
+                            {reflectionMode[card.id] === 'image' ? (
+                                <div className="image-upload-container">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageUpload(e, card.id)}
+                                        disabled={isUploading}
+                                    />
+                                    {uploadedImages[card.id] && (
+                                        <div className="image-preview">
+                                            <img src={uploadedImages[card.id]} alt="预览" />
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <textarea
+                                    autoFocus
+                                    value={reflectionText[card.id] || ''}
+                                    onChange={(e) => setReflectionText(prev => ({
+                                        ...prev,
+                                        [card.id]: e.target.value
+                                    }))}
+                                    placeholder="写下你的启发或感想..."
+                                />
+                            )}
+
+                            {/* 操作按钮 */}
                             <div className="inspiration-button-group">
-                                <button className="cancel-btn" onClick={() => {setActiveCard(null);setReflectionText(prev => ({ ...prev, [card.id]: '' }));}}>
+                                <button className="cancel-btn" onClick={() => handleCancel(card.id)}>
                                     取消
                                 </button>
-                                <button className="save-btn" onClick={() => handleSaveReflection(card.id, reflectionText[card.id] || '')}>
-                                    保存
+                                <button className="save-btn" onClick={() => handleSaveReflection(card.id)}
+                                    disabled={
+                                        (reflectionMode[card.id] === 'text' && !reflectionText[card.id]) ||
+                                        (reflectionMode[card.id] === 'image' && !uploadedImages[card.id]) ||
+                                        isUploading
+                                    }>
+                                    {isUploading ? '保存中...' : '保存'}
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 ))}
             </div>
@@ -250,8 +343,18 @@ export default function InspirationClub() {
                                 <div key={item.id} className="timeline-item">
                                     <div className="timeline-date">{item.date}</div>
                                     <div className="timeline-content">
-
-                                        <p className="reflection">{item.text}</p>
+                                        {/* 根据类型渲染文字或图片 */}
+                                        {item.type === 'image' ? (
+                                            <div className="image-reflection">
+                                                <img
+                                                    src={item.text}
+                                                    alt="感想图片"
+                                                    onClick={() => setHoveredImage(item.text)} // 点击可放大预览
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="text-reflection">{item.text}</p>
+                                        )}
                                     </div>
                                 </div>
                             ))}
