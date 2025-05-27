@@ -21,12 +21,13 @@ export default function MyReflections() {
     const [uploadedImages, setUploadedImages] = useState({}); // 存储每张卡片上传后的图片URL {cardId: url}
     const [isUploading, setIsUploading] = useState(false); // 上传状态
     const [reflectionMode, setReflectionMode] = useState({}); // 存储每张卡片的输入模式 {cardId: 'text' | 'image'}
+    const [searchQuery, setSearchQuery] = useState('');
 
     // 获取我的感想（分页）
     const fetchMyReflections = async (page) => {
         try {
             setLoading(true);
-            const response = await api.get(`${API_BASE_URL}/api/my-reflections?page=${page}&per_page=2`);
+            const response = await api.get(`${API_BASE_URL}/api/my-reflections?page=${page}&per_page=2&search=${searchQuery}`);
             const data = response.data;
 
             setReflections(data.reflections);
@@ -232,8 +233,18 @@ export default function MyReflections() {
 
     return (
         <div className="my-reflections">
-            <h2>我的感想 ✍️</h2>
-
+            <span>我的感想 ✍️</span>
+            <input
+                style={{width:'400px'}}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="搜索感想内容..."
+                    onKeyDown={(e) => e.key === 'Enter' && fetchMyReflections(1)}
+                />
+                <button onClick={()=>fetchMyReflections(1)} className='green-button'>
+                    搜索
+                </button>
             {/* 图片预览层 */}
             {hoveredImage && (
                 <div className="image-preview-overlay" onClick={() => setHoveredImage(null)}>
