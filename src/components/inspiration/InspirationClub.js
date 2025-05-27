@@ -24,6 +24,8 @@ export default function InspirationClub() {
     const [uploadedImages, setUploadedImages] = useState({}); // 存储每张卡片上传后的图片URL {cardId: url}
     const [isUploading, setIsUploading] = useState(false); // 上传状态
     const [reflectionMode, setReflectionMode] = useState({}); // 存储每张卡片的输入模式 {cardId: 'text' | 'image'}
+    const [searchQuery, setSearchQuery] = useState('');
+
 
     const handleImageUpload = async (e, cardId) => {
         const file = e.target.files[0];
@@ -74,7 +76,7 @@ export default function InspirationClub() {
     const fetchInspirations = async (page) => {
         try {
             setLoading(true);
-            const response = await api.get(`${API_BASE_URL}/api/inspirations?page=${page}&per_page=${cardsPerPage}`);
+            const response = await api.get(`${API_BASE_URL}/api/inspirations?page=${page}&per_page=${cardsPerPage}&search=${searchQuery}`);
             const data = await response.data;
             setInspirations(data.inspirations);
             setTotalPages(data.pages);
@@ -180,7 +182,21 @@ export default function InspirationClub() {
 
     return (
         <div className="inspiration-club">
-            <h2>启发俱乐部 ✨</h2>
+            {/* 添加搜索框 */}
+            <div className="search-container">
+                <span>启发俱乐部 ✨</span>
+                <input
+                style={{width:'400px'}}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="搜索启发内容..."
+                    onKeyDown={(e) => e.key === 'Enter' && fetchInspirations(1)}
+                />
+                <button onClick={()=>fetchInspirations(1)} className='green-button'>
+                    搜索
+                </button>
+            </div>
             {/* 图片预览层 */}
             {hoveredImage && (
                 <div className="image-preview-overlay" onClick={() => setHoveredImage(null)}>
@@ -280,7 +296,7 @@ export default function InspirationClub() {
                                         (reflectionMode[card.id] === 'image' && !uploadedImages[card.id]) ||
                                         isUploading
                                     }>
-                                    {isUploading ? '保存中...' : '保存'}
+                                    {loading ? '保存中...' : '保存'}
                                 </button>
                             </div>
                         </div>
