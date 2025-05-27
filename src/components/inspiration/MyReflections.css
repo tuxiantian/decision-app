@@ -395,8 +395,7 @@
 }
 
 .reflection-content::-webkit-scrollbar-thumb,
-.card-back textarea::-webkit-scrollbar-thumb
-.card-new textarea::-webkit-scrollbar-thumb {
+.card-back textarea::-webkit-scrollbar-thumb .card-new textarea::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
 }
@@ -424,4 +423,18 @@
 .card.flipped-new .card-back,
 .card.flipped-new .card-inspiration {
     display: none;
+}
+
+.clear-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #999;
+    padding: 0 5px;
+}
+
+.clear-icon:hover {
+    color: #666;
 }

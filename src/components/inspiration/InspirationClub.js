@@ -3,6 +3,8 @@ import { API_BASE_URL } from '../../config';
 import api from '../api';
 import QuoteContent from './QuoteContent';
 import './InspirationClub.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 export default function InspirationClub() {
     const [currentPage, setCurrentPage] = useState(0);
@@ -185,15 +187,26 @@ export default function InspirationClub() {
             {/* 添加搜索框 */}
             <div className="search-container">
                 <span>启发俱乐部 ✨</span>
-                <input
-                style={{width:'400px'}}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="搜索启发内容..."
-                    onKeyDown={(e) => e.key === 'Enter' && fetchInspirations(1)}
-                />
-                <button onClick={()=>fetchInspirations(1)} className='green-button'>
+                <div className="search-container" style={{ position: 'relative', display: 'inline-block' }}>
+                    <input
+                        style={{ width: '400px' }}
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="搜索启发内容..."
+                        onKeyDown={(e) => e.key === 'Enter' && fetchInspirations(1)}
+                    />
+                    {searchQuery && ( // 只有有内容时才显示清空图标
+                        <FontAwesomeIcon
+                            icon={faTimes}
+                            className="clear-icon"
+                            onClick={() => {
+                                setSearchQuery('');
+                            }}
+                        />
+                    )}
+                </div>
+                <button onClick={() => fetchInspirations(1)} className='green-button'>
                     搜索
                 </button>
             </div>

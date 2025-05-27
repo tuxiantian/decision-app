@@ -3,7 +3,8 @@ import { API_BASE_URL } from '../../config';
 import api from '../api';
 import QuoteContent from './QuoteContent';
 import './MyReflections.css';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 export default function MyReflections() {
     const [currentPage, setCurrentPage] = useState(1);
     const [cardState, setCardState] = useState({}); // {cardId: 'front'|'back'|'inspiration'}
@@ -91,10 +92,10 @@ export default function MyReflections() {
             const response = await api.put(`${API_BASE_URL}/api/reflections/${reflectionId}`, {
                 content, type
             });
-            let updated_at=response.data.updated_at;
+            let updated_at = response.data.updated_at;
             // 更新本地状态
             setReflections(prev => prev.map(ref =>
-                ref.id === reflectionId ? { ...ref, content, type,updated_at } : ref
+                ref.id === reflectionId ? { ...ref, content, type, updated_at } : ref
             ));
             setUploadedImages(prev => {
                 const newState = { ...prev }; // 浅拷贝原对象
@@ -135,7 +136,7 @@ export default function MyReflections() {
 
         try {
             let content, type;
-            if(!reflectionMode[id]){
+            if (!reflectionMode[id]) {
                 alert('请选则文字感想或图片感想');
                 return;
             }
@@ -180,13 +181,13 @@ export default function MyReflections() {
                 delete newState[id]; // 删除指定键
                 return newState; // 返回新对象
             });
-            if(type === 'text'){
+            if (type === 'text') {
                 setReflectionText(prev => {
                     const newState = { ...prev }; // 浅拷贝原对象
                     delete newState[id]; // 删除指定键
                     return newState; // 返回新对象
                 });
-            }else{
+            } else {
                 setUploadedImages(prev => {
                     const newState = { ...prev }; // 浅拷贝原对象
                     delete newState[id]; // 删除指定键
@@ -234,17 +235,29 @@ export default function MyReflections() {
     return (
         <div className="my-reflections">
             <span>我的感想 ✍️</span>
-            <input
-                style={{width:'400px'}}
+            <div className="search-container" style={{ position: 'relative', display: 'inline-block' }}>
+
+                <input
+                    style={{ width: '400px', paddingRight: '30px' }}
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="搜索感想内容..."
                     onKeyDown={(e) => e.key === 'Enter' && fetchMyReflections(1)}
                 />
-                <button onClick={()=>fetchMyReflections(1)} className='green-button'>
-                    搜索
-                </button>
+                {searchQuery && ( // 只有有内容时才显示清空图标
+                    <FontAwesomeIcon
+                        icon={faTimes}
+                        className="clear-icon"
+                        onClick={() => {
+                            setSearchQuery(''); 
+                        }}
+                    />
+                )}
+            </div>
+            <button onClick={() => fetchMyReflections(1)} className='green-button'>
+                搜索
+            </button>
             {/* 图片预览层 */}
             {hoveredImage && (
                 <div className="image-preview-overlay" onClick={() => setHoveredImage(null)}>
@@ -458,7 +471,7 @@ export default function MyReflections() {
                                 </button>
                                 <button
                                     className="save-btn"
-                                    onClick={()=>handleCreateReflection(reflection.id)}
+                                    onClick={() => handleCreateReflection(reflection.id)}
                                     disabled={(reflectionMode[reflection.id] === 'text' && !reflectionText[reflection.id]) ||
                                         (reflectionMode[reflection.id] === 'image' && !uploadedImages[reflection.id]) ||
                                         isUploading}
@@ -479,7 +492,7 @@ export default function MyReflections() {
                     <>
                         <button
                             className="random-btn"
-                            onClick={()=>fetchRandomReflections}
+                            onClick={() => fetchRandomReflections}
                         >
                             🔄 随机换一批
                         </button>
