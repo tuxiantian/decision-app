@@ -37,6 +37,7 @@ import KellyCalculator from './components/KellyCalculator';
 import TodoHistory from './components/todolist/TodoHistory';
 import InspirationClub from './components/inspiration/InspirationClub';
 import MyReflections from './components/inspiration/MyReflections';
+import FlowTest from './components/checklist/FlowTest';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -76,6 +77,9 @@ function App() {
       {
         title: '首页',
         path: '/'
+      },{
+        title: '流程图',
+        path: '/flow'
       },
       {
         title: '平衡决策',
@@ -206,6 +210,7 @@ function App() {
       <Routes>
 
         <Route path="/" element={<Home />} />
+        <Route path="/flow" element={<FlowTest />} />
         <Route path="/login" element={<LoginPage onLogin={setUsername} />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/join-group/:groupId" element={<JoinGroupPage />} />
