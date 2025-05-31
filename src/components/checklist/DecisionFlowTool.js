@@ -9,8 +9,9 @@ const DecisionFlowTool = () => {
         const savedData = localStorage.getItem('decisionFlowData');
         return savedData ? JSON.parse(savedData).connections : [];
     });
-    const [activeNodeId, setActiveNodeId] = useState(null); // 正在编辑的节点
-    const [selectedNodeId, setSelectedNodeId] = useState(null); // 选中的节点
+    const [activeNodeId, setActiveNodeId] = useState(null);
+    const [selectedNodeId, setSelectedNodeId] = useState(null);
+    const [selectedConnectionId, setSelectedConnectionId] = useState(null);
     const [draggingNodeId, setDraggingNodeId] = useState(null);
     const [connectingStart, setConnectingStart] = useState(null);
     const [selectedTool, setSelectedTool] = useState('select');
@@ -61,6 +62,7 @@ const DecisionFlowTool = () => {
                 setConnections(parsedData.connections || []);
                 setActiveNodeId(null);
                 setSelectedNodeId(null);
+                setSelectedConnectionId(null);
                 showNotification('数据加载成功！');
             } else {
                 showNotification('没有找到保存的数据', 'info');
@@ -77,6 +79,7 @@ const DecisionFlowTool = () => {
             setConnections([]);
             setActiveNodeId(null);
             setSelectedNodeId(null);
+            setSelectedConnectionId(null);
             nodeCounter.current = 1;
             localStorage.removeItem('decisionFlowData');
             showNotification('画布已重置', 'info');
@@ -132,6 +135,7 @@ const DecisionFlowTool = () => {
                 setConnections(importedData.connections || []);
                 setActiveNodeId(null);
                 setSelectedNodeId(null);
+                setSelectedConnectionId(null);
                 
                 // 保存到本地存储
                 localStorage.setItem('decisionFlowData', JSON.stringify(importedData));
@@ -153,9 +157,10 @@ const DecisionFlowTool = () => {
         // 点击节点时不要创建新节点
         if (e.target !== stageRef.current) return;
         
-        // 如果当前有选中节点，点击画布空白处取消选中
-        if (selectedNodeId) {
+        // 如果当前有选中节点或连线，点击画布空白处取消选中
+        if (selectedNodeId || selectedConnectionId) {
             setSelectedNodeId(null);
+            setSelectedConnectionId(null);
             return;
         }
         
@@ -198,7 +203,8 @@ const DecisionFlowTool = () => {
         setDeletedItems({
             nodes: [...nodes],
             connections: [...connections],
-            selectedNodeId
+            selectedNodeId,
+            selectedConnectionId
         });
         
         // 删除节点
@@ -217,6 +223,26 @@ const DecisionFlowTool = () => {
         showNotification(`已删除节点 #${nodeNumber}`, 'info');
     };
 
+    // 删除选中的连接
+    const deleteSelectedConnection = () => {
+        if (!selectedConnectionId) return;
+        
+        // 保存当前状态用于可能的撤销操作
+        setDeletedItems({
+            nodes: [...nodes],
+            connections: [...connections],
+            selectedNodeId,
+            selectedConnectionId
+        });
+        
+        // 删除连接
+        const newConnections = connections.filter(conn => conn.id !== selectedConnectionId);
+        setConnections(newConnections);
+        setSelectedConnectionId(null);
+        
+        showNotification('已删除连接', 'info');
+    };
+
     // 撤销删除操作
     const undoDelete = () => {
         if (!deletedItems) return;
@@ -224,6 +250,7 @@ const DecisionFlowTool = () => {
         setNodes(deletedItems.nodes);
         setConnections(deletedItems.connections);
         setSelectedNodeId(deletedItems.selectedNodeId);
+        setSelectedConnectionId(deletedItems.selectedConnectionId);
         setDeletedItems(null);
         
         showNotification('已撤销删除操作', 'info');
@@ -322,9 +349,13 @@ const DecisionFlowTool = () => {
     // 处理键盘事件
     useEffect(() => {
         const handleKeyDown = (e) => {
-            // 按下Delete键删除选中节点
-            if (e.key === 'Delete' && selectedNodeId) {
-                deleteSelectedNode();
+            // 按下Delete键删除选中节点或连接
+            if (e.key === 'Delete') {
+                if (selectedNodeId) {
+                    deleteSelectedNode();
+                } else if (selectedConnectionId) {
+                    deleteSelectedConnection();
+                }
                 e.preventDefault();
             }
             
@@ -335,8 +366,13 @@ const DecisionFlowTool = () => {
             }
             
             // 按下Esc键退出编辑状态
-            if (e.key === 'Escape' && activeNodeId) {
-                setActiveNodeId(null);
+            if (e.key === 'Escape') {
+                if (activeNodeId) {
+                    setActiveNodeId(null);
+                } else {
+                    setSelectedNodeId(null);
+                    setSelectedConnectionId(null);
+                }
             }
         };
 
@@ -344,7 +380,7 @@ const DecisionFlowTool = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [selectedNodeId, activeNodeId, deletedItems]);
+    }, [selectedNodeId, selectedConnectionId, activeNodeId, deletedItems]);
 
     // 保存按钮样式
     const getButtonStyle = (isActive = false, color = null) => ({
@@ -519,6 +555,35 @@ const DecisionFlowTool = () => {
                             </button>
                         </div>
                     )}
+                    {selectedConnectionId && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ color: '#555', fontSize: '14px' }}>
+                                选中连接
+                            </div>
+                            <button 
+                                style={{ 
+                                    padding: '6px 12px', 
+                                    backgroundColor: '#e74c3c', 
+                                    color: 'white', 
+                                    border: 'none', 
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    transition: 'all 0.2s',
+                                    ':hover': {
+                                        backgroundColor: '#c0392b',
+                                        transform: 'scale(1.05)'
+                                    }
+                                }}
+                                onClick={deleteSelectedConnection}
+                            >
+                                <i className="fas fa-trash"></i>
+                                删除连接
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -583,8 +648,8 @@ const DecisionFlowTool = () => {
                     </div>
                 )}
                 
-                {/* 删除提示 */}
-                {selectedNodeId && (
+                {/* 操作提示 */}
+                {(selectedNodeId || selectedConnectionId) && (
                     <div style={{
                         position: 'absolute',
                         bottom: '20px',
@@ -602,7 +667,9 @@ const DecisionFlowTool = () => {
                         animation: 'pulse 1.5s infinite'
                     }}>
                         <i className="fas fa-exclamation-triangle"></i>
-                        已选中节点 #{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}，按Delete键或点击工具栏删除按钮可删除
+                        {selectedNodeId ? 
+                            `已选中节点 #${nodes.find(n => n.id === selectedNodeId)?.nodeNumber}，按Delete键或点击工具栏删除按钮可删除` : 
+                            '已选中连接，按Delete键或点击工具栏删除按钮可删除'}
                     </div>
                 )}
                 
@@ -665,12 +732,14 @@ const DecisionFlowTool = () => {
                             e.stopPropagation();
                             setDraggingNodeId(node.id);
                             setSelectedNodeId(node.id);
+                            setSelectedConnectionId(null);
                         }}
                         onDoubleClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             setActiveNodeId(node.id);
                             setSelectedNodeId(null);
+                            setSelectedConnectionId(null);
                         }}
                     >
                         {/* 文本编辑区域 */}
@@ -821,9 +890,15 @@ const DecisionFlowTool = () => {
                                 y1={start.y}
                                 x2={end.x}
                                 y2={end.y}
-                                stroke="#333"
-                                strokeWidth="2"
+                                stroke={selectedConnectionId === conn.id ? "#e74c3c" : "#333"}
+                                strokeWidth={selectedConnectionId === conn.id ? "4" : "2"}
                                 markerEnd="url(#arrowhead)"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedConnectionId(conn.id);
+                                    setSelectedNodeId(null);
+                                }}
+                                style={{ cursor: 'pointer', pointerEvents: 'visibleStroke' }}
                             />
                         </svg>
                     );
@@ -901,10 +976,10 @@ const DecisionFlowTool = () => {
                 borderTop: '1px solid #34495e'
             }}>
                 <div>
-                    提示：选中节点后按Delete键或点击工具栏删除按钮可删除节点及相关连接 | Ctrl+Z撤销删除操作 | Esc退出编辑
+                    提示：选中节点或连线后按Delete键可删除 | Ctrl+Z撤销删除操作 | Esc取消选择
                 </div>
                 <div style={{ marginTop: '5px', opacity: 0.7 }}>
-                    决策流程图工具 v1.3 &copy; {new Date().getFullYear()}
+                    决策流程图工具 v1.4 &copy; {new Date().getFullYear()}
                 </div>
             </div>
             
