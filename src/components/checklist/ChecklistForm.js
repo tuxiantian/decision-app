@@ -10,7 +10,6 @@ const ChecklistForm = () => {
   const [checklistName, setChecklistName] = useState('');
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([{ question: '', description: '' }]);
-  const [mermaidCode, setMermaidCode] = useState('');
   const [flowData, setFlowData] = useState({});
   const [activeTab, setActiveTab] = useState('form');
   const navigate = useNavigate();
@@ -23,7 +22,6 @@ const ChecklistForm = () => {
           const data = response.data;
           setChecklistName(data.name);
           setDescription(data.description);
-          setMermaidCode(data.mermaid_code);
           setQuestions(data.questions.map(q => ({
             question: q.question,
             description: q.description || '',
