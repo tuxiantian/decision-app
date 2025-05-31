@@ -46,7 +46,17 @@ const DecisionFlowTool = ({
             setConnectingStart(null);
         }
     }, [readOnly]);
+    // 在组件挂载时初始化计数器
+    useEffect(() => {
+        if (initialNodes?.length > 0) {
+            // 找到最大的节点序号
+            const maxNodeNumber = initialNodes.reduce((max, node) => {
+                return node.nodeNumber > max ? node.nodeNumber : max;
+            }, 0);
 
+            nodeCounter.current = maxNodeNumber + 1;
+        }
+    }, [initialNodes]); // 依赖 initialNodes
     // 显示通知
     const showNotification = (message, type = 'success') => {
         setNotification({ message, type });
@@ -131,14 +141,12 @@ const DecisionFlowTool = ({
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
 
-                // 找出最大的节点序号
-                const maxNodeId = parsedData.nodes.reduce((max, node) => {
-                    const nodeNum = parseInt(node.id.replace('node-', ''));
-                    return nodeNum > max ? nodeNum : max;
-                }, 0);
+                // 使用 nodeNumber 而非解析 ID
+                const maxNodeNumber = parsedData.nodes.reduce((max, node) =>
+                    node.nodeNumber > max ? node.nodeNumber : max
+                    , 0);
 
-                // 更新节点计数器
-                nodeCounter.current = maxNodeId + 1;
+                nodeCounter.current = maxNodeNumber + 1;
 
                 setNodes(parsedData.nodes || []);
                 setConnections(parsedData.connections || []);
@@ -204,14 +212,12 @@ const DecisionFlowTool = ({
                     throw new Error('无效的数据格式: 缺少节点数据');
                 }
 
-                // 找出最大的节点序号
-                const maxNodeId = importedData.nodes.reduce((max, node) => {
-                    const nodeNum = parseInt(node.id.replace('node-', ''));
-                    return nodeNum > max ? nodeNum : max;
-                }, 0);
+                // 使用 nodeNumber 而非解析 ID
+                const maxNodeNumber = importedData.nodes.reduce((max, node) =>
+                    node.nodeNumber > max ? node.nodeNumber : max
+                    , 0);
 
-                // 更新节点计数器
-                nodeCounter.current = maxNodeId + 1;
+                nodeCounter.current = maxNodeNumber + 1;
 
                 setNodes(importedData.nodes || []);
                 setConnections(importedData.connections || []);
@@ -741,7 +747,7 @@ const DecisionFlowTool = ({
                     flex: 1,
                     border: isFullScreen ? 'none' : '1px solid #ddd',
                     position: 'relative',
-                    overflow: 'hidden',
+                    overflow: 'auto',
                     backgroundColor: isFullScreen ? '#1a1a1a' : '#f9f9f9',
                     backgroundImage: isFullScreen
                         ? 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)'
@@ -1096,7 +1102,7 @@ const DecisionFlowTool = ({
                 )}
 
                 {/* 空状态提示 */}
-                {nodes.length === 0 && !readOnly  && (
+                {nodes.length === 0 && !readOnly && (
                     <div style={{
                         position: 'absolute',
                         top: '50%',
@@ -1127,7 +1133,7 @@ const DecisionFlowTool = ({
             </div>
 
             {/* 页脚信息 */}
-            {!isFullScreen && !readOnly  && (
+            {!isFullScreen && !readOnly && (
                 <div style={{
                     padding: '4px 12px',
                     backgroundColor: '#2c3e50',
