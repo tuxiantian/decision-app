@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-const DecisionFlowTool = () => {
-    const [nodes, setNodes] = useState(() => {
-        const savedData = localStorage.getItem('decisionFlowData');
-        return savedData ? JSON.parse(savedData).nodes : [];
-    });
-    const [connections, setConnections] = useState(() => {
-        const savedData = localStorage.getItem('decisionFlowData');
-        return savedData ? JSON.parse(savedData).connections : [];
-    });
+const DecisionFlowTool = ({
+    initialNodes = [],
+    initialConnections = [],
+    onFlowChange = () => { },
+    readOnly = false  // 添加 readOnly 属性
+}) => {
+    const [nodes, setNodes] = useState(initialNodes);
+    const [connections, setConnections] = useState(initialConnections);
     const [activeNodeId, setActiveNodeId] = useState(null);
     const [selectedNodeId, setSelectedNodeId] = useState(null);
     const [selectedConnectionId, setSelectedConnectionId] = useState(null);
@@ -23,9 +22,30 @@ const DecisionFlowTool = () => {
     const textareaRefs = useRef({});
     const fileInputRef = useRef(null);
     const containerRef = useRef(null);
-    
+
     // 节点计数器
     const nodeCounter = useRef(1);
+
+    // 添加状态变化回调
+    useEffect(() => {
+        if (onFlowChange) {
+            onFlowChange(nodes, connections);
+        }
+    }, [nodes, connections, onFlowChange]);
+
+    // 添加只读模式处理逻辑
+    useEffect(() => {
+        if (readOnly) {
+            // 只读模式下禁用所有编辑工具
+            setSelectedTool('select');
+
+            // 清除所有选中状态
+            setSelectedNodeId(null);
+            setSelectedConnectionId(null);
+            setActiveNodeId(null);
+            setConnectingStart(null);
+        }
+    }, [readOnly]);
 
     // 显示通知
     const showNotification = (message, type = 'success') => {
@@ -110,16 +130,16 @@ const DecisionFlowTool = () => {
             const savedData = localStorage.getItem('decisionFlowData');
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
-                
+
                 // 找出最大的节点序号
                 const maxNodeId = parsedData.nodes.reduce((max, node) => {
                     const nodeNum = parseInt(node.id.replace('node-', ''));
                     return nodeNum > max ? nodeNum : max;
                 }, 0);
-                
+
                 // 更新节点计数器
                 nodeCounter.current = maxNodeId + 1;
-                
+
                 setNodes(parsedData.nodes || []);
                 setConnections(parsedData.connections || []);
                 setActiveNodeId(null);
@@ -153,15 +173,15 @@ const DecisionFlowTool = () => {
         try {
             const flowData = { nodes, connections };
             const dataStr = JSON.stringify(flowData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
             const exportFileDefaultName = '决策流程图.json';
-            
+
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
-            
+
             showNotification('数据导出成功！');
         } catch (error) {
             showNotification('导出失败: ' + error.message, 'error');
@@ -172,60 +192,61 @@ const DecisionFlowTool = () => {
     const importData = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        
+
         const reader = new FileReader();
         reader.onload = (event) => {
             try {
                 const content = event.target.result;
                 const importedData = JSON.parse(content);
-                
+
                 // 验证数据格式
                 if (!Array.isArray(importedData.nodes)) {
                     throw new Error('无效的数据格式: 缺少节点数据');
                 }
-                
+
                 // 找出最大的节点序号
                 const maxNodeId = importedData.nodes.reduce((max, node) => {
                     const nodeNum = parseInt(node.id.replace('node-', ''));
                     return nodeNum > max ? nodeNum : max;
                 }, 0);
-                
+
                 // 更新节点计数器
                 nodeCounter.current = maxNodeId + 1;
-                
+
                 setNodes(importedData.nodes || []);
                 setConnections(importedData.connections || []);
                 setActiveNodeId(null);
                 setSelectedNodeId(null);
                 setSelectedConnectionId(null);
-                
+
                 // 保存到本地存储
                 localStorage.setItem('decisionFlowData', JSON.stringify(importedData));
-                
+
                 showNotification('数据导入成功！');
             } catch (error) {
                 showNotification('导入失败: ' + error.message, 'error');
             }
-            
+
             // 重置文件输入
             e.target.value = null;
         };
-        
+
         reader.readAsText(file);
     };
 
     // 创建新节点
     const addNode = (e) => {
+        if (readOnly) return; // 只读模式下禁止添加节点
         // 点击节点时不要创建新节点
         if (e.target !== stageRef.current) return;
-        
+
         // 如果当前有选中节点或连线，点击画布空白处取消选中
         if (selectedNodeId || selectedConnectionId) {
             setSelectedNodeId(null);
             setSelectedConnectionId(null);
             return;
         }
-        
+
         if (selectedTool !== 'text') return;
 
         const rect = stageRef.current.getBoundingClientRect();
@@ -253,14 +274,16 @@ const DecisionFlowTool = () => {
 
     // 删除选中的节点及其相关连接
     const deleteSelectedNode = () => {
+        if (readOnly) return; // 只读模式下禁止编辑文本
+
         if (!selectedNodeId) return;
-        
+
         // 确认删除
         const nodeNumber = nodes.find(n => n.id === selectedNodeId)?.nodeNumber;
         if (!window.confirm(`确定要删除节点 #${nodeNumber} 及其所有连接吗？`)) {
             return;
         }
-        
+
         // 保存当前状态用于可能的撤销操作
         setDeletedItems({
             nodes: [...nodes],
@@ -268,27 +291,29 @@ const DecisionFlowTool = () => {
             selectedNodeId,
             selectedConnectionId
         });
-        
+
         // 删除节点
         const newNodes = nodes.filter(node => node.id !== selectedNodeId);
-        
+
         // 删除与该节点相关的所有连接
-        const newConnections = connections.filter(conn => 
+        const newConnections = connections.filter(conn =>
             conn.from.nodeId !== selectedNodeId && conn.to.nodeId !== selectedNodeId
         );
-        
+
         setNodes(newNodes);
         setConnections(newConnections);
         setSelectedNodeId(null);
         setActiveNodeId(null);
-        
+
         showNotification(`已删除节点 #${nodeNumber}`, 'info');
     };
 
     // 删除选中的连接
     const deleteSelectedConnection = () => {
+        if (readOnly) return; // 只读模式下禁止编辑文本
+
         if (!selectedConnectionId) return;
-        
+
         // 保存当前状态用于可能的撤销操作
         setDeletedItems({
             nodes: [...nodes],
@@ -296,31 +321,31 @@ const DecisionFlowTool = () => {
             selectedNodeId,
             selectedConnectionId
         });
-        
+
         // 删除连接
         const newConnections = connections.filter(conn => conn.id !== selectedConnectionId);
         setConnections(newConnections);
         setSelectedConnectionId(null);
-        
+
         showNotification('已删除连接', 'info');
     };
 
     // 撤销删除操作
     const undoDelete = () => {
         if (!deletedItems) return;
-        
+
         setNodes(deletedItems.nodes);
         setConnections(deletedItems.connections);
         setSelectedNodeId(deletedItems.selectedNodeId);
         setSelectedConnectionId(deletedItems.selectedConnectionId);
         setDeletedItems(null);
-        
+
         showNotification('已撤销删除操作', 'info');
     };
 
     // 开始连接
     const startConnection = (nodeId, anchorPosition) => {
-        if (selectedTool !== 'arrow') return;
+        if (readOnly || selectedTool !== 'arrow') return;
         setConnectingStart({ nodeId, anchorPosition });
     };
 
@@ -343,6 +368,7 @@ const DecisionFlowTool = () => {
 
     // 处理节点拖拽
     const handleNodeDrag = (e, nodeId) => {
+        if (readOnly) return; // 只读模式下禁止拖拽节点
         // 允许在select和arrow工具下拖拽
         if (selectedTool !== 'select' && selectedTool !== 'arrow') return;
 
@@ -357,6 +383,8 @@ const DecisionFlowTool = () => {
 
     // 更新节点文本
     const updateNodeText = (nodeId, newText) => {
+        if (readOnly) return; // 只读模式下禁止编辑文本
+
         setNodes(nodes.map(node =>
             node.id === nodeId ? { ...node, text: newText } : node
         ));
@@ -420,13 +448,13 @@ const DecisionFlowTool = () => {
                 }
                 e.preventDefault();
             }
-            
+
             // Ctrl+Z撤销删除操作
             if (e.ctrlKey && e.key === 'z' && deletedItems) {
                 undoDelete();
                 e.preventDefault();
             }
-            
+
             // 按下Esc键退出编辑状态
             if (e.key === 'Escape') {
                 if (activeNodeId) {
@@ -435,13 +463,13 @@ const DecisionFlowTool = () => {
                     setSelectedNodeId(null);
                     setSelectedConnectionId(null);
                 }
-                
+
                 // 如果全屏，按ESC退出全屏
                 if (isFullScreen) {
                     exitFullScreen();
                 }
             }
-            
+
             // F11键切换全屏
             if (e.key === 'F11') {
                 e.preventDefault();
@@ -473,236 +501,239 @@ const DecisionFlowTool = () => {
     });
 
     return (
-        <div 
+        <div
             ref={containerRef}
-            style={{ 
-                display: 'flex', 
-                flexDirection: 'column', 
-                height: '100vh', 
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
                 fontFamily: 'Arial, sans-serif',
                 backgroundColor: isFullScreen ? '#1e1e1e' : 'white'
             }}
         >
             {/* 顶部操作栏 */}
-            <div style={{ 
-                padding: '6px 12px', 
-                backgroundColor: '#2c3e50', 
-                display: 'flex', 
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                color: 'white',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                zIndex: 100,
-                height: '40px' // 固定高度
-            }}>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                    <i className="fas fa-project-diagram" style={{ marginRight: '8px', fontSize: '16px' }}></i>
-                    决策流程图工具
-                    {isFullScreen && (
-                        <span style={{ 
-                            marginLeft: '12px', 
-                            fontSize: '12px', 
-                            backgroundColor: '#4a90e2', 
-                            padding: '2px 6px', 
-                            borderRadius: '4px'
-                        }}>
-                            全屏模式中 - 按ESC退出
-                        </span>
-                    )}
-                </div>
-                
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                        style={getButtonStyle()}
-                        onClick={saveData}
-                    >
-                        <i className="fas fa-save" style={{ fontSize: '12px' }}></i>
-                        保存
-                    </button>
-                    <button
-                        style={getButtonStyle()}
-                        onClick={loadLocalData}
-                    >
-                        <i className="fas fa-folder-open" style={{ fontSize: '12px' }}></i>
-                        加载
-                    </button>
-                    <button
-                        style={getButtonStyle()}
-                        onClick={exportData}
-                    >
-                        <i className="fas fa-file-export" style={{ fontSize: '12px' }}></i>
-                        导出
-                    </button>
-                    <button
-                        style={getButtonStyle()}
-                        onClick={() => fileInputRef.current.click()}
-                    >
-                        <i className="fas fa-file-import" style={{ fontSize: '12px' }}></i>
-                        导入
-                        <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            style={{ display: 'none' }} 
-                            accept=".json"
-                            onChange={importData}
-                        />
-                    </button>
-                    {deletedItems && (
+            {!readOnly && (
+                <div style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#2c3e50',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    color: 'white',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                    zIndex: 100,
+                    height: '40px' // 固定高度
+                }}>
+                    <div style={{ fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+                        <i className="fas fa-project-diagram" style={{ marginRight: '8px', fontSize: '16px' }}></i>
+                        决策流程图工具
+                        {isFullScreen && (
+                            <span style={{
+                                marginLeft: '12px',
+                                fontSize: '12px',
+                                backgroundColor: '#4a90e2',
+                                padding: '2px 6px',
+                                borderRadius: '4px'
+                            }}>
+                                全屏模式中 - 按ESC退出
+                            </span>
+                        )}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px' }}>
                         <button
-                            style={getButtonStyle(false, '#ff9f43')}
-                            onClick={undoDelete}
+                            style={getButtonStyle()}
+                            onClick={saveData}
                         >
-                            <i className="fas fa-undo" style={{ fontSize: '12px' }}></i>
-                            撤销删除
+                            <i className="fas fa-save" style={{ fontSize: '12px' }}></i>
+                            保存
                         </button>
-                    )}
-                    <button
-                        style={{ ...getButtonStyle(false, '#e74c3c'), color: 'white' }}
-                        onClick={resetCanvas}
-                    >
-                        <i className="fas fa-trash-alt" style={{ fontSize: '12px' }}></i>
-                        重置
-                    </button>
-                    <button
-                        style={{ ...getButtonStyle(false, isFullScreen ? '#4a90e2' : '#2ecc71'), color: 'white' }}
-                        onClick={toggleFullScreen}
-                    >
-                        <i className={`fas ${isFullScreen ? 'fa-compress' : 'fa-expand'}`} style={{ fontSize: '12px' }}></i>
-                        {isFullScreen ? '退出全屏' : '全屏模式'}
-                    </button>
+                        <button
+                            style={getButtonStyle()}
+                            onClick={loadLocalData}
+                        >
+                            <i className="fas fa-folder-open" style={{ fontSize: '12px' }}></i>
+                            加载
+                        </button>
+                        <button
+                            style={getButtonStyle()}
+                            onClick={exportData}
+                        >
+                            <i className="fas fa-file-export" style={{ fontSize: '12px' }}></i>
+                            导出
+                        </button>
+                        <button
+                            style={getButtonStyle()}
+                            onClick={() => fileInputRef.current.click()}
+                        >
+                            <i className="fas fa-file-import" style={{ fontSize: '12px' }}></i>
+                            导入
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
+                                accept=".json"
+                                onChange={importData}
+                            />
+                        </button>
+                        {deletedItems && (
+                            <button
+                                style={getButtonStyle(false, '#ff9f43')}
+                                onClick={undoDelete}
+                            >
+                                <i className="fas fa-undo" style={{ fontSize: '12px' }}></i>
+                                撤销删除
+                            </button>
+                        )}
+                        <button
+                            style={{ ...getButtonStyle(false, '#e74c3c'), color: 'white' }}
+                            onClick={resetCanvas}
+                        >
+                            <i className="fas fa-trash-alt" style={{ fontSize: '12px' }}></i>
+                            重置
+                        </button>
+                        <button
+                            style={{ ...getButtonStyle(false, isFullScreen ? '#4a90e2' : '#2ecc71'), color: 'white' }}
+                            onClick={toggleFullScreen}
+                        >
+                            <i className={`fas ${isFullScreen ? 'fa-compress' : 'fa-expand'}`} style={{ fontSize: '12px' }}></i>
+                            {isFullScreen ? '退出全屏' : '全屏模式'}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* 工具栏 */}
-            <div style={{ 
-                padding: '6px', 
-                backgroundColor: '#f0f0f0', 
-                display: 'flex', 
-                gap: '8px', 
-                borderBottom: '1px solid #ddd',
-                zIndex: 100,
-                height: '36px' // 固定高度
-            }}>
-                <button
-                    style={{
-                        padding: '6px 12px',
-                        backgroundColor: selectedTool === 'select' ? '#4a90e2' : 'white',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px' // 减小字体
-                    }}
-                    onClick={() => setSelectedTool('select')}
-                >
-                    <i className="fas fa-mouse-pointer" style={{ fontSize: '12px' }}></i>
-                    选择
-                </button>
-                <button
-                    style={{
-                        padding: '6px 12px',
-                        backgroundColor: selectedTool === 'text' ? '#4a90e2' : 'white',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px' // 减小字体
-                    }}
-                    onClick={() => setSelectedTool('text')}
-                >
-                    <i className="fas fa-font" style={{ fontSize: '12px' }}></i>
-                    文本
-                </button>
-                <button
-                    style={{
-                        padding: '6px 12px',
-                        backgroundColor: selectedTool === 'arrow' ? '#4a90e2' : 'white',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontSize: '13px' // 减小字体
-                    }}
-                    onClick={() => setSelectedTool('arrow')}
-                >
-                    <i className="fas fa-arrow-right" style={{ fontSize: '12px' }}></i>
-                    箭头
-                </button>
-                
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
-                        <i className="fas fa-info-circle" style={{ marginRight: '4px', fontSize: '12px' }}></i>
-                        节点: {nodes.length} | 连接: {connections.length}
-                    </div>
-                    {selectedNodeId && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <div style={{ color: '#555', fontSize: '12px' }}>
-                                选中节点: <span style={{ fontWeight: 'bold' }}>#{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}</span>
-                            </div>
-                            <button 
-                                style={{ 
-                                    padding: '4px 8px', 
-                                    backgroundColor: '#e74c3c', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    transition: 'all 0.2s',
-                                    fontSize: '12px', // 减小字体
-                                    ':hover': {
-                                        backgroundColor: '#c0392b',
-                                        transform: 'scale(1.05)'
-                                    }
-                                }}
-                                onClick={deleteSelectedNode}
-                            >
-                                <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
-                                删除节点
-                            </button>
-                        </div>
-                    )}
-                    {selectedConnectionId && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ color: '#555', fontSize: '12px' }}>
-                                选中连接
-                            </div>
-                            <button 
-                                style={{ 
-                                    padding: '4px 8px', 
-                                    backgroundColor: '#e74c3c', 
-                                    color: 'white', 
-                                    border: 'none', 
-                                    borderRadius: '4px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    transition: 'all 0.2s',
-                                    fontSize: '12px', // 减小字体
-                                    ':hover': {
-                                        backgroundColor: '#c0392b',
-                                        transform: 'scale(1.05)'
-                                    }
-                                }}
-                                onClick={deleteSelectedConnection}
-                            >
-                                <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
-                                删除连接
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
+            {!readOnly && (
+                <div style={{
+                    padding: '6px',
+                    backgroundColor: '#f0f0f0',
+                    display: 'flex',
+                    gap: '8px',
+                    borderBottom: '1px solid #ddd',
+                    zIndex: 100,
+                    height: '36px' // 固定高度
+                }}>
+                    <button
+                        style={{
+                            padding: '6px 12px',
+                            backgroundColor: selectedTool === 'select' ? '#4a90e2' : 'white',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '13px' // 减小字体
+                        }}
+                        onClick={() => setSelectedTool('select')}
+                    >
+                        <i className="fas fa-mouse-pointer" style={{ fontSize: '12px' }}></i>
+                        选择
+                    </button>
+                    <button
+                        style={{
+                            padding: '6px 12px',
+                            backgroundColor: selectedTool === 'text' ? '#4a90e2' : 'white',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '13px' // 减小字体
+                        }}
+                        onClick={() => setSelectedTool('text')}
+                    >
+                        <i className="fas fa-font" style={{ fontSize: '12px' }}></i>
+                        文本
+                    </button>
+                    <button
+                        style={{
+                            padding: '6px 12px',
+                            backgroundColor: selectedTool === 'arrow' ? '#4a90e2' : 'white',
+                            border: '1px solid #ddd',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '13px' // 减小字体
+                        }}
+                        onClick={() => setSelectedTool('arrow')}
+                    >
+                        <i className="fas fa-arrow-right" style={{ fontSize: '12px' }}></i>
+                        箭头
+                    </button>
 
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
+                            <i className="fas fa-info-circle" style={{ marginRight: '4px', fontSize: '12px' }}></i>
+                            节点: {nodes.length} | 连接: {connections.length}
+                        </div>
+                        {selectedNodeId && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ color: '#555', fontSize: '12px' }}>
+                                    选中节点: <span style={{ fontWeight: 'bold' }}>#{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}</span>
+                                </div>
+                                <button
+                                    style={{
+                                        padding: '4px 8px',
+                                        backgroundColor: '#e74c3c',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        transition: 'all 0.2s',
+                                        fontSize: '12px', // 减小字体
+                                        ':hover': {
+                                            backgroundColor: '#c0392b',
+                                            transform: 'scale(1.05)'
+                                        }
+                                    }}
+                                    onClick={deleteSelectedNode}
+                                >
+                                    <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
+                                    删除节点
+                                </button>
+                            </div>
+                        )}
+                        {selectedConnectionId && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ color: '#555', fontSize: '12px' }}>
+                                    选中连接
+                                </div>
+                                <button
+                                    style={{
+                                        padding: '4px 8px',
+                                        backgroundColor: '#e74c3c',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        transition: 'all 0.2s',
+                                        fontSize: '12px', // 减小字体
+                                        ':hover': {
+                                            backgroundColor: '#c0392b',
+                                            transform: 'scale(1.05)'
+                                        }
+                                    }}
+                                    onClick={deleteSelectedConnection}
+                                >
+                                    <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
+                                    删除连接
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
             {/* 画布 */}
             <div
                 ref={stageRef}
@@ -712,12 +743,14 @@ const DecisionFlowTool = () => {
                     position: 'relative',
                     overflow: 'hidden',
                     backgroundColor: isFullScreen ? '#1a1a1a' : '#f9f9f9',
-                    backgroundImage: isFullScreen 
+                    backgroundImage: isFullScreen
                         ? 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)'
                         : 'linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px)',
                     backgroundSize: '20px 20px',
                     cursor: connectingStart ? 'crosshair' : selectedTool === 'text' ? 'text' : 'default',
-                    transition: 'background-color 0.3s'
+                    transition: 'background-color 0.3s',
+                    cursor: readOnly ? 'default' : (
+                        connectingStart ? 'crosshair' : selectedTool === 'text' ? 'text' : 'default')
                 }}
                 onClick={addNode}
                 onMouseMove={(e) => {
@@ -750,8 +783,8 @@ const DecisionFlowTool = () => {
                         left: '50%',
                         transform: 'translateX(-50%)',
                         padding: '10px 20px',
-                        backgroundColor: notification.type === 'error' ? '#e74c3c' : 
-                                        notification.type === 'info' ? '#3498db' : '#2ecc71',
+                        backgroundColor: notification.type === 'error' ? '#e74c3c' :
+                            notification.type === 'info' ? '#3498db' : '#2ecc71',
                         color: 'white',
                         borderRadius: '4px',
                         boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
@@ -766,7 +799,7 @@ const DecisionFlowTool = () => {
                         {notification.message}
                     </div>
                 )}
-                
+
                 {/* 操作提示 */}
                 {(selectedNodeId || selectedConnectionId) && (
                     <div style={{
@@ -786,12 +819,12 @@ const DecisionFlowTool = () => {
                         animation: 'pulse 1.5s infinite'
                     }}>
                         <i className="fas fa-exclamation-triangle"></i>
-                        {selectedNodeId ? 
-                            `已选中节点 #${nodes.find(n => n.id === selectedNodeId)?.nodeNumber}，按Delete键或点击工具栏删除按钮可删除` : 
+                        {selectedNodeId ?
+                            `已选中节点 #${nodes.find(n => n.id === selectedNodeId)?.nodeNumber}，按Delete键或点击工具栏删除按钮可删除` :
                             '已选中连接，按Delete键或点击工具栏删除按钮可删除'}
                     </div>
                 )}
-                
+
                 {/* 箭头标记定义 */}
                 <svg style={{ height: 0, width: 0 }}>
                     <defs>
@@ -813,22 +846,24 @@ const DecisionFlowTool = () => {
                     <div
                         key={node.id}
                         style={{
+                            cursor: readOnly ? 'default' : (
+                                selectedTool === 'select' || selectedTool === 'arrow' ? 'move' : 'default'),
                             position: 'absolute',
                             left: `${node.x}px`,
                             top: `${node.y}px`,
                             width: `${node.width}px`,
                             minHeight: `${node.height}px`,
-                            border: selectedNodeId === node.id 
-                                ? '3px solid #e74c3c' 
-                                : activeNodeId === node.id 
-                                    ? '2px solid #4a90e2' 
+                            border: selectedNodeId === node.id
+                                ? '3px solid #e74c3c'
+                                : activeNodeId === node.id
+                                    ? '2px solid #4a90e2'
                                     : isFullScreen ? '1px solid #555' : '1px solid #bbb',
                             borderRadius: '8px',
                             padding: '12px',
                             backgroundColor: isFullScreen ? '#2a2a2a' : '#ffffff',
-                            boxShadow: selectedNodeId === node.id 
-                                ? '0 0 15px rgba(231, 76, 60, 0.4)' 
-                                : activeNodeId === node.id 
+                            boxShadow: selectedNodeId === node.id
+                                ? '0 0 15px rgba(231, 76, 60, 0.4)'
+                                : activeNodeId === node.id
                                     ? '0 0 10px rgba(74, 144, 226, 0.3)'
                                     : '0 3px 8px rgba(0,0,0,0.1)',
                             cursor: selectedTool === 'select' || selectedTool === 'arrow' ? 'move' : 'default',
@@ -836,14 +871,15 @@ const DecisionFlowTool = () => {
                             transition: 'all 0.3s',
                             ':hover': {
                                 boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
-                                borderColor: selectedNodeId === node.id 
-                                    ? '#e74c3c' 
-                                    : activeNodeId === node.id 
+                                borderColor: selectedNodeId === node.id
+                                    ? '#e74c3c'
+                                    : activeNodeId === node.id
                                         ? '#4a90e2'
                                         : isFullScreen ? '#777' : '#999'
                             }
                         }}
                         onMouseDown={(e) => {
+                            if (readOnly) return; // 只读模式下禁止交互
                             // 编辑状态下阻止拖拽
                             if (activeNodeId === node.id) {
                                 return;
@@ -854,6 +890,7 @@ const DecisionFlowTool = () => {
                             setSelectedConnectionId(null);
                         }}
                         onDoubleClick={(e) => {
+                            if (readOnly) return; // 只读模式下禁止交互
                             e.stopPropagation();
                             e.preventDefault();
                             setActiveNodeId(node.id);
@@ -891,6 +928,7 @@ const DecisionFlowTool = () => {
                                     lineHeight: '1.5',
                                     color: isFullScreen ? '#fff' : '#000'
                                 }}
+                                readOnly={readOnly}
                                 autoFocus
                                 onMouseDown={(e) => e.stopPropagation()}
                             />
@@ -918,9 +956,9 @@ const DecisionFlowTool = () => {
                             fontSize: '10px',
                             color: '#fff',
                             userSelect: 'none',
-                            backgroundColor: selectedNodeId === node.id 
-                                ? '#e74c3c' 
-                                : activeNodeId === node.id 
+                            backgroundColor: selectedNodeId === node.id
+                                ? '#e74c3c'
+                                : activeNodeId === node.id
                                     ? '#4a90e2'
                                     : isFullScreen ? '#555' : '#777',
                             borderRadius: '10px',
@@ -931,7 +969,7 @@ const DecisionFlowTool = () => {
                         </div>
 
                         {/* 锚点 */}
-                        {(selectedTool === 'select' || selectedTool === 'arrow') && (
+                        {!readOnly && (selectedTool === 'select' || selectedTool === 'arrow') && (
                             <>
                                 {['top', 'right', 'bottom', 'left'].map(position => (
                                     <div
@@ -1015,11 +1053,12 @@ const DecisionFlowTool = () => {
                                 strokeWidth={selectedConnectionId === conn.id ? "4" : "2"}
                                 markerEnd="url(#arrowhead)"
                                 onClick={(e) => {
+                                    if (readOnly) return; // 只读模式下禁止选择
                                     e.stopPropagation();
                                     setSelectedConnectionId(conn.id);
                                     setSelectedNodeId(null);
                                 }}
-                                style={{ cursor: 'pointer', pointerEvents: 'visibleStroke' }}
+                                style={{ cursor: readOnly ? 'default' : 'pointer', pointerEvents: readOnly ? 'none' : 'visibleStroke' }}
                             />
                         </svg>
                     );
@@ -1055,9 +1094,9 @@ const DecisionFlowTool = () => {
                         />
                     </svg>
                 )}
-                
+
                 {/* 空状态提示 */}
-                {nodes.length === 0 && (
+                {nodes.length === 0 && !readOnly  && (
                     <div style={{
                         position: 'absolute',
                         top: '50%',
@@ -1086,9 +1125,9 @@ const DecisionFlowTool = () => {
                     </div>
                 )}
             </div>
-            
+
             {/* 页脚信息 */}
-            {!isFullScreen && (
+            {!isFullScreen && !readOnly  && (
                 <div style={{
                     padding: '4px 12px',
                     backgroundColor: '#2c3e50',
@@ -1106,10 +1145,10 @@ const DecisionFlowTool = () => {
                     </div>
                 </div>
             )}
-            
+
             {/* Font Awesome 图标 */}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-            
+
             {/* 动画样式 */}
             <style>
                 {`
