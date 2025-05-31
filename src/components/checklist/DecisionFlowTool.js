@@ -1,15 +1,124 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 const DecisionFlowTool = () => {
-    const [nodes, setNodes] = useState([]);
-    const [connections, setConnections] = useState([]);
+    const [nodes, setNodes] = useState(() => {
+        // 尝试从localStorage加载保存的数据
+        const savedData = localStorage.getItem('decisionFlowData');
+        return savedData ? JSON.parse(savedData).nodes : [];
+    });
+    const [connections, setConnections] = useState(() => {
+        const savedData = localStorage.getItem('decisionFlowData');
+        return savedData ? JSON.parse(savedData).connections : [];
+    });
     const [activeNodeId, setActiveNodeId] = useState(null);
     const [draggingNodeId, setDraggingNodeId] = useState(null);
     const [connectingStart, setConnectingStart] = useState(null);
     const [selectedTool, setSelectedTool] = useState('select');
     const [hoveredAnchor, setHoveredAnchor] = useState(null);
+    const [notification, setNotification] = useState(null);
     const stageRef = useRef(null);
     const textareaRefs = useRef({});
+    const fileInputRef = useRef(null);
+
+    // 显示通知
+    const showNotification = (message, type = 'success') => {
+        setNotification({ message, type });
+        setTimeout(() => setNotification(null), 3000);
+    };
+
+    // 保存数据到localStorage
+    const saveData = () => {
+        try {
+            const flowData = { nodes, connections };
+            localStorage.setItem('decisionFlowData', JSON.stringify(flowData));
+            showNotification('数据保存成功！');
+        } catch (error) {
+            showNotification('保存失败: ' + error.message, 'error');
+        }
+    };
+
+    // 加载本地数据
+    const loadLocalData = () => {
+        try {
+            const savedData = localStorage.getItem('decisionFlowData');
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                setNodes(parsedData.nodes || []);
+                setConnections(parsedData.connections || []);
+                showNotification('数据加载成功！');
+            } else {
+                showNotification('没有找到保存的数据', 'info');
+            }
+        } catch (error) {
+            showNotification('加载失败: ' + error.message, 'error');
+        }
+    };
+
+    // 重置画布
+    const resetCanvas = () => {
+        if (window.confirm('确定要重置画布吗？所有未保存的数据将会丢失！')) {
+            setNodes([]);
+            setConnections([]);
+            setActiveNodeId(null);
+            localStorage.removeItem('decisionFlowData');
+            showNotification('画布已重置', 'info');
+        }
+    };
+
+    // 导出为JSON文件
+    const exportData = () => {
+        try {
+            const flowData = { nodes, connections };
+            const dataStr = JSON.stringify(flowData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = '决策流程图.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('数据导出成功！');
+        } catch (error) {
+            showNotification('导出失败: ' + error.message, 'error');
+        }
+    };
+
+    // 导入JSON文件
+    const importData = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const content = event.target.result;
+                const importedData = JSON.parse(content);
+                
+                // 简单验证数据格式
+                if (!Array.isArray(importedData.nodes)) {
+                    throw new Error('无效的数据格式: 缺少节点数据');
+                }
+                
+                setNodes(importedData.nodes || []);
+                setConnections(importedData.connections || []);
+                setActiveNodeId(null);
+                
+                // 保存到本地存储
+                localStorage.setItem('decisionFlowData', JSON.stringify(importedData));
+                
+                showNotification('数据导入成功！');
+            } catch (error) {
+                showNotification('导入失败: ' + error.message, 'error');
+            }
+            
+            // 重置文件输入
+            e.target.value = null;
+        };
+        
+        reader.readAsText(file);
+    };
 
     // 创建新节点
     const addNode = (e) => {
@@ -138,20 +247,101 @@ const DecisionFlowTool = () => {
         setDraggingNodeId(null); // 修复：防止双击时节点移动
     };
 
+    // 保存按钮样式
+    const getButtonStyle = (isActive = false) => ({
+        padding: '8px 16px',
+        backgroundColor: isActive ? '#4a90e2' : 'white',
+        border: '1px solid #ddd',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        transition: 'all 0.2s',
+        ':hover': {
+            backgroundColor: isActive ? '#3a7bc8' : '#f5f5f5'
+        }
+    });
+
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', fontFamily: 'Arial, sans-serif' }}>
+            {/* 顶部操作栏 */}
+            <div style={{ 
+                padding: '10px 15px', 
+                backgroundColor: '#2c3e50', 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: 'white',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            }}>
+                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                    <i className="fas fa-project-diagram" style={{ marginRight: '10px' }}></i>
+                    决策流程图工具
+                </div>
+                
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                        style={getButtonStyle()}
+                        onClick={saveData}
+                    >
+                        <i className="fas fa-save"></i>
+                        保存
+                    </button>
+                    <button
+                        style={getButtonStyle()}
+                        onClick={loadLocalData}
+                    >
+                        <i className="fas fa-folder-open"></i>
+                        加载
+                    </button>
+                    <button
+                        style={getButtonStyle()}
+                        onClick={exportData}
+                    >
+                        <i className="fas fa-file-export"></i>
+                        导出
+                    </button>
+                    <button
+                        style={getButtonStyle()}
+                        onClick={() => fileInputRef.current.click()}
+                    >
+                        <i className="fas fa-file-import"></i>
+                        导入
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            style={{ display: 'none' }} 
+                            accept=".json"
+                            onChange={importData}
+                        />
+                    </button>
+                    <button
+                        style={{ ...getButtonStyle(), backgroundColor: '#e74c3c', color: 'white' }}
+                        onClick={resetCanvas}
+                    >
+                        <i className="fas fa-trash-alt"></i>
+                        重置
+                    </button>
+                </div>
+            </div>
+
             {/* 工具栏 */}
-            <div style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', gap: '10px' }}>
+            <div style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', gap: '10px', borderBottom: '1px solid #ddd' }}>
                 <button
                     style={{
                         padding: '8px 16px',
                         backgroundColor: selectedTool === 'select' ? '#4a90e2' : 'white',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
                     }}
                     onClick={() => setSelectedTool('select')}
                 >
+                    <i className="fas fa-mouse-pointer"></i>
                     选择
                 </button>
                 <button
@@ -160,10 +350,14 @@ const DecisionFlowTool = () => {
                         backgroundColor: selectedTool === 'text' ? '#4a90e2' : 'white',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
                     }}
                     onClick={() => setSelectedTool('text')}
                 >
+                    <i className="fas fa-font"></i>
                     文本
                 </button>
                 <button
@@ -172,12 +366,21 @@ const DecisionFlowTool = () => {
                         backgroundColor: selectedTool === 'arrow' ? '#4a90e2' : 'white',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
                     }}
                     onClick={() => setSelectedTool('arrow')}
                 >
+                    <i className="fas fa-arrow-right"></i>
                     箭头
                 </button>
+                
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
+                    <i className="fas fa-info-circle" style={{ marginRight: '6px' }}></i>
+                    当前节点: {nodes.length} | 连接: {connections.length}
+                </div>
             </div>
 
             {/* 画布 */}
@@ -188,6 +391,9 @@ const DecisionFlowTool = () => {
                     border: '1px solid #ddd',
                     position: 'relative',
                     overflow: 'hidden',
+                    backgroundColor: '#f9f9f9',
+                    backgroundImage: 'linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px)',
+                    backgroundSize: '20px 20px',
                     cursor: connectingStart ? 'crosshair' : selectedTool === 'text' ? 'text' : 'default'
                 }}
                 onClick={addNode}
@@ -213,6 +419,31 @@ const DecisionFlowTool = () => {
                     }
                 }}
             >
+                {/* 通知消息 */}
+                {notification && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '20px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        padding: '10px 20px',
+                        backgroundColor: notification.type === 'error' ? '#e74c3c' : 
+                                        notification.type === 'info' ? '#3498db' : '#2ecc71',
+                        color: 'white',
+                        borderRadius: '4px',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                        zIndex: 100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px'
+                    }}>
+                        {notification.type === 'error' && <i className="fas fa-exclamation-circle"></i>}
+                        {notification.type === 'info' && <i className="fas fa-info-circle"></i>}
+                        {notification.type === 'success' && <i className="fas fa-check-circle"></i>}
+                        {notification.message}
+                    </div>
+                )}
+                
                 {/* 箭头标记定义 */}
                 <svg style={{ height: 0, width: 0 }}>
                     <defs>
@@ -305,13 +536,18 @@ const DecisionFlowTool = () => {
                             top: `${node.y}px`,
                             width: `${node.width}px`,
                             minHeight: `${node.height}px`,
-                            border: activeNodeId === node.id ? '2px solid #4a90e2' : 'none',
-                            borderRadius: '4px',
-                            padding: '8px',
-                            backgroundColor: 'white',
-                            boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                            border: activeNodeId === node.id ? '2px solid #4a90e2' : '1px solid #bbb',
+                            borderRadius: '8px',
+                            padding: '12px',
+                            backgroundColor: '#ffffff',
+                            boxShadow: '0 3px 8px rgba(0,0,0,0.1)',
                             cursor: selectedTool === 'select' ? 'move' : 'default',
                             zIndex: activeNodeId === node.id ? 2 : 1,
+                            transition: 'box-shadow 0.2s, border-color 0.2s',
+                            ':hover': {
+                                boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
+                                borderColor: activeNodeId === node.id ? '#4a90e2' : '#999'
+                            }
                         }}
                         onMouseDown={(e) => {
                             // 修复：编辑状态下阻止拖拽
@@ -348,9 +584,10 @@ const DecisionFlowTool = () => {
                                     outline: 'none',
                                     resize: 'none',
                                     fontFamily: 'inherit',
-                                    fontSize: 'inherit',
+                                    fontSize: '16px',
                                     backgroundColor: 'transparent',
                                     cursor: 'text',
+                                    lineHeight: '1.5'
                                 }}
                                 autoFocus // 确保自动获取焦点
                                 onMouseDown={(e) => e.stopPropagation()} // 修复：阻止冒泡
@@ -360,13 +597,27 @@ const DecisionFlowTool = () => {
                                 style={{
                                     whiteSpace: 'pre-wrap',
                                     cursor: 'text',
-                                    minHeight: '100%', // 确保整个区域可点击
-                                    userSelect: 'none' // 防止双击选中文本
+                                    minHeight: '100%',
+                                    userSelect: 'none',
+                                    fontSize: '16px',
+                                    lineHeight: '1.5'
                                 }}
                             >
                                 {node.text}
                             </div>
                         )}
+
+                        {/* 节点ID标签 */}
+                        <div style={{
+                            position: 'absolute',
+                            top: '4px',
+                            right: '8px',
+                            fontSize: '10px',
+                            color: '#888',
+                            userSelect: 'none'
+                        }}>
+                            {node.id.slice(0, 6)}
+                        </div>
 
                         {/* 锚点 */}
                         {(selectedTool === 'select' || selectedTool === 'arrow') && (
@@ -376,30 +627,36 @@ const DecisionFlowTool = () => {
                                         key={position}
                                         style={{
                                             position: 'absolute',
-                                            width: '10px',
-                                            height: '10px',
+                                            width: '12px',
+                                            height: '12px',
                                             borderRadius: '50%',
                                             backgroundColor: hoveredAnchor?.nodeId === node.id &&
                                                 hoveredAnchor?.position === position
                                                 ? '#ff6b6b' : '#4a90e2',
                                             cursor: 'crosshair',
+                                            border: '1px solid white',
+                                            boxShadow: '0 0 3px rgba(0,0,0,0.3)',
+                                            transition: 'transform 0.2s',
+                                            ':hover': {
+                                                transform: 'scale(1.3)'
+                                            },
                                             ...(position === 'top' && {
                                                 left: '50%',
-                                                top: '-5px',
+                                                top: '-6px',
                                                 transform: 'translateX(-50%)',
                                             }),
                                             ...(position === 'right' && {
-                                                right: '-5px',
+                                                right: '-6px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
                                             }),
                                             ...(position === 'bottom' && {
                                                 left: '50%',
-                                                bottom: '-5px',
+                                                bottom: '-6px',
                                                 transform: 'translateX(-50%)',
                                             }),
                                             ...(position === 'left' && {
-                                                left: '-5px',
+                                                left: '-6px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
                                             }),
@@ -414,7 +671,56 @@ const DecisionFlowTool = () => {
                         )}
                     </div>
                 ))}
+                
+                {/* 空状态提示 */}
+                {nodes.length === 0 && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        textAlign: 'center',
+                        color: '#888',
+                        maxWidth: '500px',
+                        padding: '20px'
+                    }}>
+                        <i className="fas fa-project-diagram" style={{ fontSize: '48px', marginBottom: '20px' }}></i>
+                        <h2>欢迎使用决策流程图工具</h2>
+                        <p style={{ margin: '15px 0', lineHeight: '1.6' }}>
+                            请选择上方的"文本"工具开始创建节点，或使用"箭头"工具连接节点。<br />
+                            您也可以点击"加载"按钮恢复之前保存的工作。
+                        </p>
+                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
+                            <button style={getButtonStyle()} onClick={() => setSelectedTool('text')}>
+                                <i className="fas fa-font"></i> 创建节点
+                            </button>
+                            <button style={getButtonStyle()} onClick={loadLocalData}>
+                                <i className="fas fa-folder-open"></i> 加载数据
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
+            
+            {/* 页脚信息 */}
+            <div style={{
+                padding: '8px 15px',
+                backgroundColor: '#2c3e50',
+                color: '#ecf0f1',
+                fontSize: '12px',
+                textAlign: 'center',
+                borderTop: '1px solid #34495e'
+            }}>
+                <div>
+                    提示：数据会自动保存到浏览器本地存储。使用"导出"功能可将数据备份到文件。
+                </div>
+                <div style={{ marginTop: '5px', opacity: 0.7 }}>
+                    决策流程图工具 v1.0 &copy; {new Date().getFullYear()}
+                </div>
+            </div>
+            
+            {/* Font Awesome 图标 */}
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
         </div>
     );
 };
