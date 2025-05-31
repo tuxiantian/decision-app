@@ -18,9 +18,11 @@ const DecisionFlowTool = () => {
     const [hoveredAnchor, setHoveredAnchor] = useState(null);
     const [notification, setNotification] = useState(null);
     const [deletedItems, setDeletedItems] = useState(null);
+    const [isFullScreen, setIsFullScreen] = useState(false);
     const stageRef = useRef(null);
     const textareaRefs = useRef({});
     const fileInputRef = useRef(null);
+    const containerRef = useRef(null);
     
     // 节点计数器
     const nodeCounter = useRef(1);
@@ -30,6 +32,66 @@ const DecisionFlowTool = () => {
         setNotification({ message, type });
         setTimeout(() => setNotification(null), 3000);
     };
+
+    // 进入全屏模式
+    const enterFullScreen = () => {
+        const element = containerRef.current;
+        if (element.requestFullscreen) {
+            element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+        } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
+        } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+        }
+    };
+
+    // 退出全屏模式
+    const exitFullScreen = () => {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    };
+
+    // 切换全屏状态
+    const toggleFullScreen = () => {
+        if (isFullScreen) {
+            exitFullScreen();
+        } else {
+            enterFullScreen();
+        }
+    };
+
+    // 监听全屏变化
+    useEffect(() => {
+        const handleFullScreenChange = () => {
+            setIsFullScreen(!!(
+                document.fullscreenElement ||
+                document.mozFullScreenElement ||
+                document.webkitFullscreenElement ||
+                document.msFullscreenElement
+            ));
+        };
+
+        document.addEventListener('fullscreenchange', handleFullScreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullScreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullScreenChange);
+        document.addEventListener('msfullscreenchange', handleFullScreenChange);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullScreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullScreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
+            document.removeEventListener('msfullscreenchange', handleFullScreenChange);
+        };
+    }, []);
 
     // 保存数据
     const saveData = () => {
@@ -373,6 +435,17 @@ const DecisionFlowTool = () => {
                     setSelectedNodeId(null);
                     setSelectedConnectionId(null);
                 }
+                
+                // 如果全屏，按ESC退出全屏
+                if (isFullScreen) {
+                    exitFullScreen();
+                }
+            }
+            
+            // F11键切换全屏
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullScreen();
             }
         };
 
@@ -380,7 +453,7 @@ const DecisionFlowTool = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [selectedNodeId, selectedConnectionId, activeNodeId, deletedItems]);
+    }, [selectedNodeId, selectedConnectionId, activeNodeId, deletedItems, isFullScreen]);
 
     // 保存按钮样式
     const getButtonStyle = (isActive = false, color = null) => ({
@@ -399,7 +472,16 @@ const DecisionFlowTool = () => {
     });
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', fontFamily: 'Arial, sans-serif' }}>
+        <div 
+            ref={containerRef}
+            style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                height: '100vh', 
+                fontFamily: 'Arial, sans-serif',
+                backgroundColor: isFullScreen ? '#1e1e1e' : 'white'
+            }}
+        >
             {/* 顶部操作栏 */}
             <div style={{ 
                 padding: '10px 15px', 
@@ -408,11 +490,23 @@ const DecisionFlowTool = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 color: 'white',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                zIndex: 100
             }}>
-                <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
                     <i className="fas fa-project-diagram" style={{ marginRight: '10px' }}></i>
                     决策流程图工具
+                    {isFullScreen && (
+                        <span style={{ 
+                            marginLeft: '15px', 
+                            fontSize: '14px', 
+                            backgroundColor: '#4a90e2', 
+                            padding: '3px 8px', 
+                            borderRadius: '4px'
+                        }}>
+                            全屏模式中 - 按ESC退出
+                        </span>
+                    )}
                 </div>
                 
                 <div style={{ display: 'flex', gap: '10px' }}>
@@ -467,11 +561,25 @@ const DecisionFlowTool = () => {
                         <i className="fas fa-trash-alt"></i>
                         重置
                     </button>
+                    <button
+                        style={{ ...getButtonStyle(false, isFullScreen ? '#4a90e2' : '#2ecc71'), color: 'white' }}
+                        onClick={toggleFullScreen}
+                    >
+                        <i className={`fas ${isFullScreen ? 'fa-compress' : 'fa-expand'}`}></i>
+                        {isFullScreen ? '退出全屏' : '全屏模式'}
+                    </button>
                 </div>
             </div>
 
             {/* 工具栏 */}
-            <div style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', gap: '10px', borderBottom: '1px solid #ddd' }}>
+            <div style={{ 
+                padding: '10px', 
+                backgroundColor: '#f0f0f0', 
+                display: 'flex', 
+                gap: '10px', 
+                borderBottom: '1px solid #ddd',
+                zIndex: 100
+            }}>
                 <button
                     style={{
                         padding: '8px 16px',
@@ -592,13 +700,16 @@ const DecisionFlowTool = () => {
                 ref={stageRef}
                 style={{
                     flex: 1,
-                    border: '1px solid #ddd',
+                    border: isFullScreen ? 'none' : '1px solid #ddd',
                     position: 'relative',
                     overflow: 'hidden',
-                    backgroundColor: '#f9f9f9',
-                    backgroundImage: 'linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px)',
+                    backgroundColor: isFullScreen ? '#1a1a1a' : '#f9f9f9',
+                    backgroundImage: isFullScreen 
+                        ? 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)'
+                        : 'linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px)',
                     backgroundSize: '20px 20px',
-                    cursor: connectingStart ? 'crosshair' : selectedTool === 'text' ? 'text' : 'default'
+                    cursor: connectingStart ? 'crosshair' : selectedTool === 'text' ? 'text' : 'default',
+                    transition: 'background-color 0.3s'
                 }}
                 onClick={addNode}
                 onMouseMove={(e) => {
@@ -684,7 +795,7 @@ const DecisionFlowTool = () => {
                             refY="3.5"
                             orient="auto"
                         >
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                            <polygon points="0 0, 10 3.5, 0 7" fill={isFullScreen ? "#fff" : "#333"} />
                         </marker>
                     </defs>
                 </svg>
@@ -703,10 +814,10 @@ const DecisionFlowTool = () => {
                                 ? '3px solid #e74c3c' 
                                 : activeNodeId === node.id 
                                     ? '2px solid #4a90e2' 
-                                    : '1px solid #bbb',
+                                    : isFullScreen ? '1px solid #555' : '1px solid #bbb',
                             borderRadius: '8px',
                             padding: '12px',
-                            backgroundColor: '#ffffff',
+                            backgroundColor: isFullScreen ? '#2a2a2a' : '#ffffff',
                             boxShadow: selectedNodeId === node.id 
                                 ? '0 0 15px rgba(231, 76, 60, 0.4)' 
                                 : activeNodeId === node.id 
@@ -721,7 +832,7 @@ const DecisionFlowTool = () => {
                                     ? '#e74c3c' 
                                     : activeNodeId === node.id 
                                         ? '#4a90e2'
-                                        : '#999'
+                                        : isFullScreen ? '#777' : '#999'
                             }
                         }}
                         onMouseDown={(e) => {
@@ -769,7 +880,8 @@ const DecisionFlowTool = () => {
                                     fontSize: '16px',
                                     backgroundColor: 'transparent',
                                     cursor: 'text',
-                                    lineHeight: '1.5'
+                                    lineHeight: '1.5',
+                                    color: isFullScreen ? '#fff' : '#000'
                                 }}
                                 autoFocus
                                 onMouseDown={(e) => e.stopPropagation()}
@@ -782,7 +894,8 @@ const DecisionFlowTool = () => {
                                     minHeight: '100%',
                                     userSelect: 'none',
                                     fontSize: '16px',
-                                    lineHeight: '1.5'
+                                    lineHeight: '1.5',
+                                    color: isFullScreen ? '#fff' : '#000'
                                 }}
                             >
                                 {node.text}
@@ -801,7 +914,7 @@ const DecisionFlowTool = () => {
                                 ? '#e74c3c' 
                                 : activeNodeId === node.id 
                                     ? '#4a90e2'
-                                    : '#777',
+                                    : isFullScreen ? '#555' : '#777',
                             borderRadius: '10px',
                             padding: '3px 8px',
                             fontWeight: 'bold'
@@ -890,7 +1003,7 @@ const DecisionFlowTool = () => {
                                 y1={start.y}
                                 x2={end.x}
                                 y2={end.y}
-                                stroke={selectedConnectionId === conn.id ? "#e74c3c" : "#333"}
+                                stroke={selectedConnectionId === conn.id ? "#e74c3c" : (isFullScreen ? "#fff" : "#333")}
                                 strokeWidth={selectedConnectionId === conn.id ? "4" : "2"}
                                 markerEnd="url(#arrowhead)"
                                 onClick={(e) => {
@@ -928,7 +1041,7 @@ const DecisionFlowTool = () => {
                             ).y}
                             x2={connectingStart.currentX || 0}
                             y2={connectingStart.currentY || 0}
-                            stroke="#333"
+                            stroke={isFullScreen ? "#fff" : "#333"}
                             strokeWidth="2"
                             markerEnd="url(#arrowhead)"
                         />
@@ -943,7 +1056,7 @@ const DecisionFlowTool = () => {
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
                         textAlign: 'center',
-                        color: '#888',
+                        color: isFullScreen ? '#aaa' : '#888',
                         maxWidth: '500px',
                         padding: '20px',
                         zIndex: 50
@@ -967,21 +1080,23 @@ const DecisionFlowTool = () => {
             </div>
             
             {/* 页脚信息 */}
-            <div style={{
-                padding: '8px 15px',
-                backgroundColor: '#2c3e50',
-                color: '#ecf0f1',
-                fontSize: '12px',
-                textAlign: 'center',
-                borderTop: '1px solid #34495e'
-            }}>
-                <div>
-                    提示：选中节点或连线后按Delete键可删除 | Ctrl+Z撤销删除操作 | Esc取消选择
+            {!isFullScreen && (
+                <div style={{
+                    padding: '8px 15px',
+                    backgroundColor: '#2c3e50',
+                    color: '#ecf0f1',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                    borderTop: '1px solid #34495e'
+                }}>
+                    <div>
+                        提示：选中节点或连线后按Delete键可删除 | Ctrl+Z撤销删除操作 | Esc取消选择 | F11全屏
+                    </div>
+                    <div style={{ marginTop: '5px', opacity: 0.7 }}>
+                        决策流程图工具 v1.5 &copy; {new Date().getFullYear()}
+                    </div>
                 </div>
-                <div style={{ marginTop: '5px', opacity: 0.7 }}>
-                    决策流程图工具 v1.4 &copy; {new Date().getFullYear()}
-                </div>
-            </div>
+            )}
             
             {/* Font Awesome 图标 */}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
@@ -993,6 +1108,25 @@ const DecisionFlowTool = () => {
                     0% { opacity: 0.9; }
                     50% { opacity: 0.7; }
                     100% { opacity: 0.9; }
+                }
+                
+                .fullscreen-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 10px 15px;
+                    background-color: rgba(46, 204, 113, 0.9);
+                    color: white;
+                    border-radius: 4px;
+                    z-index: 1000;
+                    animation: fadeInOut 3s forwards;
+                }
+                
+                @keyframes fadeInOut {
+                    0% { opacity: 0; transform: translateY(-20px); }
+                    10% { opacity: 1; transform: translateY(0); }
+                    90% { opacity: 1; transform: translateY(0); }
+                    100% { opacity: 0; transform: translateY(-20px); }
                 }
                 `}
             </style>
