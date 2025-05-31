@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line, Arrow, Text, Group, Transformer, Circle } from 'react-konva';
 import styled from 'styled-components';
 
+
 const ToolContainer = styled.div`
   position: relative;
   width: 100%;
@@ -44,6 +45,7 @@ const AnchorPoint = styled(Circle)`
         stroke: #fff;
         stroke-width: 2;
         cursor: crosshair;
+        transform: scale(1.2);
 `;
 
 const FlowChartTool = () => {
@@ -104,15 +106,8 @@ const FlowChartTool = () => {
                 setIsTextToolActive(false); // 创建后立即禁用文字工具
                 setTool('select'); // 自动切换回选择工具
             }
-            setSelectedId(null);
             return;
-        } else {
-            const id = e.target.attrs.id || e.target.parent.attrs.id;
-            // Only update if selection changed
-            if (id !== selectedId) {
-                setSelectedId(id);
-            }
-        }
+        } 
     };
 
     const handleAddArrow = () => {
@@ -146,109 +141,6 @@ const FlowChartTool = () => {
         setIsTextToolActive(true);
     };
 
-    const handleTextDoubleClick = (e, id) => {
-        e.cancelBubble = true; // 阻止事件冒泡到锚点
-        const textNode = e.target;
-        const stage = textNode.getStage(); // 获取 stage 引用
-
-        // 进入编辑模式时改变文本样式
-        textNode.setAttrs({
-            draggable: false,
-            editing: true,
-            fill: '#0000FF',
-            fontStyle: 'italic'
-        });
-
-        // 存储原始文本和样式
-        if (!textNode.getAttr('originalText')) {
-            textNode.setAttr('originalText', textNode.text());
-            textNode.setAttr('originalFill', textNode.fill());
-            textNode.setAttr('originalFontStyle', textNode.fontStyle());
-        }
-
-        // 清空文本并显示光标
-        textNode.text('|');
-        if (stage) {
-            stage.container().style.cursor = 'text';
-            stage.container().focus();
-        }
-
-        // 临时禁用所有锚点的交互
-        stage.find('Circle').forEach(anchor => {
-            anchor.listening(false);
-        });
-
-        const finishEditing = () => {
-            if (!textNode || !stage) return;
-
-            const currentText = textNode.text().replace(/\|$/, '').trim();
-            const originalText = textNode.getAttr('originalText');
-            const newText = currentText || originalText;
-
-            // 恢复原始样式
-            textNode.setAttrs({
-                text: newText,
-                draggable: true,
-                fill: textNode.getAttr('originalFill'),
-                fontStyle: textNode.getAttr('originalFontStyle'),
-                editing: false
-            });
-
-            // 恢复锚点交互
-            stage.find('Circle').forEach(anchor => {
-                anchor.listening(true);
-            });
-
-            // 更新状态
-            setElements(elements.map(el =>
-                el.id === id ? { ...el, text: newText } : el
-            ));
-
-            // 清理事件监听
-            document.removeEventListener('keydown', handleKeyDown);
-            stage.container().style.cursor = 'default';
-        };
-
-        const handleKeyDown = (e) => {
-            if (!textNode || !stage) {
-                document.removeEventListener('keydown', handleKeyDown);
-                return;
-            }
-
-            e.preventDefault();
-
-            if (e.key === 'Enter') {
-                finishEditing();
-                return;
-            }
-
-            if (e.key === 'Backspace') {
-                const current = textNode.text().replace(/\|$/, '');
-                textNode.text(current.slice(0, -1) + '|');
-                return;
-            }
-
-            if (e.key.length === 1) {
-                const current = textNode.text().replace(/\|$/, '');
-                textNode.text(current + e.key + '|');
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-
-        // 点击其他地方完成编辑
-        const handleStageClick = (e) => {
-            if (e.target !== textNode) {
-                finishEditing();
-                stage.off('click', handleStageClick);
-            }
-        };
-
-        if (stage) {
-            stage.on('click', handleStageClick);
-        }
-    };
-
     const handleExport = () => {
         const uri = stageRef.current.toDataURL();
         const link = document.createElement('a');
@@ -260,24 +152,141 @@ const FlowChartTool = () => {
     };
 
     const getAnchorPosition = (element, position) => {
-        // 注意：这里需要确保 element.width 和 element.height 是有效的
-        // 你可能需要在 Text 组件上使用 ref 来获取实际尺寸
         const width = element.width || 100; // 默认值
         const height = element.height || 30; // 默认值
+        const offset = 10; // 锚点向外偏移的距离，可以根据需要调整
 
         switch (position) {
             case 'top':
-                return { x: element.x + width / 2, y: element.y };
+                return {
+                    x: element.x + width / 2,
+                    y: element.y - offset // 向上偏移
+                };
             case 'right':
-                return { x: element.x + width, y: element.y + height / 2 };
+                return {
+                    x: element.x + width + offset, // 向右偏移
+                    y: element.y + height / 2
+                };
             case 'bottom':
-                return { x: element.x + width / 2, y: element.y + height };
+                return {
+                    x: element.x + width / 2,
+                    y: element.y + height + offset // 向下偏移
+                };
             case 'left':
-                return { x: element.x, y: element.y + height / 2 };
+                return {
+                    x: element.x - offset, // 向左偏移
+                    y: element.y + height / 2
+                };
             default:
                 return { x: element.x, y: element.y };
         };
     }
+
+    const EditableText = ({ x, y, text, fontSize, fill, onEditEnd, id }) => {
+        const [isEditing, setIsEditing] = useState(false);
+        const [value, setValue] = useState(text);
+        const textRef = useRef(null);
+        const inputRef = useRef(null);
+
+        useEffect(() => {
+            console.log("Current value:", value);
+        }, [value]);
+        const handleDblClick = (e) => {
+            e.cancelBubble = true;
+            setIsEditing(true);
+        };
+
+        const handleBlur = () => {
+            setIsEditing(false);
+            onEditEnd(value);
+        };
+
+        const handleChange = (e) => {
+            console.log(e.target.value);
+            setValue(e.target.value);
+            textRef.current.text(e.target.value);
+        };
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleBlur();
+            }
+        };
+
+        useEffect(() => {
+            if (!isEditing) {
+                // 隐藏而非移除
+                if (inputRef.current) {
+                    inputRef.current.style.display = 'none';
+                }
+                return;
+            }
+            let input = inputRef.current;
+            if (!input) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = value;
+                input.style.position = 'absolute';
+                input.style.fontSize = `${fontSize}px`;
+                input.style.color = fill;
+                input.style.border = '1px solid #4af';
+                input.style.background = 'rgba(200, 230, 255, 0.9)';
+                input.style.outline = 'none';
+                input.style.padding = '4px 8px';
+                input.style.borderRadius = '4px';
+                input.style.zIndex = '1000';
+                input.style.minWidth = '100px';
+
+                const updatePosition = () => {
+                    const textNode = textRef.current;
+                    if (!textNode) return;
+
+                    const absPos = textNode.absolutePosition();
+                    const stage = textNode.getStage();
+                    const containerRect = stage.container().getBoundingClientRect();
+
+                    input.style.left = `${containerRect.left + absPos.x}px`;
+                    input.style.top = `${containerRect.top + absPos.y}px`;
+                    input.style.width = `${Math.max(textNode.width(), 100)}px`;
+                    input.style.height = `${textNode.height() + 8}px`;
+                };
+
+                input.addEventListener('change', handleChange);
+                input.addEventListener('blur', handleBlur);
+                input.addEventListener('keydown', handleKeyDown);
+                updatePosition();
+                document.body.appendChild(input);
+                inputRef.current = input;
+                inputRef.current.value = value;
+            }
+
+            return () => {
+                // if (!isEditing) {
+                //     input.removeEventListener('change', handleChange);
+                //     input.removeEventListener('blur', handleBlur);
+                //     input.removeEventListener('keydown', handleKeyDown);
+                //     if (input.parentNode) {
+                //         input.parentNode.removeChild(input);
+                //     }
+                // }
+
+            };
+        }, [isEditing, value, fontSize, fill]);
+
+        return (
+            <Text
+                x={x}
+                y={y}
+                ref={textRef}
+                text={value}
+                fontSize={fontSize}
+                fill={fill}
+                onDblClick={handleDblClick}
+                onDblTap={handleDblClick}
+            />
+        );
+    };
 
     const handleAnchorMouseDown = (e, textId, position) => {
         e.cancelBubble = true; // 阻止事件冒泡
@@ -525,69 +534,62 @@ const FlowChartTool = () => {
 
                             if (element.type === 'text') {
                                 return (
-                                    <Group key={element.id} id={element.id}>
-                                        <Text
+                                    <Group key={element.id} id={element.id} x={element.x} y={element.y} draggable
+                                        onDragEnd={(e) => {
+                                            const node = e.target;
+                                            setElements(
+                                                elements.map((el) => {
+                                                    if (el.id === element.id) {
+                                                        return {
+                                                            ...el,
+                                                            x: node.x(),
+                                                            y: node.y(),
+                                                        };
+                                                    }
+                                                    return el;
+                                                })
+                                            );
+                                        }}>
+                                        <EditableText
                                             x={element.x}
                                             y={element.y}
+                                            id={element.id}
                                             text={element.text}
                                             fontSize={element.fontSize}
-                                            fill={element.editing ? '#0000FF' : element.fill}
-                                            draggable={!element.editing}
-                                            onDblClick={(e) => {
-                                                if (!element.editing) {
-                                                    handleTextDoubleClick(e, element.id);
-                                                }
-                                            }}
-                                            onDblTap={(e) => {
-                                                if (!element.editing) {
-                                                    handleTextDoubleClick(e, element.id);
-                                                }
-                                            }}
-                                            onDragEnd={(e) => {
-                                                const node = e.target;
-                                                setElements(
-                                                    elements.map((el) => {
-                                                        if (el.id === element.id) {
-                                                            return {
-                                                                ...el,
-                                                                x: node.x(),
-                                                                y: node.y(),
-                                                            };
-                                                        }
-                                                        return el;
-                                                    })
-                                                );
-                                            }}
+                                            fill={element.fill}
+                                            onEditEnd={(newText) => {
 
-                                            ref={(node) => {
-                                                if (node) {
-                                                    textRefs.current[element.id] = node;
-                                                }
+                                                setElements(elements.map(el =>
+                                                    el.id === element.id ? { ...el, text: newText } : el
+                                                ));
                                             }}
                                         />
-                                        {['top', 'right', 'bottom', 'left'].map((position) => (
-                                            <Circle
-                                                key={position}
-                                                x={getAnchorPosition(element, position).x}
-                                                y={getAnchorPosition(element, position).y}
-                                                radius={5}
-                                                fill="#4af"
-                                                stroke="#fff"
-                                                strokeWidth={1}
-                                                draggable={false}
-                                                visible={tool === 'select' && selectedId === element.id}
-                                                onMouseDown={(e) => {
-                                                    if (tool === 'select') {
-                                                        handleAnchorMouseDown(e, element.id, position);
-                                                    }
-                                                }}
-                                                onTap={(e) => {
-                                                    if (tool === 'select') {
-                                                        handleAnchorMouseDown(e, element.id, position);
-                                                    }
-                                                }}
-                                            />
-                                        ))}
+                                        {['top', 'right', 'bottom', 'left'].map((position) => {
+                                            return (
+                                                <Circle
+                                                    key={position}
+                                                    x={getAnchorPosition(element, position).x}
+                                                    y={getAnchorPosition(element, position).y}
+                                                    radius={5}
+                                                    fill="#4af"
+                                                    stroke="#fff"
+                                                    strokeWidth={1}
+                                                    draggable={false}
+                                                    visible={tool === 'select' && selectedId === element.id}
+                                                    onMouseDown={(e) => {
+                                                        if (tool === 'select') {
+                                                            handleAnchorMouseDown(e, element.id, position);
+                                                        }
+                                                    }}
+                                                    onTap={(e) => {
+                                                        if (tool === 'select') {
+                                                            handleAnchorMouseDown(e, element.id, position);
+                                                        }
+                                                    }}
+                                                />
+                                            );
+
+                                        })}
 
                                         {selectedId === element.id && (
                                             <Line
