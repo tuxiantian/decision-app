@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useCallback} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DecisionFlowTool from './DecisionFlowTool'; // 引入新的流程图组件
 import { API_BASE_URL } from '../../config.js';
@@ -46,6 +46,9 @@ const ChecklistForm = () => {
     }
   }, [checklistId]);
 
+  const handleFlowChange = useCallback((nodes, connections) => {
+    setFlowData({ nodes, connections });
+  }, []); // 依赖数组为空，函数引用永远不变
 
   const handleAddQuestion = () => {
     setQuestions([...questions, { question: '', description: '' }]);
@@ -139,12 +142,7 @@ const ChecklistForm = () => {
               initialNodes={flowData.nodes}
               initialConnections={flowData.connections}
               // 当流程图数据改变时，更新flowData状态
-              onFlowChange={(newNodes, newConnections) => {
-                setFlowData({
-                  nodes: newNodes,
-                  connections: newConnections
-                });
-              }}
+              onFlowChange={handleFlowChange}
             />
           </div>
         </div>
