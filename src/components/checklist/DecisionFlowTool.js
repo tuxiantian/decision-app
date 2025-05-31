@@ -457,15 +457,16 @@ const DecisionFlowTool = () => {
 
     // 保存按钮样式
     const getButtonStyle = (isActive = false, color = null) => ({
-        padding: '8px 16px',
+        padding: '6px 12px',
         backgroundColor: color || (isActive ? '#4a90e2' : 'white'),
         border: '1px solid #ddd',
         borderRadius: '4px',
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: '4px',
         transition: 'all 0.2s',
+        fontSize: '13px', // 减小字体
         ':hover': {
             backgroundColor: color ? `${color}cc` : (isActive ? '#3a7bc8' : '#f5f5f5')
         }
@@ -484,24 +485,25 @@ const DecisionFlowTool = () => {
         >
             {/* 顶部操作栏 */}
             <div style={{ 
-                padding: '10px 15px', 
+                padding: '6px 12px', 
                 backgroundColor: '#2c3e50', 
                 display: 'flex', 
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 color: 'white',
                 boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                zIndex: 100
+                zIndex: 100,
+                height: '40px' // 固定高度
             }}>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
-                    <i className="fas fa-project-diagram" style={{ marginRight: '10px' }}></i>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
+                    <i className="fas fa-project-diagram" style={{ marginRight: '8px', fontSize: '16px' }}></i>
                     决策流程图工具
                     {isFullScreen && (
                         <span style={{ 
-                            marginLeft: '15px', 
-                            fontSize: '14px', 
+                            marginLeft: '12px', 
+                            fontSize: '12px', 
                             backgroundColor: '#4a90e2', 
-                            padding: '3px 8px', 
+                            padding: '2px 6px', 
                             borderRadius: '4px'
                         }}>
                             全屏模式中 - 按ESC退出
@@ -509,33 +511,33 @@ const DecisionFlowTool = () => {
                     )}
                 </div>
                 
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                         style={getButtonStyle()}
                         onClick={saveData}
                     >
-                        <i className="fas fa-save"></i>
+                        <i className="fas fa-save" style={{ fontSize: '12px' }}></i>
                         保存
                     </button>
                     <button
                         style={getButtonStyle()}
                         onClick={loadLocalData}
                     >
-                        <i className="fas fa-folder-open"></i>
+                        <i className="fas fa-folder-open" style={{ fontSize: '12px' }}></i>
                         加载
                     </button>
                     <button
                         style={getButtonStyle()}
                         onClick={exportData}
                     >
-                        <i className="fas fa-file-export"></i>
+                        <i className="fas fa-file-export" style={{ fontSize: '12px' }}></i>
                         导出
                     </button>
                     <button
                         style={getButtonStyle()}
                         onClick={() => fileInputRef.current.click()}
                     >
-                        <i className="fas fa-file-import"></i>
+                        <i className="fas fa-file-import" style={{ fontSize: '12px' }}></i>
                         导入
                         <input 
                             type="file" 
@@ -550,7 +552,7 @@ const DecisionFlowTool = () => {
                             style={getButtonStyle(false, '#ff9f43')}
                             onClick={undoDelete}
                         >
-                            <i className="fas fa-undo"></i>
+                            <i className="fas fa-undo" style={{ fontSize: '12px' }}></i>
                             撤销删除
                         </button>
                     )}
@@ -558,14 +560,14 @@ const DecisionFlowTool = () => {
                         style={{ ...getButtonStyle(false, '#e74c3c'), color: 'white' }}
                         onClick={resetCanvas}
                     >
-                        <i className="fas fa-trash-alt"></i>
+                        <i className="fas fa-trash-alt" style={{ fontSize: '12px' }}></i>
                         重置
                     </button>
                     <button
                         style={{ ...getButtonStyle(false, isFullScreen ? '#4a90e2' : '#2ecc71'), color: 'white' }}
                         onClick={toggleFullScreen}
                     >
-                        <i className={`fas ${isFullScreen ? 'fa-compress' : 'fa-expand'}`}></i>
+                        <i className={`fas ${isFullScreen ? 'fa-compress' : 'fa-expand'}`} style={{ fontSize: '12px' }}></i>
                         {isFullScreen ? '退出全屏' : '全屏模式'}
                     </button>
                 </div>
@@ -573,75 +575,79 @@ const DecisionFlowTool = () => {
 
             {/* 工具栏 */}
             <div style={{ 
-                padding: '10px', 
+                padding: '6px', 
                 backgroundColor: '#f0f0f0', 
                 display: 'flex', 
-                gap: '10px', 
+                gap: '8px', 
                 borderBottom: '1px solid #ddd',
-                zIndex: 100
+                zIndex: 100,
+                height: '36px' // 固定高度
             }}>
                 <button
                     style={{
-                        padding: '8px 16px',
+                        padding: '6px 12px',
                         backgroundColor: selectedTool === 'select' ? '#4a90e2' : 'white',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px'
+                        gap: '4px',
+                        fontSize: '13px' // 减小字体
                     }}
                     onClick={() => setSelectedTool('select')}
                 >
-                    <i className="fas fa-mouse-pointer"></i>
+                    <i className="fas fa-mouse-pointer" style={{ fontSize: '12px' }}></i>
                     选择
                 </button>
                 <button
                     style={{
-                        padding: '8px 16px',
+                        padding: '6px 12px',
                         backgroundColor: selectedTool === 'text' ? '#4a90e2' : 'white',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px'
+                        gap: '4px',
+                        fontSize: '13px' // 减小字体
                     }}
                     onClick={() => setSelectedTool('text')}
                 >
-                    <i className="fas fa-font"></i>
+                    <i className="fas fa-font" style={{ fontSize: '12px' }}></i>
                     文本
                 </button>
                 <button
                     style={{
-                        padding: '8px 16px',
+                        padding: '6px 12px',
                         backgroundColor: selectedTool === 'arrow' ? '#4a90e2' : 'white',
                         border: '1px solid #ddd',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px'
+                        gap: '4px',
+                        fontSize: '13px' // 减小字体
                     }}
                     onClick={() => setSelectedTool('arrow')}
                 >
-                    <i className="fas fa-arrow-right"></i>
+                    <i className="fas fa-arrow-right" style={{ fontSize: '12px' }}></i>
                     箭头
                 </button>
                 
                 <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
-                        <i className="fas fa-info-circle" style={{ marginRight: '6px' }}></i>
+                        <i className="fas fa-info-circle" style={{ marginRight: '4px', fontSize: '12px' }}></i>
                         节点: {nodes.length} | 连接: {connections.length}
                     </div>
                     {selectedNodeId && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ color: '#555', fontSize: '14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <div style={{ color: '#555', fontSize: '12px' }}>
                                 选中节点: <span style={{ fontWeight: 'bold' }}>#{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}</span>
                             </div>
                             <button 
                                 style={{ 
-                                    padding: '6px 12px', 
+                                    padding: '4px 8px', 
                                     backgroundColor: '#e74c3c', 
                                     color: 'white', 
                                     border: 'none', 
@@ -649,8 +655,9 @@ const DecisionFlowTool = () => {
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '5px',
+                                    gap: '4px',
                                     transition: 'all 0.2s',
+                                    fontSize: '12px', // 减小字体
                                     ':hover': {
                                         backgroundColor: '#c0392b',
                                         transform: 'scale(1.05)'
@@ -658,19 +665,19 @@ const DecisionFlowTool = () => {
                                 }}
                                 onClick={deleteSelectedNode}
                             >
-                                <i className="fas fa-trash"></i>
+                                <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
                                 删除节点
                             </button>
                         </div>
                     )}
                     {selectedConnectionId && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ color: '#555', fontSize: '14px' }}>
+                            <div style={{ color: '#555', fontSize: '12px' }}>
                                 选中连接
                             </div>
                             <button 
                                 style={{ 
-                                    padding: '6px 12px', 
+                                    padding: '4px 8px', 
                                     backgroundColor: '#e74c3c', 
                                     color: 'white', 
                                     border: 'none', 
@@ -678,8 +685,9 @@ const DecisionFlowTool = () => {
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '5px',
+                                    gap: '4px',
                                     transition: 'all 0.2s',
+                                    fontSize: '12px', // 减小字体
                                     ':hover': {
                                         backgroundColor: '#c0392b',
                                         transform: 'scale(1.05)'
@@ -687,7 +695,7 @@ const DecisionFlowTool = () => {
                                 }}
                                 onClick={deleteSelectedConnection}
                             >
-                                <i className="fas fa-trash"></i>
+                                <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
                                 删除连接
                             </button>
                         </div>
@@ -1082,12 +1090,13 @@ const DecisionFlowTool = () => {
             {/* 页脚信息 */}
             {!isFullScreen && (
                 <div style={{
-                    padding: '8px 15px',
+                    padding: '4px 12px',
                     backgroundColor: '#2c3e50',
                     color: '#ecf0f1',
-                    fontSize: '12px',
+                    fontSize: '10px',
                     textAlign: 'center',
-                    borderTop: '1px solid #34495e'
+                    borderTop: '1px solid #34495e',
+                    height: '40px' // 固定高度
                 }}>
                     <div>
                         提示：选中节点或连线后按Delete键可删除 | Ctrl+Z撤销删除操作 | Esc取消选择 | F11全屏
