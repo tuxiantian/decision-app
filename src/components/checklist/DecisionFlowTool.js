@@ -969,7 +969,8 @@ const DecisionFlowTool = ({
                                     : isFullScreen ? '#555' : '#777',
                             borderRadius: '10px',
                             padding: '3px 8px',
-                            fontWeight: 'bold'
+                            fontWeight: 'bold',
+                            display:'none'
                         }}>
                             #{node.nodeNumber}
                         </div>
