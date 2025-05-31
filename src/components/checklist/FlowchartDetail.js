@@ -130,7 +130,7 @@ const FlowchartDetail = () => {
       </div>
 
       <div style={{
-        marginTop: '20px',
+        margin: '20px auto',
         padding: '15px',
         backgroundColor: '#e9f7ef',
         borderRadius: '8px',
