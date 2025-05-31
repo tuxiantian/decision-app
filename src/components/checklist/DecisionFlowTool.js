@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 
 const DecisionFlowTool = () => {
     const [nodes, setNodes] = useState(() => {
-        // 尝试从localStorage加载保存的数据
         const savedData = localStorage.getItem('decisionFlowData');
         return savedData ? JSON.parse(savedData).nodes : [];
     });
@@ -19,6 +18,9 @@ const DecisionFlowTool = () => {
     const stageRef = useRef(null);
     const textareaRefs = useRef({});
     const fileInputRef = useRef(null);
+    
+    // 节点计数器（确保每个节点有唯一序号）
+    const nodeCounter = useRef(1);
 
     // 显示通知
     const showNotification = (message, type = 'success') => {
@@ -43,6 +45,16 @@ const DecisionFlowTool = () => {
             const savedData = localStorage.getItem('decisionFlowData');
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
+                
+                // 找出最大的节点序号
+                const maxNodeId = parsedData.nodes.reduce((max, node) => {
+                    const nodeNum = parseInt(node.id.replace('node-', ''));
+                    return nodeNum > max ? nodeNum : max;
+                }, 0);
+                
+                // 更新节点计数器
+                nodeCounter.current = maxNodeId + 1;
+                
                 setNodes(parsedData.nodes || []);
                 setConnections(parsedData.connections || []);
                 showNotification('数据加载成功！');
@@ -60,6 +72,7 @@ const DecisionFlowTool = () => {
             setNodes([]);
             setConnections([]);
             setActiveNodeId(null);
+            nodeCounter.current = 1;
             localStorage.removeItem('decisionFlowData');
             showNotification('画布已重置', 'info');
         }
@@ -101,6 +114,15 @@ const DecisionFlowTool = () => {
                     throw new Error('无效的数据格式: 缺少节点数据');
                 }
                 
+                // 找出最大的节点序号
+                const maxNodeId = importedData.nodes.reduce((max, node) => {
+                    const nodeNum = parseInt(node.id.replace('node-', ''));
+                    return nodeNum > max ? nodeNum : max;
+                }, 0);
+                
+                // 更新节点计数器
+                nodeCounter.current = maxNodeId + 1;
+                
                 setNodes(importedData.nodes || []);
                 setConnections(importedData.connections || []);
                 setActiveNodeId(null);
@@ -136,17 +158,23 @@ const DecisionFlowTool = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        // 使用计数器生成唯一节点ID和序号
+        const nodeId = `node-${nodeCounter.current}`;
         const newNode = {
-            id: `node-${Date.now()}`,
+            id: nodeId,
             x,
             y,
             width: 200,
             height: 100,
             text: '双击编辑内容',
+            nodeNumber: nodeCounter.current
         };
 
+        // 增加节点计数器
+        nodeCounter.current += 1;
+
         setNodes([...nodes, newNode]);
-        setActiveNodeId(newNode.id);
+        setActiveNodeId(nodeId);
     };
 
     // 开始连接
@@ -607,16 +635,20 @@ const DecisionFlowTool = () => {
                             </div>
                         )}
 
-                        {/* 节点ID标签 */}
+                        {/* 节点序号标签 - 修复：显示唯一节点序号 */}
                         <div style={{
                             position: 'absolute',
                             top: '4px',
                             right: '8px',
                             fontSize: '10px',
                             color: '#888',
-                            userSelect: 'none'
+                            userSelect: 'none',
+                            backgroundColor: '#f0f0f0',
+                            borderRadius: '10px',
+                            padding: '2px 6px',
+                            fontWeight: 'bold'
                         }}>
-                            {node.id.slice(0, 6)}
+                            #{node.nodeNumber}
                         </div>
 
                         {/* 锚点 */}
