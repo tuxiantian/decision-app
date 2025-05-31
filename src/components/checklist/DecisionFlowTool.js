@@ -9,17 +9,19 @@ const DecisionFlowTool = () => {
         const savedData = localStorage.getItem('decisionFlowData');
         return savedData ? JSON.parse(savedData).connections : [];
     });
-    const [activeNodeId, setActiveNodeId] = useState(null);
+    const [activeNodeId, setActiveNodeId] = useState(null); // 正在编辑的节点
+    const [selectedNodeId, setSelectedNodeId] = useState(null); // 选中的节点
     const [draggingNodeId, setDraggingNodeId] = useState(null);
     const [connectingStart, setConnectingStart] = useState(null);
     const [selectedTool, setSelectedTool] = useState('select');
     const [hoveredAnchor, setHoveredAnchor] = useState(null);
     const [notification, setNotification] = useState(null);
+    const [deletedItems, setDeletedItems] = useState(null);
     const stageRef = useRef(null);
     const textareaRefs = useRef({});
     const fileInputRef = useRef(null);
     
-    // 节点计数器（确保每个节点有唯一序号）
+    // 节点计数器
     const nodeCounter = useRef(1);
 
     // 显示通知
@@ -28,7 +30,7 @@ const DecisionFlowTool = () => {
         setTimeout(() => setNotification(null), 3000);
     };
 
-    // 保存数据到localStorage
+    // 保存数据
     const saveData = () => {
         try {
             const flowData = { nodes, connections };
@@ -57,6 +59,8 @@ const DecisionFlowTool = () => {
                 
                 setNodes(parsedData.nodes || []);
                 setConnections(parsedData.connections || []);
+                setActiveNodeId(null);
+                setSelectedNodeId(null);
                 showNotification('数据加载成功！');
             } else {
                 showNotification('没有找到保存的数据', 'info');
@@ -72,13 +76,14 @@ const DecisionFlowTool = () => {
             setNodes([]);
             setConnections([]);
             setActiveNodeId(null);
+            setSelectedNodeId(null);
             nodeCounter.current = 1;
             localStorage.removeItem('decisionFlowData');
             showNotification('画布已重置', 'info');
         }
     };
 
-    // 导出为JSON文件
+    // 导出数据
     const exportData = () => {
         try {
             const flowData = { nodes, connections };
@@ -98,7 +103,7 @@ const DecisionFlowTool = () => {
         }
     };
 
-    // 导入JSON文件
+    // 导入数据
     const importData = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -109,7 +114,7 @@ const DecisionFlowTool = () => {
                 const content = event.target.result;
                 const importedData = JSON.parse(content);
                 
-                // 简单验证数据格式
+                // 验证数据格式
                 if (!Array.isArray(importedData.nodes)) {
                     throw new Error('无效的数据格式: 缺少节点数据');
                 }
@@ -126,6 +131,7 @@ const DecisionFlowTool = () => {
                 setNodes(importedData.nodes || []);
                 setConnections(importedData.connections || []);
                 setActiveNodeId(null);
+                setSelectedNodeId(null);
                 
                 // 保存到本地存储
                 localStorage.setItem('decisionFlowData', JSON.stringify(importedData));
@@ -144,11 +150,12 @@ const DecisionFlowTool = () => {
 
     // 创建新节点
     const addNode = (e) => {
-        // 修复：点击节点时不要创建新节点
+        // 点击节点时不要创建新节点
         if (e.target !== stageRef.current) return;
-        // 修复：如果当前有激活节点，点击画布空白处先退出编辑
-        if (activeNodeId) {
-            setActiveNodeId(null);
+        
+        // 如果当前有选中节点，点击画布空白处取消选中
+        if (selectedNodeId) {
+            setSelectedNodeId(null);
             return;
         }
         
@@ -158,7 +165,7 @@ const DecisionFlowTool = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // 使用计数器生成唯一节点ID和序号
+        // 创建新节点
         const nodeId = `node-${nodeCounter.current}`;
         const newNode = {
             id: nodeId,
@@ -174,7 +181,52 @@ const DecisionFlowTool = () => {
         nodeCounter.current += 1;
 
         setNodes([...nodes, newNode]);
-        setActiveNodeId(nodeId);
+        setSelectedNodeId(nodeId);
+    };
+
+    // 删除选中的节点及其相关连接
+    const deleteSelectedNode = () => {
+        if (!selectedNodeId) return;
+        
+        // 确认删除
+        const nodeNumber = nodes.find(n => n.id === selectedNodeId)?.nodeNumber;
+        if (!window.confirm(`确定要删除节点 #${nodeNumber} 及其所有连接吗？`)) {
+            return;
+        }
+        
+        // 保存当前状态用于可能的撤销操作
+        setDeletedItems({
+            nodes: [...nodes],
+            connections: [...connections],
+            selectedNodeId
+        });
+        
+        // 删除节点
+        const newNodes = nodes.filter(node => node.id !== selectedNodeId);
+        
+        // 删除与该节点相关的所有连接
+        const newConnections = connections.filter(conn => 
+            conn.from.nodeId !== selectedNodeId && conn.to.nodeId !== selectedNodeId
+        );
+        
+        setNodes(newNodes);
+        setConnections(newConnections);
+        setSelectedNodeId(null);
+        setActiveNodeId(null);
+        
+        showNotification(`已删除节点 #${nodeNumber}`, 'info');
+    };
+
+    // 撤销删除操作
+    const undoDelete = () => {
+        if (!deletedItems) return;
+        
+        setNodes(deletedItems.nodes);
+        setConnections(deletedItems.connections);
+        setSelectedNodeId(deletedItems.selectedNodeId);
+        setDeletedItems(null);
+        
+        showNotification('已撤销删除操作', 'info');
     };
 
     // 开始连接
@@ -202,7 +254,8 @@ const DecisionFlowTool = () => {
 
     // 处理节点拖拽
     const handleNodeDrag = (e, nodeId) => {
-        if (selectedTool !== 'select') return;
+        // 允许在select和arrow工具下拖拽
+        if (selectedTool !== 'select' && selectedTool !== 'arrow') return;
 
         const rect = stageRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -266,19 +319,37 @@ const DecisionFlowTool = () => {
         return null;
     };
 
-    // 处理节点双击事件
-    const handleNodeDoubleClick = (e, nodeId) => {
-        e.stopPropagation();
-        e.preventDefault(); // 关键：阻止默认双击行为
-        setSelectedTool('select');
-        setActiveNodeId(nodeId);
-        setDraggingNodeId(null); // 修复：防止双击时节点移动
-    };
+    // 处理键盘事件
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // 按下Delete键删除选中节点
+            if (e.key === 'Delete' && selectedNodeId) {
+                deleteSelectedNode();
+                e.preventDefault();
+            }
+            
+            // Ctrl+Z撤销删除操作
+            if (e.ctrlKey && e.key === 'z' && deletedItems) {
+                undoDelete();
+                e.preventDefault();
+            }
+            
+            // 按下Esc键退出编辑状态
+            if (e.key === 'Escape' && activeNodeId) {
+                setActiveNodeId(null);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [selectedNodeId, activeNodeId, deletedItems]);
 
     // 保存按钮样式
-    const getButtonStyle = (isActive = false) => ({
+    const getButtonStyle = (isActive = false, color = null) => ({
         padding: '8px 16px',
-        backgroundColor: isActive ? '#4a90e2' : 'white',
+        backgroundColor: color || (isActive ? '#4a90e2' : 'white'),
         border: '1px solid #ddd',
         borderRadius: '4px',
         cursor: 'pointer',
@@ -287,7 +358,7 @@ const DecisionFlowTool = () => {
         gap: '6px',
         transition: 'all 0.2s',
         ':hover': {
-            backgroundColor: isActive ? '#3a7bc8' : '#f5f5f5'
+            backgroundColor: color ? `${color}cc` : (isActive ? '#3a7bc8' : '#f5f5f5')
         }
     });
 
@@ -344,8 +415,17 @@ const DecisionFlowTool = () => {
                             onChange={importData}
                         />
                     </button>
+                    {deletedItems && (
+                        <button
+                            style={getButtonStyle(false, '#ff9f43')}
+                            onClick={undoDelete}
+                        >
+                            <i className="fas fa-undo"></i>
+                            撤销删除
+                        </button>
+                    )}
                     <button
-                        style={{ ...getButtonStyle(), backgroundColor: '#e74c3c', color: 'white' }}
+                        style={{ ...getButtonStyle(false, '#e74c3c'), color: 'white' }}
                         onClick={resetCanvas}
                     >
                         <i className="fas fa-trash-alt"></i>
@@ -405,9 +485,40 @@ const DecisionFlowTool = () => {
                     箭头
                 </button>
                 
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
-                    <i className="fas fa-info-circle" style={{ marginRight: '6px' }}></i>
-                    当前节点: {nodes.length} | 连接: {connections.length}
+                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
+                        <i className="fas fa-info-circle" style={{ marginRight: '6px' }}></i>
+                        节点: {nodes.length} | 连接: {connections.length}
+                    </div>
+                    {selectedNodeId && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ color: '#555', fontSize: '14px' }}>
+                                选中节点: <span style={{ fontWeight: 'bold' }}>#{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}</span>
+                            </div>
+                            <button 
+                                style={{ 
+                                    padding: '6px 12px', 
+                                    backgroundColor: '#e74c3c', 
+                                    color: 'white', 
+                                    border: 'none', 
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                    transition: 'all 0.2s',
+                                    ':hover': {
+                                        backgroundColor: '#c0392b',
+                                        transform: 'scale(1.05)'
+                                    }
+                                }}
+                                onClick={deleteSelectedNode}
+                            >
+                                <i className="fas fa-trash"></i>
+                                删除节点
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -472,6 +583,29 @@ const DecisionFlowTool = () => {
                     </div>
                 )}
                 
+                {/* 删除提示 */}
+                {selectedNodeId && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: '20px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        padding: '8px 16px',
+                        backgroundColor: 'rgba(231, 76, 60, 0.9)',
+                        color: 'white',
+                        borderRadius: '4px',
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                        zIndex: 100,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        animation: 'pulse 1.5s infinite'
+                    }}>
+                        <i className="fas fa-exclamation-triangle"></i>
+                        已选中节点 #{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}，按Delete键或点击工具栏删除按钮可删除
+                    </div>
+                )}
+                
                 {/* 箭头标记定义 */}
                 <svg style={{ height: 0, width: 0 }}>
                     <defs>
@@ -488,72 +622,6 @@ const DecisionFlowTool = () => {
                     </defs>
                 </svg>
 
-                {/* 渲染连接线 */}
-                {connections.map(conn => {
-                    const fromNode = nodes.find(n => n.id === conn.from.nodeId);
-                    const toNode = nodes.find(n => n.id === conn.to.nodeId);
-
-                    if (!fromNode || !toNode) return null;
-
-                    const start = getAnchorPosition(fromNode, conn.from.anchorPosition);
-                    const end = getAnchorPosition(toNode, conn.to.anchorPosition);
-
-                    return (
-                        <svg
-                            key={conn.id}
-                            style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: '100%',
-                                height: '100%',
-                                pointerEvents: 'none',
-                            }}
-                        >
-                            <line
-                                x1={start.x}
-                                y1={start.y}
-                                x2={end.x}
-                                y2={end.y}
-                                stroke="#333"
-                                strokeWidth="2"
-                                markerEnd="url(#arrowhead)"
-                            />
-                        </svg>
-                    );
-                })}
-
-                {/* 正在创建的连接线 */}
-                {connectingStart && (
-                    <svg
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            pointerEvents: 'none',
-                            zIndex: 10,
-                        }}
-                    >
-                        <line
-                            x1={getAnchorPosition(
-                                nodes.find(n => n.id === connectingStart.nodeId),
-                                connectingStart.anchorPosition
-                            ).x}
-                            y1={getAnchorPosition(
-                                nodes.find(n => n.id === connectingStart.nodeId),
-                                connectingStart.anchorPosition
-                            ).y}
-                            x2={connectingStart.currentX || 0}
-                            y2={connectingStart.currentY || 0}
-                            stroke="#333"
-                            strokeWidth="2"
-                            markerEnd="url(#arrowhead)"
-                        />
-                    </svg>
-                )}
-
                 {/* 渲染节点 */}
                 {nodes.map(node => (
                     <div
@@ -564,29 +632,46 @@ const DecisionFlowTool = () => {
                             top: `${node.y}px`,
                             width: `${node.width}px`,
                             minHeight: `${node.height}px`,
-                            border: activeNodeId === node.id ? '2px solid #4a90e2' : '1px solid #bbb',
+                            border: selectedNodeId === node.id 
+                                ? '3px solid #e74c3c' 
+                                : activeNodeId === node.id 
+                                    ? '2px solid #4a90e2' 
+                                    : '1px solid #bbb',
                             borderRadius: '8px',
                             padding: '12px',
                             backgroundColor: '#ffffff',
-                            boxShadow: '0 3px 8px rgba(0,0,0,0.1)',
-                            cursor: selectedTool === 'select' ? 'move' : 'default',
-                            zIndex: activeNodeId === node.id ? 2 : 1,
-                            transition: 'box-shadow 0.2s, border-color 0.2s',
+                            boxShadow: selectedNodeId === node.id 
+                                ? '0 0 15px rgba(231, 76, 60, 0.4)' 
+                                : activeNodeId === node.id 
+                                    ? '0 0 10px rgba(74, 144, 226, 0.3)'
+                                    : '0 3px 8px rgba(0,0,0,0.1)',
+                            cursor: selectedTool === 'select' || selectedTool === 'arrow' ? 'move' : 'default',
+                            zIndex: (selectedNodeId === node.id || activeNodeId === node.id) ? 100 : 1,
+                            transition: 'all 0.3s',
                             ':hover': {
                                 boxShadow: '0 5px 15px rgba(0,0,0,0.15)',
-                                borderColor: activeNodeId === node.id ? '#4a90e2' : '#999'
+                                borderColor: selectedNodeId === node.id 
+                                    ? '#e74c3c' 
+                                    : activeNodeId === node.id 
+                                        ? '#4a90e2'
+                                        : '#999'
                             }
                         }}
                         onMouseDown={(e) => {
-                            // 修复：编辑状态下阻止拖拽
-                            if (selectedTool !== 'select' || activeNodeId === node.id) {
+                            // 编辑状态下阻止拖拽
+                            if (activeNodeId === node.id) {
                                 return;
                             }
                             e.stopPropagation();
                             setDraggingNodeId(node.id);
-                            setActiveNodeId(node.id);
+                            setSelectedNodeId(node.id);
                         }}
-                        onDoubleClick={(e) => handleNodeDoubleClick(e, node.id)} // 修复：在节点容器上处理双击
+                        onDoubleClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setActiveNodeId(node.id);
+                            setSelectedNodeId(null);
+                        }}
                     >
                         {/* 文本编辑区域 */}
                         {activeNodeId === node.id ? (
@@ -617,8 +702,8 @@ const DecisionFlowTool = () => {
                                     cursor: 'text',
                                     lineHeight: '1.5'
                                 }}
-                                autoFocus // 确保自动获取焦点
-                                onMouseDown={(e) => e.stopPropagation()} // 修复：阻止冒泡
+                                autoFocus
+                                onMouseDown={(e) => e.stopPropagation()}
                             />
                         ) : (
                             <div
@@ -635,17 +720,21 @@ const DecisionFlowTool = () => {
                             </div>
                         )}
 
-                        {/* 节点序号标签 - 修复：显示唯一节点序号 */}
+                        {/* 节点序号标签 */}
                         <div style={{
                             position: 'absolute',
                             top: '4px',
                             right: '8px',
                             fontSize: '10px',
-                            color: '#888',
+                            color: '#fff',
                             userSelect: 'none',
-                            backgroundColor: '#f0f0f0',
+                            backgroundColor: selectedNodeId === node.id 
+                                ? '#e74c3c' 
+                                : activeNodeId === node.id 
+                                    ? '#4a90e2'
+                                    : '#777',
                             borderRadius: '10px',
-                            padding: '2px 6px',
+                            padding: '3px 8px',
                             fontWeight: 'bold'
                         }}>
                             #{node.nodeNumber}
@@ -703,6 +792,73 @@ const DecisionFlowTool = () => {
                         )}
                     </div>
                 ))}
+
+                {/* 渲染连接线（放在节点后面，确保节点可以点击） */}
+                {connections.map(conn => {
+                    const fromNode = nodes.find(n => n.id === conn.from.nodeId);
+                    const toNode = nodes.find(n => n.id === conn.to.nodeId);
+
+                    if (!fromNode || !toNode) return null;
+
+                    const start = getAnchorPosition(fromNode, conn.from.anchorPosition);
+                    const end = getAnchorPosition(toNode, conn.to.anchorPosition);
+
+                    return (
+                        <svg
+                            key={conn.id}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                pointerEvents: 'none',
+                                zIndex: 10 // 确保连接线在节点上方
+                            }}
+                        >
+                            <line
+                                x1={start.x}
+                                y1={start.y}
+                                x2={end.x}
+                                y2={end.y}
+                                stroke="#333"
+                                strokeWidth="2"
+                                markerEnd="url(#arrowhead)"
+                            />
+                        </svg>
+                    );
+                })}
+
+                {/* 正在创建的连接线 */}
+                {connectingStart && (
+                    <svg
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            pointerEvents: 'none',
+                            zIndex: 20,
+                        }}
+                    >
+                        <line
+                            x1={getAnchorPosition(
+                                nodes.find(n => n.id === connectingStart.nodeId),
+                                connectingStart.anchorPosition
+                            ).x}
+                            y1={getAnchorPosition(
+                                nodes.find(n => n.id === connectingStart.nodeId),
+                                connectingStart.anchorPosition
+                            ).y}
+                            x2={connectingStart.currentX || 0}
+                            y2={connectingStart.currentY || 0}
+                            stroke="#333"
+                            strokeWidth="2"
+                            markerEnd="url(#arrowhead)"
+                        />
+                    </svg>
+                )}
                 
                 {/* 空状态提示 */}
                 {nodes.length === 0 && (
@@ -714,7 +870,8 @@ const DecisionFlowTool = () => {
                         textAlign: 'center',
                         color: '#888',
                         maxWidth: '500px',
-                        padding: '20px'
+                        padding: '20px',
+                        zIndex: 50
                     }}>
                         <i className="fas fa-project-diagram" style={{ fontSize: '48px', marginBottom: '20px' }}></i>
                         <h2>欢迎使用决策流程图工具</h2>
@@ -744,15 +901,26 @@ const DecisionFlowTool = () => {
                 borderTop: '1px solid #34495e'
             }}>
                 <div>
-                    提示：数据会自动保存到浏览器本地存储。使用"导出"功能可将数据备份到文件。
+                    提示：选中节点后按Delete键或点击工具栏删除按钮可删除节点及相关连接 | Ctrl+Z撤销删除操作 | Esc退出编辑
                 </div>
                 <div style={{ marginTop: '5px', opacity: 0.7 }}>
-                    决策流程图工具 v1.0 &copy; {new Date().getFullYear()}
+                    决策流程图工具 v1.3 &copy; {new Date().getFullYear()}
                 </div>
             </div>
             
             {/* Font Awesome 图标 */}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+            
+            {/* 动画样式 */}
+            <style>
+                {`
+                @keyframes pulse {
+                    0% { opacity: 0.9; }
+                    50% { opacity: 0.7; }
+                    100% { opacity: 0.9; }
+                }
+                `}
+            </style>
         </div>
     );
 };
