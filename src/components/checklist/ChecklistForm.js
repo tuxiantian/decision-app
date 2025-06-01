@@ -135,7 +135,6 @@ const ChecklistForm = () => {
 
       {activeTab === 'flowchart' && (
         <div className="tab-content">
-          <h3>Decision Flowchart Editor</h3>
           <div className="flowchart-container">
             <DecisionFlowTool
               // 传递初始数据
