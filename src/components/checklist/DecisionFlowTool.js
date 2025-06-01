@@ -18,6 +18,7 @@ const DecisionFlowTool = ({
     const [notification, setNotification] = useState(null);
     const [deletedItems, setDeletedItems] = useState(null);
     const [isFullScreen, setIsFullScreen] = useState(false);
+    const [dragStartPos, setDragStartPos] = useState(null);
     const stageRef = useRef(null);
     const textareaRefs = useRef({});
     const fileInputRef = useRef(null);
@@ -374,14 +375,13 @@ const DecisionFlowTool = ({
 
     // 处理节点拖拽
     const handleNodeDrag = (e, nodeId) => {
-        if (readOnly) return; // 只读模式下禁止拖拽节点
+        if (readOnly || e.buttons !== 1) return; // 只读模式下禁止拖拽节点
         // 允许在select和arrow工具下拖拽
         if (selectedTool !== 'select' && selectedTool !== 'arrow') return;
-
         const rect = stageRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
+        console.log(e.buttons);
         setNodes(nodes.map(node =>
             node.id === nodeId ? { ...node, x, y } : node
         ));
@@ -764,8 +764,13 @@ const DecisionFlowTool = ({
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
 
-                    if (draggingNodeId) {
-                        handleNodeDrag(e, draggingNodeId);
+                    if (draggingNodeId && e.buttons === 1) {
+                        const dx = Math.abs(e.clientX - dragStartPos.x);
+                        const dy = Math.abs(e.clientY - dragStartPos.y);
+                        // 移动超过5px才认为是拖拽
+                        if (dx > 5 || dy > 5) {
+                            handleNodeDrag(e, draggingNodeId);
+                        }
                     }
 
                     if (connectingStart) {
@@ -890,7 +895,9 @@ const DecisionFlowTool = ({
                             if (activeNodeId === node.id) {
                                 return;
                             }
+                            setDragStartPos({ x: e.clientX, y: e.clientY });
                             e.stopPropagation();
+                            e.preventDefault();
                             setDraggingNodeId(node.id);
                             setSelectedNodeId(node.id);
                             setSelectedConnectionId(null);
@@ -970,7 +977,7 @@ const DecisionFlowTool = ({
                             borderRadius: '10px',
                             padding: '3px 8px',
                             fontWeight: 'bold',
-                            display:'none'
+                            display: 'none'
                         }}>
                             #{node.nodeNumber}
                         </div>
