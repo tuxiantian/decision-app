@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-
+import './DecisionFlowTool.css'
 const DecisionFlowTool = ({
     initialNodes = [],
     initialConnections = [],
@@ -509,27 +509,14 @@ const DecisionFlowTool = ({
     return (
         <div
             ref={containerRef}
+            className='decision-flow-container'
             style={{
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100vh',
-                fontFamily: 'Arial, sans-serif',
                 backgroundColor: isFullScreen ? '#1e1e1e' : 'white'
             }}
         >
             {/* 顶部操作栏 */}
             {!readOnly && (
-                <div style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#2c3e50',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    color: 'white',
-                    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                    zIndex: 100,
-                    height: '40px' // 固定高度
-                }}>
+                <div className="toolbar-top">
                     <div style={{ fontSize: '16px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>
                         <i className="fas fa-project-diagram" style={{ marginRight: '8px', fontSize: '16px' }}></i>
                         决策流程图工具
@@ -611,26 +598,11 @@ const DecisionFlowTool = ({
 
             {/* 工具栏 */}
             {!readOnly && (
-                <div style={{
-                    padding: '6px',
-                    backgroundColor: '#f0f0f0',
-                    display: 'flex',
-                    gap: '8px',
-                    borderBottom: '1px solid #ddd',
-                    zIndex: 100,
-                    height: '36px' // 固定高度
-                }}>
+                <div className='toolbar-main'>
                     <button
+                        className='tool-button'
                         style={{
-                            padding: '6px 12px',
-                            backgroundColor: selectedTool === 'select' ? '#4a90e2' : 'white',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            fontSize: '13px' // 减小字体
+                            backgroundColor: selectedTool === 'select' ? '#4a90e2' : 'white'
                         }}
                         onClick={() => setSelectedTool('select')}
                     >
@@ -638,16 +610,9 @@ const DecisionFlowTool = ({
                         选择
                     </button>
                     <button
+                        className='tool-button'
                         style={{
-                            padding: '6px 12px',
                             backgroundColor: selectedTool === 'text' ? '#4a90e2' : 'white',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            fontSize: '13px' // 减小字体
                         }}
                         onClick={() => setSelectedTool('text')}
                     >
@@ -655,16 +620,9 @@ const DecisionFlowTool = ({
                         文本
                     </button>
                     <button
+                        className='tool-button'
                         style={{
-                            padding: '6px 12px',
                             backgroundColor: selectedTool === 'arrow' ? '#4a90e2' : 'white',
-                            border: '1px solid #ddd',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            fontSize: '13px' // 减小字体
                         }}
                         onClick={() => setSelectedTool('arrow')}
                     >
@@ -683,23 +641,7 @@ const DecisionFlowTool = ({
                                     选中节点: <span style={{ fontWeight: 'bold' }}>#{nodes.find(n => n.id === selectedNodeId)?.nodeNumber}</span>
                                 </div>
                                 <button
-                                    style={{
-                                        padding: '4px 8px',
-                                        backgroundColor: '#e74c3c',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        transition: 'all 0.2s',
-                                        fontSize: '12px', // 减小字体
-                                        ':hover': {
-                                            backgroundColor: '#c0392b',
-                                            transform: 'scale(1.05)'
-                                        }
-                                    }}
+                                className='delete-button'
                                     onClick={deleteSelectedNode}
                                 >
                                     <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
@@ -712,24 +654,7 @@ const DecisionFlowTool = ({
                                 <div style={{ color: '#555', fontSize: '12px' }}>
                                     选中连接
                                 </div>
-                                <button
-                                    style={{
-                                        padding: '4px 8px',
-                                        backgroundColor: '#e74c3c',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                        transition: 'all 0.2s',
-                                        fontSize: '12px', // 减小字体
-                                        ':hover': {
-                                            backgroundColor: '#c0392b',
-                                            transform: 'scale(1.05)'
-                                        }
-                                    }}
+                                <button className='delete-button'                                   
                                     onClick={deleteSelectedConnection}
                                 >
                                     <i className="fas fa-trash" style={{ fontSize: '10px' }}></i>
@@ -788,21 +713,9 @@ const DecisionFlowTool = ({
             >
                 {/* 通知消息 */}
                 {notification && (
-                    <div style={{
-                        position: 'absolute',
-                        top: '20px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        padding: '10px 20px',
+                    <div className='notification' style={{   
                         backgroundColor: notification.type === 'error' ? '#e74c3c' :
-                            notification.type === 'info' ? '#3498db' : '#2ecc71',
-                        color: 'white',
-                        borderRadius: '4px',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                        zIndex: 100,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px'
+                            notification.type === 'info' ? '#3498db' : '#2ecc71',                    
                     }}>
                         {notification.type === 'error' && <i className="fas fa-exclamation-circle"></i>}
                         {notification.type === 'info' && <i className="fas fa-info-circle"></i>}
@@ -813,22 +726,7 @@ const DecisionFlowTool = ({
 
                 {/* 操作提示 */}
                 {(selectedNodeId || selectedConnectionId) && (
-                    <div style={{
-                        position: 'absolute',
-                        bottom: '20px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        padding: '8px 16px',
-                        backgroundColor: 'rgba(231, 76, 60, 0.9)',
-                        color: 'white',
-                        borderRadius: '4px',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-                        zIndex: 100,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        animation: 'pulse 1.5s infinite'
-                    }}>
+                    <div className='selection-hint'>
                         <i className="fas fa-exclamation-triangle"></i>
                         {selectedNodeId ?
                             `已选中节点 #${nodes.find(n => n.id === selectedNodeId)?.nodeNumber}，按Delete键或点击工具栏删除按钮可删除` :
@@ -928,17 +826,8 @@ const DecisionFlowTool = ({
                                 value={node.text}
                                 onChange={(e) => updateNodeText(node.id, e.target.value)}
                                 onBlur={() => setActiveNodeId(null)}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    border: 'none',
-                                    outline: 'none',
-                                    resize: 'none',
-                                    fontFamily: 'inherit',
-                                    fontSize: '16px',
-                                    backgroundColor: 'transparent',
-                                    cursor: 'text',
-                                    lineHeight: '1.5',
+                                className='node-textarea'
+                                style={{                          
                                     color: isFullScreen ? '#fff' : '#000'
                                 }}
                                 readOnly={readOnly}
@@ -947,13 +836,8 @@ const DecisionFlowTool = ({
                             />
                         ) : (
                             <div
-                                style={{
-                                    whiteSpace: 'pre-wrap',
-                                    cursor: 'text',
-                                    minHeight: '100%',
-                                    userSelect: 'none',
-                                    fontSize: '16px',
-                                    lineHeight: '1.5',
+                            className='node-text-display'
+                                style={{                                
                                     color: isFullScreen ? '#fff' : '#000'
                                 }}
                             >
@@ -962,22 +846,13 @@ const DecisionFlowTool = ({
                         )}
 
                         {/* 节点序号标签 */}
-                        <div style={{
-                            position: 'absolute',
-                            top: '4px',
-                            right: '8px',
-                            fontSize: '10px',
-                            color: '#fff',
-                            userSelect: 'none',
+                        <div className='node-number' style={{
                             backgroundColor: selectedNodeId === node.id
                                 ? '#e74c3c'
                                 : activeNodeId === node.id
                                     ? '#4a90e2'
                                     : isFullScreen ? '#555' : '#777',
-                            borderRadius: '10px',
-                            padding: '3px 8px',
-                            fontWeight: 'bold',
-                            display: 'none'
+
                         }}>
                             #{node.nodeNumber}
                         </div>
@@ -1111,16 +986,8 @@ const DecisionFlowTool = ({
 
                 {/* 空状态提示 */}
                 {nodes.length === 0 && !readOnly && (
-                    <div style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        textAlign: 'center',
+                    <div className='empty-state' style={{
                         color: isFullScreen ? '#aaa' : '#888',
-                        maxWidth: '500px',
-                        padding: '20px',
-                        zIndex: 50
                     }}>
                         <i className="fas fa-project-diagram" style={{ fontSize: '48px', marginBottom: '20px' }}></i>
                         <h2>欢迎使用决策流程图工具</h2>
@@ -1142,19 +1009,11 @@ const DecisionFlowTool = ({
 
             {/* 页脚信息 */}
             {!isFullScreen && !readOnly && (
-                <div style={{
-                    padding: '4px 12px',
-                    backgroundColor: '#2c3e50',
-                    color: '#ecf0f1',
-                    fontSize: '10px',
-                    textAlign: 'center',
-                    borderTop: '1px solid #34495e',
-                    height: '40px' // 固定高度
-                }}>
+                <div className='footer'>
                     <div>
                         提示：选中节点或连线后按Delete键可删除 | Ctrl+Z撤销删除操作 | Esc取消选择 | F11全屏
                     </div>
-                    <div style={{ marginTop: '5px', opacity: 0.7 }}>
+                    <div className='footer-copyright'>
                         决策流程图工具 v1.5 &copy; {new Date().getFullYear()}
                     </div>
                 </div>
@@ -1163,35 +1022,7 @@ const DecisionFlowTool = ({
             {/* Font Awesome 图标 */}
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-            {/* 动画样式 */}
-            <style>
-                {`
-                @keyframes pulse {
-                    0% { opacity: 0.9; }
-                    50% { opacity: 0.7; }
-                    100% { opacity: 0.9; }
-                }
-                
-                .fullscreen-notification {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 10px 15px;
-                    background-color: rgba(46, 204, 113, 0.9);
-                    color: white;
-                    border-radius: 4px;
-                    z-index: 1000;
-                    animation: fadeInOut 3s forwards;
-                }
-                
-                @keyframes fadeInOut {
-                    0% { opacity: 0; transform: translateY(-20px); }
-                    10% { opacity: 1; transform: translateY(0); }
-                    90% { opacity: 1; transform: translateY(0); }
-                    100% { opacity: 0; transform: translateY(-20px); }
-                }
-                `}
-            </style>
+
         </div>
     );
 };
