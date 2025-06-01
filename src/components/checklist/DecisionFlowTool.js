@@ -267,7 +267,7 @@ const DecisionFlowTool = ({
             x,
             y,
             width: 200,
-            height: 100,
+            height: 60,
             text: '双击编辑内容',
             nodeNumber: nodeCounter.current
         };
