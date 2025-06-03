@@ -134,7 +134,6 @@ const ChecklistForm = () => {
       </div>
 
       {activeTab === 'flowchart' && (
-        <div className="tab-content">
           <div className="flowchart-container">
             <DecisionFlowTool
               // 传递初始数据
@@ -144,7 +143,6 @@ const ChecklistForm = () => {
               onFlowChange={handleFlowChange}
             />
           </div>
-        </div>
       )}
 
       {activeTab === 'form' && (
