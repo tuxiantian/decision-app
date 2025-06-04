@@ -3,6 +3,7 @@ import { useParams, Link, useLocation } from 'react-router-dom';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js';
 import DecisionFlowTool from './DecisionFlowTool';
+import './FlowchartDetail.css';
 import html2canvas from 'html2canvas';
 
 const FlowchartDetail = () => {
@@ -152,17 +153,11 @@ const FlowchartDetail = () => {
       <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '15px' }}>
         <button 
           onClick={handleDownload} 
+          className="flowchart-button"
           disabled={!isReady}
           style={{
-            padding: '10px 15px',
             background: isReady ? '#28a745' : '#6c757d',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: isReady ? 'pointer' : 'not-allowed',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
+            cursor: isReady ? 'pointer' : 'not-allowed'
           }}
         >
           导出为PNG
@@ -170,16 +165,9 @@ const FlowchartDetail = () => {
         
         <button 
           onClick={centerView} 
+          className="flowchart-button"
           style={{
-            padding: '10px 15px',
             background: '#17a2b8',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
           }}
         >
           重置视图
@@ -187,15 +175,9 @@ const FlowchartDetail = () => {
         
         <Link
           to="/checklists"
+          className="flowchart-button"
           style={{
-            padding: '10px 15px',
-            textDecoration: 'none',
-            color: 'white',
-            background: '#007bff',
-            borderRadius: '5px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
+            background: '#007bff'
           }}
         >
           返回列表
