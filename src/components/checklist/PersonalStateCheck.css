@@ -1,3 +1,22 @@
+.personal-state-check {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 80vh;
+  /* 确保容器至少占据整个视口高度 */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.state-content {
+  width: 100%;
+}
+
+.green-button:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
 .green-button:hover {
   transform: scale(1.1);
   transition: transform 0.2s ease;
