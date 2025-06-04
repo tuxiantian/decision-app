@@ -9,11 +9,14 @@ const LoginPage = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+    const [freezeDetails, setFreezeDetails] = useState(null);
     const location = useLocation();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError(null);
+        setFreezeDetails(null);
         const publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsPIcYtKANnymGmDEwOje
 5kO5cVrxxLj7qrUiiUUJOYhE2bfsFRqEqQgi7anrWkC1d6sL2pVJROF8tIsZzerM
@@ -33,7 +36,7 @@ jQIDAQAB
         const encryptedPassword = encryptor.encrypt(password);
 
         if (!encryptedPassword) {
-            console.error("Encryption failed");
+            console.error("密码加密失败，请重试");
             return;
         }
         try {
@@ -41,7 +44,6 @@ jQIDAQAB
                 username,
                 'password':encryptedPassword,
             });
-
             if (response.status === 200) {
                 // 登录成功后设置用户名，并存储到 localStorage
                 const loggedInUsername = response.data.username;
@@ -62,7 +64,44 @@ jQIDAQAB
             console.log(error);
             // 处理登录错误
             setError(error.response?.data?.message || 'Login failed');
+            // 处理不同类型的错误响应
+            if (error.response?.status === 403 && error.response.data?.is_frozen) {
+                // 账户被冻结的特殊处理
+                setFreezeDetails({
+                    message: error.response.data.message,
+                    reason: error.response.data.reason,
+                    until: error.response.data.frozen_until
+                });
+            } else if (error.response?.status === 401) {
+                // 普通登录失败
+                setError(error.response.data?.message || '用户名或密码错误');
+            } else {
+                // 其他错误
+                setError('登录失败，请稍后重试');
+            }
+        
         }
+    };
+
+    // 渲染冻结账户倒计时
+    const renderFreezeCountdown = () => {
+        if (!freezeDetails?.until) return null;
+        
+        const freezeUntil = new Date(freezeDetails.until);
+        const now = new Date();
+        
+        if (freezeUntil > now) {
+            const diffMs = freezeUntil - now;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            return (
+                <div className="freeze-countdown">
+                    剩余冻结时间: {diffDays}天{diffHours}小时
+                </div>
+            );
+        }
+        return null;
     };
 
     return (
@@ -88,6 +127,14 @@ jQIDAQAB
                     />
                 </div>
                 {error && <p className="error-message">{error}</p>}
+                {/* 冻结账户提示 */}
+                {freezeDetails && (
+                    <div className="freeze-message">
+                        <div className="freeze-alert">{freezeDetails.message}</div>
+                        <div className="freeze-reason">原因: {freezeDetails.reason}</div>
+                        {renderFreezeCountdown()}
+                    </div>
+                )}
                 <button type="submit" className='green-button'>Login</button>
             </form>
         </div>

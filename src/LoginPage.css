@@ -28,4 +28,39 @@
     color: red;
     margin-top: 10px;
   }
-  
+
+/* 普通错误提示样式 */
+.error-message {
+    color: #dc3545;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+/* 冻结账户提示样式 */
+.freeze-message {
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.freeze-alert {
+    color: #856404;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.freeze-reason {
+    color: #856404;
+    margin-bottom: 8px;
+}
+
+.freeze-countdown {
+    color: #d39e00;
+    font-size: 0.9em;
+}  
