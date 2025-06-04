@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import mermaid from 'mermaid';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import PersonalStateCheck from './PersonalStateCheck.js';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
-import DecisionFlowTool from './DecisionFlowTool';
-import './ChecklistDetail.css';
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
 Modal.setAppElement('#root');
@@ -30,31 +29,18 @@ const ChecklistDetail = () => {
   const [activeQuestionId, setActiveQuestionId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [mermaidCode, setMermaidCode] = useState(''); // 流程图代码
   const [renderFlowchart, setRenderFlowchart] = useState(false); // 控制流程图渲染的状态
   const [platformArticles, setPlatformArticles] = useState([]); // 新增状态，用于存储平台推荐的文章
   const [tab, setTab] = useState('my'); // 新增状态，用于管理标签页
-  const [flowchartData, setFlowchartData] = useState('');
-  const [flowData, setFlowData] = useState({});
+
 
   useEffect(() => {
     const fetchChecklistDetails = async () => {
       try {
         const response = await api.get(`${API_BASE_URL}/checklists/${checklistId}`);
         setQuestions(response.data.questions);
-        setFlowchartData(response.data.mermaid_code);
-        // 尝试解析mermaid_code字段，它现在存储的是流程图数据的JSON字符串
-        if (response.data.mermaid_code) {
-          try {
-            const parsedFlowData = JSON.parse(response.data.mermaid_code);
-            setFlowData(parsedFlowData);
-          } catch (e) {
-            console.error('Failed to parse flow data', e);
-            // 如果解析失败，使用空数据
-            setFlowData({ nodes: [], connections: [] });
-          }
-        } else {
-          setFlowData({ nodes: [], connections: [] });
-        }
+        setMermaidCode(response.data.mermaid_code); // 获取流程图代码
         setLatestChecklistId(response.data.id);
       } catch (error) {
         console.error('Error fetching checklist details', error);
@@ -62,6 +48,26 @@ const ChecklistDetail = () => {
     };
     fetchChecklistDetails();
   }, [checklistId]);
+
+  // 监听步骤的变化，确保流程图在正确的步骤显示
+  useEffect(() => {
+    if (renderFlowchart && mermaidCode) {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        themeCSS: `
+        .nodeLabel  p {
+          white-space: pre-wrap;         /* 强制长文本换行 */
+        }
+        `,
+        flowchart: { curve: 'linear' },
+        securityLevel: 'loose',
+      });
+
+      // 渲染流程图
+      mermaid.run();
+    }
+  }, [renderFlowchart, mermaidCode]);
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -240,7 +246,7 @@ const ChecklistDetail = () => {
   };
 
   return (
-    <div className="checklist-detail">
+    <div className="checklist-detail" style={{ maxWidth: '800px', margin: '0 auto' }}>
       {!assessmentComplete ? (
         <PersonalStateCheck onAssessmentComplete={handleAssessmentComplete} />
       ) : (
@@ -249,19 +255,18 @@ const ChecklistDetail = () => {
           {/* 新增步骤 - 全局预览，包括流程图和问题列表 */}
           {step === 1 && (
             <div>
-              
-              {flowchartData && renderFlowchart && (
-                <div>
-                  <h2>Step 1: Overview of Checklist</h2>
+              <h2>Step 1: Overview of Checklist</h2>
+              {mermaidCode && (
+                <div style={{ marginBottom: '20px' }}>
                   <h3>Flowchart:</h3>
-                  <DecisionFlowTool
-                    readOnly={true}
-                    initialNodes={flowData.nodes}
-                    initialConnections={flowData.connections}
-                  />
-
+                  <div
+                    id="mermaid-flowchart"
+                    className="mermaid"
+                    style={{ border: '1px solid #ccc', padding: '20px', borderRadius: '5px', marginTop: '20px' }}
+                  >
+                    {mermaidCode}
+                  </div>
                 </div>
-
               )}
               <div>
                 <h3>Checklist Questions:</h3>
@@ -281,7 +286,7 @@ const ChecklistDetail = () => {
 
 
           {step === 2 && (
-            <div className='checklist-step'>
+            <div>
               <h2>Step 2: Enter Decision Name</h2>
               <div style={{ marginBottom: '20px' }}>
                 <input
@@ -300,13 +305,13 @@ const ChecklistDetail = () => {
           )}
 
           {step === 3 && (
-            <div className='checklist-step'>
+            <div>
               <h2>Step 3: Answer Checklist Questions</h2>
               {questions.length > 0 && (
                 <div key={questions[currentQuestionIndex].id} className="checklist-form-group" style={{ marginBottom: '20px' }}>
-                  <label>{`Question ${currentQuestionIndex + 1}/${questions.length}: ${questions[currentQuestionIndex].question}`}</label>
+                  <label>{`Question ${currentQuestionIndex + 1}: ${questions[currentQuestionIndex].question}`}</label>
                   <textarea
-                    style={{ width: '80%', padding: '10px', fontSize: '16px', height: '240px' }}
+                    style={{ width: '80%', padding: '10px', fontSize: '16px', height: '80px' }}
                     value={answers[questions[currentQuestionIndex].id]?.answer || ''}
                     placeholder={questions[currentQuestionIndex].description}
                     onChange={(e) => handleAnswerChange(questions[currentQuestionIndex].id, e.target.value)}
@@ -383,7 +388,7 @@ const ChecklistDetail = () => {
           )}
 
           {step === 4 && (
-            <div className='checklist-step'>
+            <div>
               <h2>Step 4: Enter Final Decision</h2>
               <div style={{ marginBottom: '20px' }}>
                 <textarea

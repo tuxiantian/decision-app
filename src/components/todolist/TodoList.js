@@ -155,8 +155,7 @@ const TodoList = ({ }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h2>Todo List</h2>
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ margin: '10px auto' }}>
         <input
           type="text"
           placeholder="Todo Name"
