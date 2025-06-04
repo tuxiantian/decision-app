@@ -31,6 +31,17 @@ const MyFeedback = () => {
         if (currentPage < totalPages) setCurrentPage(currentPage + 1);
     };
 
+        // 获取文件名的函数
+    const getFileNameFromUrl = (url) => {
+        try {
+            const urlObj = new URL(url);
+            const pathParts = urlObj.pathname.split('/');
+            return decodeURIComponent(pathParts[pathParts.length - 1]);
+        } catch {
+            return '附件';
+        }
+    };
+
     return (
         <div className="user-feedback-container">
             <h2 className="title">我的反馈</h2>
@@ -38,6 +49,25 @@ const MyFeedback = () => {
                 {feedbackList.map(fb => (
                     <li key={fb.id} className="feedback-item">
                         <p className="feedback-content"><strong>反馈内容:</strong> {fb.description}</p>
+                        {/* 显示附件部分 */}
+                        {fb.attachments && fb.attachments.length > 0 && (
+                            <div className="feedback-attachments">
+                                <strong>附件:</strong>
+                                <div className="attachments-container">
+                                    {fb.attachments.map((url, index) => (
+                                        <a 
+                                            key={index}
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="attachment-link"
+                                        >
+                                            {getFileNameFromUrl(url)}
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <p className="feedback-date"><strong>反馈时间:</strong> {new Date(fb.created_at).toLocaleString()}</p>
                         <p className={`status ${fb.status === "已回复" ? "replied" : "waiting"}`}>
                             <strong>状态:</strong> {fb.status}
