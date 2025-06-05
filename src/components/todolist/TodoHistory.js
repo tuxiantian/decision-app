@@ -124,7 +124,7 @@ const TodoHistory = ({ }) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ margin: '20px auto', display: 'flex', justifyContent: 'center', width: '600px' }}>
+            <div style={{ margin: '10px auto', display: 'flex', justifyContent: 'center', width: '600px' }}>
                 <button onClick={() => setSelectedTab('completed')} className={`tab-button ${selectedTab === 'completed' ? 'active' : ''}`}>
                     Completed Todos
                 </button>
@@ -133,7 +133,7 @@ const TodoHistory = ({ }) => {
                 </button>
             </div>
              {/* 日期筛选器 */}
-             <div style={{ margin: '20px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
+             <div style={{ margin: '10px 0', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div>
                     <label>Start Date: </label>
                     <DatePicker
@@ -167,8 +167,7 @@ const TodoHistory = ({ }) => {
             </div>
             {selectedTab === 'completed' && (
                 <>
-                    <div style={{ marginTop: '20px', width: '80%' }}>
-                        <h3>Completed Todos</h3>
+                    <div style={{width: '80%' }}>
                         {completedTodos.map(todo => (
                             <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                                 <div style={{
@@ -203,8 +202,7 @@ const TodoHistory = ({ }) => {
 
             {selectedTab === 'ended' && (
                 <>
-                    <div style={{ marginTop: '20px', width: '80%' }}>
-                        <h3>Ended Todos</h3>
+                    <div style={{width: '80%' }}>
                         {endedTodos.map(todo => (
                             <div key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                                 <div style={{
