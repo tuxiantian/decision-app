@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config';
 import api from '../api';
-import './BalancedDecisionMaker.css';
+import './BalancedDecisionList.css';
 
 function DecisionList() {
   const [decisions, setDecisions] = useState([]);
@@ -78,10 +78,24 @@ function DecisionList() {
           ))}
         </tbody>
       </table>
-      <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px auto' }}>
-        <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
-        <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {currentPage} of {totalPages}</p>
-        <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
+      <div className="pagination-container">
+        <button 
+          onClick={handlePrevPage} 
+          disabled={currentPage === 1} 
+          className="green-button"
+        >
+          Previous
+        </button>
+        <span className="page-indicator">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button 
+          onClick={handleNextPage} 
+          disabled={currentPage >= totalPages} 
+          className="green-button"
+        >
+          Next
+        </button>
       </div>
     </div>
   );
