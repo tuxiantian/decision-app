@@ -1,9 +1,6 @@
 .checklist-form {
   max-width: 100%;
   margin: 0 auto;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
 }
 
 /* 增加流程图容器样式 */
