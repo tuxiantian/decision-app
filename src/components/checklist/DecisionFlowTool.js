@@ -1227,7 +1227,7 @@ const DecisionFlowTool = React.forwardRef(({
                 <div className="canvas-controls" style={{
                     position: 'absolute',
                     right: '20px',
-                    bottom: '20px',
+                    bottom: '50px',
                     zIndex: 100,
                     display: 'flex',
                     flexDirection: 'column',
@@ -1244,7 +1244,12 @@ const DecisionFlowTool = React.forwardRef(({
                     </button>
                     <div style={{
                         backgroundColor: 'white',
-                        padding: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        paddingLeft:'2px',
+                        marginLeft:'6px',
+                        width: '38px',
+                        height: '26px',
                         borderRadius: '4px',
                         textAlign: 'center',
                         fontSize: '12px',
@@ -1271,7 +1276,8 @@ const DecisionFlowTool = React.forwardRef(({
                     cursor: readOnly ? 'default' : (
                         connectingStart ? 'crosshair' : selectedTool === 'text' ? 'text' : isPanning ? 'grabbing' : 'default'),
                     transition: 'background-color 0.3s',
-                    pointerEvents: 'auto'
+                    pointerEvents: 'auto',
+                    zIndex: 1
                 }}
                 onClick={addNode}
                 onWheel={handleWheel}
@@ -1338,22 +1344,6 @@ const DecisionFlowTool = React.forwardRef(({
                                 '已选中连接，按Delete键或点击工具栏删除按钮可删除'}
                         </div>
                     )}
-
-                    {/* 箭头标记定义 */}
-                    <svg style={{ height: 0, width: 0 }}>
-                        <defs>
-                            <marker
-                                id="arrowhead"
-                                markerWidth="10"
-                                markerHeight="7"
-                                refX="9"
-                                refY="3.5"
-                                orient="auto"
-                            >
-                                <polygon points="0 0, 10 3.5, 0 7" fill={isFullScreen ? "#fff" : "#333"} />
-                            </marker>
-                        </defs>
-                    </svg>
 
                     {/* 渲染节点 */}
                     {nodes.map(node => (
@@ -1594,7 +1584,8 @@ const DecisionFlowTool = React.forwardRef(({
                                     width: '100%',
                                     height: '100%',
                                     pointerEvents: 'none',
-                                    zIndex: 10 // 确保连接线在节点上方
+                                    zIndex: 20 ,
+                                    overflow: 'visible'
                                 }}
                             >
                                 <defs>
@@ -1624,7 +1615,7 @@ const DecisionFlowTool = React.forwardRef(({
                                         setSelectedConnectionId(conn.id);
                                         setSelectedNodeId(null);
                                     }}
-                                    style={{ cursor: readOnly ? 'default' : 'pointer', pointerEvents: readOnly ? 'none' : 'visibleStroke' }}
+                                    style={{ cursor: readOnly ? 'default' : 'pointer', pointerEvents: readOnly ? 'none' : 'visibleStroke'}}
                                 />
                             </svg>
                         );
