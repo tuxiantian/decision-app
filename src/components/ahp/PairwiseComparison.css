@@ -150,6 +150,7 @@
 .form-input{
   width: 180px;
   height: 30px;
+  margin: auto 10px;
 }
 
 /* 矩阵输入框 */

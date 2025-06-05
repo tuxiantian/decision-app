@@ -1,20 +1,105 @@
-.centered-table-container {
-  width: 800px;
+/* 表格容器样式 */
+.ahp-container {
+  max-width: 1000px;
   margin: 0 auto;
-  position: relative;
+  padding: 20px;
 }
 
-.centered-table {
-  margin: 0 auto;
-}
-
-.table-container {
-  margin-top: 20px;
-}
-
+/* 表格控制区域 */
 .table-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  padding: 0 10px;
+}
+
+/* 表格基础样式 */
+.ahp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.9em;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 表格头部样式 */
+.ahp-table thead tr {
+  background-color: #2c3e50;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+/* 表格单元格样式 */
+.ahp-table th,
+.ahp-table td {
+  padding: 12px 15px;
+  text-align: center;
+}
+
+/* 表格行样式 */
+.ahp-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+/* 表格行悬停效果 */
+.ahp-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* 表格最后一行去除底部边框 */
+.ahp-table tbody tr:last-of-type {
+  border-bottom: 2px solid #2c3e50;
+}
+
+/* 操作按钮容器 */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* 分页控制样式 */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.page-info {
+  font-size: 1em;
+  color: #333;
+  min-width: 120px;
+  text-align: center;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .ahp-table {
+    font-size: 0.8em;
+  }
+  
+  .ahp-table th,
+  .ahp-table td {
+    padding: 8px 10px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+.add-button {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }

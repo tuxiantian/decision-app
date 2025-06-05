@@ -16,10 +16,11 @@ function AHPAnalysis() {
 
   const fetchHistory = (page) => {
     api.get(`${API_BASE_URL}/ahp_history`, {
-            params: {
-                page: page,
-                page_size: pageSize },
-              })
+      params: {
+        page: page,
+        page_size: pageSize
+      },
+    })
       .then(response => {
         setHistory(response.data.history_list);
         setTotalPages(response.data.total_pages);
@@ -68,51 +69,63 @@ function AHPAnalysis() {
     }
   };
   return (
-    <div className="App">
+    <div className="ahp-container">
       <h1>AHP Decision System</h1>
       {!isNew ? (
-        <div className="centered-table-container">
+        <div>
+          <div className="table-controls">
+            <h2>历史记录</h2>
+            <button className="green-button add-button" onClick={handleNewClick}>新增</button>
+          </div>
 
-          <div className="table-container">
-            <div className="table-controls">
-              <h2>历史记录</h2>
-              <button className="green-button add-button" onClick={handleNewClick}>新增</button>
-            </div>
-            <table border="1" className="centered-table">
-              <thead>
-                <tr>
-                  <th>记录 ID</th>
-                  <th>准则</th>
-                  <th>备选方案</th>
-                  <th>最佳选择</th>
-                  <th>创建时间</th>
-                  <th>操作</th>
+          <table className="ahp-table">
+            <thead>
+              <tr>
+                <th>记录 ID</th>
+                <th>准则</th>
+                <th>备选方案</th>
+                <th>最佳选择</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((record, index) => (
+                <tr key={index}>
+                  <td>{record.id}</td>
+                  <td>{record.criteria_names}</td>
+                  <td>{record.alternative_names}</td>
+                  <td>{record.best_choice_name}</td>
+                  <td>{new Date(record.created_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}</td>
+                  <td>
+                    <div className="action-buttons">
+                      <button className="green-button" onClick={() => handleDetailsClick(record)}>详情</button>
+                      <button className="red-button" onClick={() => handleDelete(record.id)}>删除</button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {history.map((record, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{record.id}</td>
-                      <td>{record.criteria_names}</td>
-                      <td>{record.alternative_names}</td>
-                      <td>{record.best_choice_name}</td>
-                      <td>{new Date(record.created_at).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}</td>
-                      <td>
-                        <button className="green-button" onClick={() => handleDetailsClick(record)}>详情</button>
-                        <button className="red-button" onClick={() => handleDelete(record.id)}>删除</button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
 
-            <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px auto' }}>
-              <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
-              <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {currentPage} of {totalPages}</p>
-              <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
-            </div>
+          <div className="pagination-controls">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="green-button"
+            >
+              上一页
+            </button>
+            <span className="page-info">
+              第 {currentPage} 页 / 共 {totalPages} 页
+            </span>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage >= totalPages}
+              className="green-button"
+            >
+              下一页
+            </button>
           </div>
         </div>
       ) : (
