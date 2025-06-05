@@ -536,6 +536,7 @@ const DecisionFlowTool = React.forwardRef(({
 
     // 画布平移和缩放功能
     const handleWheel = (e) => {
+        if (readOnly) return;
         if (e.ctrlKey) {
             // 缩放
             e.preventDefault();
