@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PairwiseComparison from './PairwiseComparison.js';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../App.css';
+import './AHPAnalysis.css';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
 

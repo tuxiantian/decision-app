@@ -382,7 +382,7 @@ function PairwiseComparison() {
         </div>
       )}
 
-      {result && result.status === 'success'  && (
+      {result && result.status === 'success' && (
         <div className="section result-section">
           <h3 className="section-title">决策分析结果</h3>
           <div className="result-card">

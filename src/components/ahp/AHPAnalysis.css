@@ -1,0 +1,20 @@
+.centered-table-container {
+  width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.centered-table {
+  margin: 0 auto;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
