@@ -99,7 +99,6 @@ const FlowchartDetail = () => {
   }, [flowData, centerView]);
 
   const handleDownload = async () => {
-    console.log(1);
     if (!isReady || !flowchartRef.current) {
       alert("请等待流程图加载完成");
       return;

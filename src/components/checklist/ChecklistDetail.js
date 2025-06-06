@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import PersonalStateCheck from './PersonalStateCheck.js';
@@ -34,6 +34,8 @@ const ChecklistDetail = () => {
   const [tab, setTab] = useState('my'); // 新增状态，用于管理标签页
   const [flowchartData, setFlowchartData] = useState('');
   const [flowData, setFlowData] = useState({});
+  const flowchartRef = useRef(null);
+  const flowchartToolRef = useRef(null);
 
   useEffect(() => {
     const fetchChecklistDetails = async () => {
@@ -61,6 +63,49 @@ const ChecklistDetail = () => {
     };
     fetchChecklistDetails();
   }, [checklistId]);
+
+  // 计算并居中所有节点的视图
+  const centerView = useCallback(() => {
+    if (!flowchartToolRef.current || flowData.nodes.length === 0) return;
+
+    // 计算所有节点的边界
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    flowData.nodes.forEach(node => {
+      minX = Math.min(minX, node.x);
+      minY = Math.min(minY, node.y);
+      maxX = Math.max(maxX, node.x + node.width);
+      maxY = Math.max(maxY, node.y + node.height);
+    });
+
+    // 添加边距
+    const padding = 100;
+    minX -= padding;
+    minY -= padding;
+    maxX += padding;
+    maxY += padding;
+
+    // 计算需要的缩放比例
+    const containerWidth = flowchartRef.current?.clientWidth || 800;
+    const containerHeight = flowchartRef.current?.clientHeight || 600;
+    const scaleX = containerWidth / (maxX - minX);
+    const scaleY = containerHeight / (maxY - minY);
+    const scale = Math.min(scaleX, scaleY, 1); // 不超过100%缩放
+
+    // 计算居中位置
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const translateX = containerWidth / 2 - centerX * scale;
+    const translateY = containerHeight / 2 - centerY * scale;
+
+    // 应用变换
+    flowchartToolRef.current.setCanvasTransformTool({
+      translateX,
+      translateY,
+      scale
+    });
+    console.log(11);
+
+  }, [flowData]);
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -236,6 +281,11 @@ const ChecklistDetail = () => {
   const handleAssessmentComplete = () => {
     setAssessmentComplete(true);
     setRenderFlowchart(true); // 状态检测完成后，允许渲染流程图
+    setTimeout(() => {
+      if (flowData.nodes.length > 0 && flowchartToolRef.current) {
+        centerView();
+      }
+    }, 100);
   };
 
   return (
@@ -248,12 +298,21 @@ const ChecklistDetail = () => {
           {/* 新增步骤 - 全局预览，包括流程图和问题列表 */}
           {step === 1 && (
             <div>
-              
+              <h2>Step 1: Overview of Checklist</h2>
+              <h3>Flowchart:</h3>
               {flowchartData && renderFlowchart && (
-                <div>
-                  <h2>Step 1: Overview of Checklist</h2>
-                  <h3>Flowchart:</h3>
+                <div ref={flowchartRef}
+                  style={{
+                    height: '700px',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    overflow: 'auto',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    position: 'relative'
+                  }}>
+
                   <DecisionFlowTool
+                    ref={flowchartToolRef}
                     readOnly={true}
                     initialNodes={flowData.nodes}
                     initialConnections={flowData.connections}
