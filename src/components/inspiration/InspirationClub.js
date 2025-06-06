@@ -38,6 +38,7 @@ export default function InspirationClub() {
             // 2. 实际上传
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('type', 'inspiration');
 
             const response = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }

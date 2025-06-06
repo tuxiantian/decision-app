@@ -116,6 +116,7 @@ export default function MyReflections() {
             // 2. 实际上传
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('type', 'reflection');
 
             const response = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }

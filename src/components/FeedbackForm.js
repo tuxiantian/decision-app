@@ -41,6 +41,7 @@ const FeedbackForm = () => {
     const uploadFile = async (file) => {
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('type', 'feedback');
 
         try {
             const response = await api.post('/upload', formData, {
