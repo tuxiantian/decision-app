@@ -1250,13 +1250,7 @@ const DecisionFlowTool = React.forwardRef(({
                         <i className="fas fa-expand"></i>
                     </button>
                     <div style={{
-                        backgroundColor: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        paddingLeft: '2px',
-                        marginLeft: '6px',
-                        width: '38px',
-                        height: '26px',
+                        backgroundColor: 'white',                    
                         borderRadius: '4px',
                         textAlign: 'center',
                         fontSize: '12px',
