@@ -738,8 +738,15 @@ const DecisionFlowTool = React.forwardRef(({
     const addNode = (e) => {
         // 点击节点时不要创建新节点
         if (readOnly || selectedTool !== 'text') return;
-        // 如果点击的是节点元素，则不创建新节点
-        if (e.target.closest('.node-text-display') || e.target.closest('textarea')) {
+        // 检查点击的目标是否是节点、文本框或其他需要排除的元素
+        const target = e.target;
+        const isNodeElement = target.closest('.node-container') ||
+            target.closest('.node-textarea') ||
+            target.closest('.node-text-display') ||
+            target.closest('.resize-handle');
+
+        // 如果点击的是节点相关元素，则不创建新节点
+        if (isNodeElement) {
             return;
         }
 
@@ -761,7 +768,7 @@ const DecisionFlowTool = React.forwardRef(({
             y,
             width: 200,
             height: 60,
-            text: '双击编辑内容',
+            text: '',
             nodeNumber: nodeCounter.current
         };
 
@@ -1246,8 +1253,8 @@ const DecisionFlowTool = React.forwardRef(({
                         backgroundColor: 'white',
                         display: 'flex',
                         alignItems: 'center',
-                        paddingLeft:'2px',
-                        marginLeft:'6px',
+                        paddingLeft: '2px',
+                        marginLeft: '6px',
                         width: '38px',
                         height: '26px',
                         borderRadius: '4px',
@@ -1584,7 +1591,7 @@ const DecisionFlowTool = React.forwardRef(({
                                     width: '100%',
                                     height: '100%',
                                     pointerEvents: 'none',
-                                    zIndex: 20 ,
+                                    zIndex: 20,
                                     overflow: 'visible'
                                 }}
                             >
@@ -1615,7 +1622,7 @@ const DecisionFlowTool = React.forwardRef(({
                                         setSelectedConnectionId(conn.id);
                                         setSelectedNodeId(null);
                                     }}
-                                    style={{ cursor: readOnly ? 'default' : 'pointer', pointerEvents: readOnly ? 'none' : 'visibleStroke'}}
+                                    style={{ cursor: readOnly ? 'default' : 'pointer', pointerEvents: readOnly ? 'none' : 'visibleStroke' }}
                                 />
                             </svg>
                         );
