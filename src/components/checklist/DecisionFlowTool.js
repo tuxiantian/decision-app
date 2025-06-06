@@ -766,7 +766,7 @@ const DecisionFlowTool = React.forwardRef(({
             id: nodeId,
             x,
             y,
-            width: 200,
+            width: 160,
             height: 60,
             text: '',
             nodeNumber: nodeCounter.current
