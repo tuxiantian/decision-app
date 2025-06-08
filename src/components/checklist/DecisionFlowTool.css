@@ -2,7 +2,7 @@
 .decision-flow-container {
     display: flex;
     flex-direction: column;
-    height: 604px;
+    height: calc(100vh - 40px);
     font-family: 'Arial, sans-serif';
     pointer-events: auto;
 }
