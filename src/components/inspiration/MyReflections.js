@@ -423,6 +423,7 @@ export default function MyReflections() {
                                     <input
                                         type="radio"
                                         name={`mode-${reflection.id}`}
+                                        checked
                                         onChange={() => setReflectionMode(prev => ({ ...prev, [reflection.id]: 'text' }))}
                                     />
                                     文字感想
@@ -430,7 +431,7 @@ export default function MyReflections() {
                                 <label>
                                     <input
                                         type="radio"
-                                        name={`mode-${reflection.id}`}
+                                        name={`mode-${reflection.id}`}                                   
                                         onChange={() => setReflectionMode(prev => ({ ...prev, [reflection.id]: 'image' }))}
                                     />
                                     图片感想

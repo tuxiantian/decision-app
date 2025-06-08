@@ -166,6 +166,10 @@
     flex-direction: column;
 }
 
+.card-new textarea{
+    height: 350px;
+}
+
 .card.flipped-new {
     transform: rotateY(180deg);
 }
@@ -329,7 +333,7 @@
 }
 
 /* 分页样式 */
-.pagination {
+.my-reflections .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
