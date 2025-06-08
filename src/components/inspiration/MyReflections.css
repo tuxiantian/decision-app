@@ -338,22 +338,25 @@
     flex-wrap: wrap;
 }
 
-.pagination button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #f0f0f0;
+.my-reflections .pagination button {
+    padding: 5px 10px;
+    background: #4CAF50; /* 改为绿色背景 */
+    color: white; /* 白色文字 */
+    border: 1px solid #388E3C; /* 深绿色边框 */
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.3s; /* 添加过渡效果 */
 }
 
-.pagination button:disabled {
+.my-reflections .pagination button:hover {
+    background: #388E3C; /* 鼠标悬停时加深颜色 */
+}
+
+.my-reflections .pagination button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.pagination button:hover:not(:disabled) {
-    background-color: #ddd;
+    background: #cccccc; /* 禁用状态改为灰色 */
+    border-color: #999999;
 }
 
 .random-btn {

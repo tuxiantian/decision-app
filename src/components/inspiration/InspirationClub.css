@@ -406,3 +406,24 @@ blockquote {
     cursor: zoom-in;
     border: 1px solid #eee;
 }
+
+.inspiration-club .pagination button {
+    padding: 5px 10px;
+    background: #4CAF50; /* 改为绿色背景 */
+    color: white; /* 白色文字 */
+    border: 1px solid #388E3C; /* 深绿色边框 */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* 添加过渡效果 */
+}
+
+.inspiration-club .pagination button:hover {
+    background: #388E3C; /* 鼠标悬停时加深颜色 */
+}
+
+.inspiration-club .pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #cccccc; /* 禁用状态改为灰色 */
+    border-color: #999999;
+}
