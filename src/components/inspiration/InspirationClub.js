@@ -13,7 +13,6 @@ export default function InspirationClub() {
     const [inspirations, setInspirations] = useState([]);
     const [reflectionText, setReflectionText] = useState({}); // 存储每个卡片的感想内容
     const [showTimeline, setShowTimeline] = useState(false);
-    // 在组件顶部新增状态
     const [hoveredImage, setHoveredImage] = useState(null);
 
     // 修改时间轴状态，存储当前展示的启发ID
