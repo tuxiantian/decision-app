@@ -38,3 +38,44 @@ textarea {
   background-color: #ccc;
   cursor: not-allowed;
 }
+
+/* 选项容器 */
+.checklist-detail .options-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+}
+
+/* 隐藏原生radio按钮 */
+.option-item input[type="radio"] {
+  display: none;
+}
+
+/* 自定义radio样式 */
+.option-label {
+  display: block;
+  padding: 10px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+/* 选中状态 */
+.option-label.selected {
+  border-color: #4CAF50;
+  background-color: #e8f5e9;
+  font-weight: bold;
+}
+
+/* 悬停效果 */
+.option-label:hover {
+  background-color: #f5f5f5;
+}

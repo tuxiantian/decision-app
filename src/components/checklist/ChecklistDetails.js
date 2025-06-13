@@ -27,12 +27,17 @@ const ChecklistDetails = () => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [groupMembers, setGroupMembers] = useState([]);
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchDecisionDetails = async () => {
       try {
         const response = await api.get(`${API_BASE_URL}/checklist_answers/details/${decisionId}`);
-        setDecisionDetails(response.data);
+        const r=response.data;
+        r.answers=filterAndFormatAnswers(r.answers)
+        setDecisionDetails(r);
+
         // 如果存在决策组信息，设置相关变量
         if (response.data.has_group && response.data.group) {
           setGroupId(response.data.group.id);
@@ -46,13 +51,50 @@ const ChecklistDetails = () => {
     fetchDecisionDetails();
   }, [decisionId]);
 
-  const [reviews, setReviews] = useState([]);
-  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-
   const fetchReviews = () => {
     api.get(`${API_BASE_URL}/reviews/${decisionId}`)
       .then(response => setReviews(response.data))
       .catch(error => console.error('Error fetching reviews:', error));
+  };
+
+  // 在组件中添加过滤和格式化函数
+  const filterAndFormatAnswers = (answers) => {
+    return answers
+      .filter(answer => {
+        // 过滤掉没有回答的问题
+        if (answer.responses.length === 0) return false;
+
+        // 对于选择题，确保answer值有效
+        if (answer.type === 'choice') {
+          const selectedOption = answer.responses[0].answer;
+          return selectedOption !== undefined && selectedOption !== null && selectedOption !== '';
+        }
+
+        return true;
+      })
+      .map(answer => {
+        // 创建新的responses数组，添加formattedAnswer
+        const formattedResponses = answer.responses.map(response => {
+          if (answer.type === 'choice') {
+            const selectedOptionIndex = parseInt(response.answer);
+            const selectedOption = answer.options[selectedOptionIndex];
+            return {
+              ...response,
+              formattedAnswer: selectedOption || '未知选项'
+            };
+          }
+          return {
+            ...response,
+            formattedAnswer: response.answer
+          };
+        });
+
+        return {
+          ...answer,
+          responses: formattedResponses,
+          isChoice: answer.type === 'choice'
+        };
+      });
   };
 
   const openReviewModal = () => {
@@ -164,12 +206,9 @@ const ChecklistDetails = () => {
 
           {/* 根据答案数量显示不同布局 */}
           {answerData.responses.length === 1 && expandedQuestions[index] ? (
-
-
             <div className="single-answer">
-
               <strong>{answerData.responses[0].username}:</strong>
-              <p>{answerData.responses[0].answer}</p>
+              <p>{answerData.isChoice?answerData.responses[0].formattedAnswer:answerData.responses[0].answer}</p>
               {(answerData.responses[0].referenced_articles.length > 0 ||
                 answerData.responses[0].referenced_platform_articles.length > 0) && (
                   <div className="referenced-articles">
@@ -213,7 +252,7 @@ const ChecklistDetails = () => {
               {answerData.responses.map((response) => (
                 <div key={response.user_id} className="answer-item">
                   <strong>{response.username}:</strong>
-                  <p>{response.answer}</p>
+                  <p>{answerData.isChoice ? response.formattedAnswer : response.answer}</p>
 
                   {/* 检查是否有引用的文章 */}
                   {(response.referenced_articles.length > 0 || response.referenced_platform_articles.length > 0) && (
@@ -261,7 +300,7 @@ const ChecklistDetails = () => {
                   ).map((response) => (
                     <div key={response.user_id} className="answer-item">
                       <strong>{response.username}:</strong>
-                      <p>{response.answer}</p>
+                      <p>{answerData.isChoice ? response.formattedAnswer : response.answer}</p>
                       {/* 检查是否有引用的文章 */}
                       {(response.referenced_articles.length > 0 || response.referenced_platform_articles.length > 0) && (
                         <div className="referenced-articles">
@@ -338,7 +377,7 @@ const ChecklistDetails = () => {
       {/* 配置决策组按钮，仅在没有组的情况下显示 */}
       {
         !decisionDetails.has_group && (
-          <button onClick={openGroupModal} className='green-button' style={{marginBottom:'20px'}}>Configure Decision Group</button>
+          <button onClick={openGroupModal} className='green-button' style={{ marginBottom: '20px' }}>Configure Decision Group</button>
         )
       }
 
@@ -417,7 +456,7 @@ const ChecklistDetails = () => {
         <button onClick={() => setIsMembersModalOpen(false)} className="gray-button">Close</button>
       </Modal>
 
-      <button onClick={openReviewModal} className='green-button' style={{marginBottom:'20px'}}>View Reviews</button>
+      <button onClick={openReviewModal} className='green-button' style={{ marginBottom: '20px' }}>View Reviews</button>
       <Modal
         isOpen={isReviewModalOpen}
         onRequestClose={() => setIsReviewModalOpen(false)}
@@ -461,8 +500,8 @@ const ChecklistDetails = () => {
         )}
         <button onClick={() => setIsReviewModalOpen(false)} className='green-button'>Close</button>
       </Modal>
-    
-      <button onClick={() => navigate('/history')} className="green-button" style={{marginBottom:'20px'}}>Back to Checklist Answer History</button>
+
+      <button onClick={() => navigate('/history')} className="green-button" style={{ marginBottom: '20px' }}>Back to Checklist Answer History</button>
       {/* Article Modal */}
       <Modal
         isOpen={showArticleModal}

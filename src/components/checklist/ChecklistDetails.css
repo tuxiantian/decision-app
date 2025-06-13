@@ -142,7 +142,7 @@
     margin-bottom: 15px;
 }
 
-.question-header {
+.checklist-details .question-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
