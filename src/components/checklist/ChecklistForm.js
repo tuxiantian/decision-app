@@ -144,6 +144,10 @@ const ChecklistForm = () => {
   }, []); // 依赖数组为空，函数引用永远不变
 
   const handleAddQuestion = (parentId = null, optionIndex = null) => {
+    if(questions.length>=100){
+      alert('最多添加100个问题');
+      return;
+    }
     const newQuestion = {
       id: generateTempId(),
       type: 'text',
@@ -244,7 +248,6 @@ const ChecklistForm = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log(JSON.stringify(questions));
       const requestData = {
         name: checklistName,
         description,
