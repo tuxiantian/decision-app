@@ -530,11 +530,11 @@ const ChecklistForm = () => {
                     </button>
                   </div>
                   {/* 显示当前选项已有的后续问题数量 */}
-                  {question.followUpQuestions?.[optIndex]?.length > 0 && (
-                    <span className="follow-up-count">
-                      ({question.followUpQuestions[optIndex].length} follow-ups)
-                    </span>
-                  )}
+                  <span className="follow-up-count">
+                    {question.followUpQuestions?.[optIndex]?.length > 0 
+                      ? `(${question.followUpQuestions[optIndex].length} follow-ups)`
+                      : ''}
+                  </span>
                 </div>
               ))}
               {question.options.length < 4 && (
