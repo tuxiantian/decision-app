@@ -4,7 +4,7 @@ import DecisionFlowTool from './DecisionFlowTool'; // 引入新的流程图组�
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
 import './ChecklistForm.css';
-import isEqual from 'lodash/isEqual'; 
+import isEqual from 'lodash/isEqual';
 
 const ChecklistForm = () => {
   const { checklistId } = useParams();  // 获取路由中的 checklistId 参数
@@ -128,15 +128,15 @@ const ChecklistForm = () => {
   const hasChanges = useCallback(() => {
     console.log(JSON.stringify(originalData));
     console.log(checklistName !== originalData.name ||
-    description !== originalData.description ||
-    
-    !isEqual(flowData, originalData.flowData));
+      description !== originalData.description ||
+
+      !isEqual(flowData, originalData.flowData));
     return (
-    checklistName !== originalData.name ||
-    description !== originalData.description ||
-    !isEqual(questions, originalData.questions) ||
-    !isEqual(flowData, originalData.flowData)
-  );
+      checklistName !== originalData.name ||
+      description !== originalData.description ||
+      !isEqual(questions, originalData.questions) ||
+      !isEqual(flowData, originalData.flowData)
+    );
   }, [checklistName, description, questions, flowData, originalData]);
 
   const handleFlowChange = useCallback((nodes, connections) => {
@@ -272,6 +272,9 @@ const ChecklistForm = () => {
       navigate('/checklists');
     } catch (error) {
       console.error('Error saving checklist:', error);
+      if (error.response && error.response.data.error) {
+        alert(error.response.data.error); // 显示后端返回的错误信息
+      }
     }
   };
 
@@ -614,7 +617,7 @@ const ChecklistForm = () => {
             {renderQuestions()}
           </div>
           <div className="buttons-group">
-            <button onClick={handleSubmit} disabled={checklistId && !hasChanges()} className={`submit-btn ${checklistId && !hasChanges() ? 'disabled' : ''}`}>Submit Checklist</button> 
+            <button onClick={handleSubmit} disabled={checklistId && !hasChanges()} className={`submit-btn ${checklistId && !hasChanges() ? 'disabled' : ''}`}>Submit Checklist</button>
             <button onClick={() => navigate('/checklists')} className="cancel-btn">Back to List</button>
           </div>
 
