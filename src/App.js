@@ -234,7 +234,7 @@ function App() {
         <Route path="/articles" element={<ArticleList />} />
         <Route path="/add-article" element={<ArticleEditor />} />
         <Route path="/edit-article/:id" element={<ArticleEditor />} />
-        <Route path="/view-article/:id" element={<ArticleViewer />} />
+        <Route path="/view-article/:source/:id" element={<ArticleViewer />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
         <Route path="/checklist/flowchart/:checklistId" element={<FlowchartDetail />} />

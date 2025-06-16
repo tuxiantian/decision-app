@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import MarkdownViewer from './MarkdownViewer.js';
-import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
 import './ArticleViewer.css';
 
 const ArticleViewer = () => {
-    const { id } = useParams();
+    const { source,id } = useParams();
     const navigate = useNavigate(); // 用于实现页面导航
     const [article, setArticle] = useState(null);
 
     useEffect(() => {
-        api.get(`${API_BASE_URL}/articles/${id}`)
+        const url = source==='my' ? `/articles/${id}` : `/platform_articles/${id}`
+        api.get(url)
             .then(response => {
                 setArticle(response.data);
             })
