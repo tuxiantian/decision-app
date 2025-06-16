@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import Modal from 'react-modal';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
-import './ChecklistDetails.css'
+import './DecisionDetails.css'
 
-const ChecklistDetails = () => {
+const DecisionDetails = () => {
   const { decisionId } = useParams();
   const [decisionDetails, setDecisionDetails] = useState(null);
   const [showArticleModal, setShowArticleModal] = useState(false);
@@ -542,4 +541,4 @@ const ChecklistDetails = () => {
   );
 };
 
-export default ChecklistDetails;
+export default DecisionDetails;

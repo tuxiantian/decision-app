@@ -1,6 +1,5 @@
 import React from 'react';
 import './AboutUs.css'; // 可以单独创建一个 CSS 文件，控制页面样式
-import { type } from '@testing-library/user-event/dist/type';
 
 const features = [
   {

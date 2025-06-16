@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import { API_BASE_URL } from '../../config'; 
+import api from '../api.js'
 
 const ReviewEditor = () => {
   const { decisionId } = useParams();
@@ -16,7 +16,7 @@ const ReviewEditor = () => {
   const navigate = useNavigate();
 
   const fetchArticles = (search = '', page = 1) => {
-    axios.get(`${API_BASE_URL}/articles?search=${search}&page=${page}&page_size=10`)
+    api.get(`${API_BASE_URL}/articles?search=${search}&page=${page}&page_size=10`)
       .then(response => {
         setArticles(response.data.articles);
         setTotalPages(response.data.total_pages);
@@ -42,7 +42,7 @@ const ReviewEditor = () => {
       referenced_articles: referencedArticles.map(article => article.id) // 只保存文章的 id
     };
 
-    axios.post(`${API_BASE_URL}/reviews`, reviewData)
+    api.post(`${API_BASE_URL}/reviews`, reviewData)
       .then(() => {
         alert('Review saved successfully');
         navigate(`/checklist/${decisionId}`);
