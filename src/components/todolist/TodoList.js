@@ -198,7 +198,7 @@ const TodoList = ({ }) => {
             checked={importance}
             onChange={(e) => setImportance(e.target.checked)}
           />
-          Important
+          重要
         </label>
         <label style={{ marginRight: '10px' }}>
           <input
@@ -206,7 +206,7 @@ const TodoList = ({ }) => {
             checked={urgency}
             onChange={(e) => setUrgency(e.target.checked)}
           />
-          Urgent
+          紧急
         </label>
         <button onClick={handleAddTodo} className='green-button'>Add Todo</button>
       </div>
