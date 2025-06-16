@@ -165,6 +165,15 @@ li {
   margin-right: 10px;
 }
 
+.small-red-button {
+  background-color: red;
+  color: white;
+  padding: 0px 6px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
 .blue-button {
   background-color: #007bff;
   color: white;
