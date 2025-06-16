@@ -33,7 +33,10 @@ h1.title {
   justify-content: center;
   margin-bottom: 10px;
 }
-
+.input-group .button {
+  min-width: 120px;
+  white-space: nowrap;
+}
 .input {
   flex: 1;
   padding: 8px;
