@@ -70,7 +70,7 @@ function AHPAnalysis() {
   };
   return (
     <div className="ahp-container">
-      <h1>AHP Decision System</h1>
+      <h1>层次分析决策法（AHP）</h1>
       {!isNew ? (
         <div>
           <div className="table-controls">
