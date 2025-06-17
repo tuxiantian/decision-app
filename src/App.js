@@ -38,6 +38,7 @@ import TodoHistory from './components/todolist/TodoHistory';
 import InspirationClub from './components/inspiration/InspirationClub';
 import MyReflections from './components/inspiration/MyReflections';
 import FlowTest from './components/checklist/FlowTest';
+import MermaidTool from './components/checklist/MermaidTool';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -182,6 +183,9 @@ function App() {
           },{
             title: '凯利计算器',
             path: '/kelly'
+          },{
+            title: 'mermaid画图',
+            path: '/mermaid'
           },
           {
             title: '反馈',
@@ -229,6 +233,7 @@ function App() {
         <Route path="/todos" element={<TodoList />} />
         <Route path="/history-todos" element={<TodoHistory />} />
         <Route path='/kelly' element={<KellyCalculator />} />
+        <Route path='/mermaid' element={<MermaidTool />}/>
         <Route path='/inspiration' element={<InspirationClub />} />
         <Route path='/reflections' element={<MyReflections />} />
         <Route path="/articles" element={<ArticleList />} />
