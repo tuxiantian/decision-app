@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from './components/api.js'
 import './RegisterPage.css'
@@ -12,7 +12,27 @@ const RegisterPage = () => {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [passwordStrength, setPasswordStrength] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check password strength whenever password changes
+    if (password) {
+      const hasLetter = /[a-zA-Z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const isLongEnough = password.length >= 8;
+
+      if (isLongEnough && hasLetter && hasNumber) {
+        setPasswordStrength('strong');
+      } else if (isLongEnough && (hasLetter || hasNumber)) {
+        setPasswordStrength('medium');
+      } else {
+        setPasswordStrength('weak');
+      }
+    } else {
+      setPasswordStrength(null);
+    }
+  }, [password]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -21,6 +41,16 @@ const RegisterPage = () => {
     // 检查密码和确认密码是否一致
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
+      return;
+    }
+    // 检查密码强度
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      setError('Password must contain both letters and numbers.');
       return;
     }
 
@@ -65,12 +95,31 @@ const RegisterPage = () => {
         </div>
         <div className="form-group">
           <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+
+          {/* 第一行：输入框 + 强度条 */}
+          <div className="password-input-row">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {password && (
+              <div className="password-strength">
+                <div className={`password-strength-bar ${passwordStrength === 'weak' ? 'password-strength-weak' :
+                    passwordStrength === 'medium' ? 'password-strength-medium' :
+                      'password-strength-strong'
+                  }`} />
+              </div>
+            )}
+          </div>
+
+          {/* 第二行：提示文本（独立于 Flex 容器外） */}
+          {password && (
+            <p className="password-hint">
+              Password must be at least 8 characters long and contain both letters and numbers.
+            </p>
+          )}
         </div>
         <div className="form-group">
           <label>Confirm Password</label>

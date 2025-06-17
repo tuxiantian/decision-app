@@ -1,38 +1,100 @@
 .register-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: center;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-    text-align: left;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
-  }
-  
-  .success-message {
-    color: green;
-    margin-top: 10px;
-  }
-  
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.form-group {
+  text-align: left;
+  flex-direction: column;
+  display: flex;
+  align-items: flex-start;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
+
+/* Add these to RegisterPage.css */
+.password-input-container {
+  display: flex;
+  /* 启用 Flex 布局 */
+  align-items: center;
+  /* 垂直居中 */
+  gap: 10px;
+  /* 输入框和强度条之间的间距 */
+}
+
+/* 密码输入容器 - 控制输入框和强度条在同一行 */
+.password-input-row {
+  display: flex;
+  /* Flex 布局 */
+  align-items: center;
+  /* 垂直居中 */
+  gap: 10px;
+  /* 元素间距 */
+}
+
+/* 输入框自适应宽度 */
+.password-input-row input {
+  flex: 1;
+  /* 占据剩余空间 */
+}
+
+.password-strength {
+  flex: 0 0 100px;
+  /* 固定强度条宽度 */
+  height: 5px;
+  /* 高度 */
+  background-color: #eee;
+  border-radius: 2px;
+}
+
+.password-strength-bar {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-weak {
+  background-color: #ff4d4d;
+  width: 33%;
+}
+
+.password-strength-medium {
+  background-color: #ffa500;
+  width: 66%;
+}
+
+.password-strength-strong {
+  background-color: #4CAF50;
+  width: 100%;
+}
+
+.password-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  /* 与上一行的间距 */
+  display: block;
+  /* 独占一行 */
+}
