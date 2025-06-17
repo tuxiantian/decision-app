@@ -348,11 +348,35 @@ function BalancedDecisionMaker() {
         <h2 className="section-title">Add Conditions</h2>
         <div className="input-group">
           <input type="text" id="positiveCondition" placeholder="Add positive condition" className="input" />
-          <button className="button" onClick={() => addCondition('positive', document.getElementById('positiveCondition').value)}>Add Positive</button>
+          <button className="button" onClick={() => {
+            addCondition('positive', document.getElementById('positiveCondition').value);
+            const input = document.getElementById('positiveCondition');
+            input.value = '';
+            }}>Add Positive</button>
+          <span
+            className="clear-input"
+            onClick={() => {
+              document.getElementById('positiveCondition').value = '';
+            }}
+          >
+            ×
+          </span>
         </div>
         <div className="input-group">
           <input type="text" id="negativeCondition" placeholder="Add negative condition" className="input" />
-          <button className="button" onClick={() => addCondition('negative', document.getElementById('negativeCondition').value)}>Add Negative</button>
+          <button className="button" onClick={() => {
+            addCondition('negative', document.getElementById('negativeCondition').value);
+            const input = document.getElementById('negativeCondition');
+            input.value = '';
+          }}>Add Negative</button>
+                <span 
+        className="clear-input" 
+        onClick={() => {
+          document.getElementById('negativeCondition').value = '';
+        }}
+      >
+        ×
+      </span>
         </div>
       </div>
       <div className="section">
