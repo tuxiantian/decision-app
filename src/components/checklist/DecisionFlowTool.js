@@ -1194,7 +1194,7 @@ const DecisionFlowTool = React.forwardRef(({
                     </button>
 
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '14px',marginRight: '10px'}}>
                             <i className="fas fa-info-circle" style={{ marginRight: '4px', fontSize: '12px' }}></i>
                             节点: {nodes.length} | 连接: {connections.length}
                         </div>
