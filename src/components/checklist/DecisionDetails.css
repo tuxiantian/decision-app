@@ -150,18 +150,20 @@
 }
 
 .toggle-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 0.9em;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  color: #007bff !important;
+  font-size: 1.2em !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease;
 }
 
 .toggle-button:hover {
-    background-color: #0056b3;
+  transform: scale(1.1);
+  color: #0056b3 !important;
 }
+
 .two-answers {
     display: flex;
     gap: 20px; /* 间距 */

@@ -6,6 +6,8 @@ import { Viewer } from '@toast-ui/react-editor';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
 import './DecisionDetails.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const DecisionDetails = () => {
   const { decisionId } = useParams();
@@ -33,8 +35,8 @@ const DecisionDetails = () => {
     const fetchDecisionDetails = async () => {
       try {
         const response = await api.get(`${API_BASE_URL}/checklist_answers/details/${decisionId}`);
-        const r=response.data;
-        r.answers=filterAndFormatAnswers(r.answers)
+        const r = response.data;
+        r.answers = filterAndFormatAnswers(r.answers)
         setDecisionDetails(r);
 
         // 如果存在决策组信息，设置相关变量
@@ -191,16 +193,31 @@ const DecisionDetails = () => {
   return (
     <div className="checklist-details" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>{decisionDetails.decision_name} - Details</h2>
-      <div style={{textAlign:'left'}}><strong>Decision description:</strong> {decisionDetails.description}</div>
-      <div style={{textAlign:'left'}}><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
+      <div style={{ textAlign: 'left' }}><strong>Decision description:</strong> {decisionDetails.description}</div>
+      <div style={{ textAlign: 'left' }}><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
 
       <h3>Answers:</h3>
       {decisionDetails.answers.map((answerData, index) => (
         <div key={index} className="question-section">
           <div className="question-header">
             <strong>Q:</strong> {answerData.question}
-            <button onClick={() => toggleQuestion(index)} className="toggle-button">
-              {expandedQuestions[index] ? 'Hide Answers' : 'Show Answers'}
+            <button
+              onClick={() => toggleQuestion(index)}
+              className="toggle-button"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '5px',
+                fontSize: '1.2em',
+                color: '#007bff'
+              }}
+            >
+              {expandedQuestions[index] ? (
+                <FontAwesomeIcon icon={faChevronUp} />
+              ) : (
+                <FontAwesomeIcon icon={faChevronDown} />
+              )}
             </button>
           </div>
 
@@ -208,7 +225,7 @@ const DecisionDetails = () => {
           {answerData.responses.length === 1 && expandedQuestions[index] ? (
             <div className="single-answer">
               <strong>{answerData.responses[0].username}:</strong>
-              <p>{answerData.isChoice?answerData.responses[0].formattedAnswer:answerData.responses[0].answer}</p>
+              <p>{answerData.isChoice ? answerData.responses[0].formattedAnswer : answerData.responses[0].answer}</p>
               {(answerData.responses[0].referenced_articles.length > 0 ||
                 answerData.responses[0].referenced_platform_articles.length > 0) && (
                   <div className="referenced-articles">
@@ -437,7 +454,7 @@ const DecisionDetails = () => {
           readOnly
           style={{ width: '100%', padding: '8px' }}
         />
-        <div style={{margin:'20px auto'}}>
+        <div style={{ margin: '20px auto' }}>
           <button onClick={() => navigator.clipboard.writeText(inviteLink)} className="green-button">Copy Link</button>
           <button onClick={() => setIsInviteModalOpen(false)} className="gray-button" style={{ marginLeft: '10px' }}>Close</button>
         </div>
