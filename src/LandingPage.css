@@ -1,0 +1,37 @@
+/* landing.css */
+.landing-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+.life-manual {
+  line-height: 1.8;
+  color: #333;
+  text-align: left;
+}
+
+.life-manual h2 {
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.cta-button {
+  background: #28a745;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  margin: 2rem auto;
+  display: block;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cta-button:hover {
+  background: #218838;
+  transform: translateY(-2px);
+}
