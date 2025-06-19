@@ -89,20 +89,20 @@
 }
 
 .toggle-icon {
-    margin-right: 10px;
     font-size: 12px;
     width: 15px;
     display: inline-block;
 }
 
 .question-type {
-    margin-left: 10px;
     font-size: 12px;
     color: #666;
 }
 
 .question-details {
     margin-top: 10px;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .questionnaire-question .options-container {

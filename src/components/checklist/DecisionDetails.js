@@ -191,7 +191,8 @@ const DecisionDetails = () => {
   return (
     <div className="checklist-details" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>{decisionDetails.decision_name} - Details</h2>
-      <div><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
+      <div style={{textAlign:'left'}}><strong>Decision description:</strong> {decisionDetails.description}</div>
+      <div style={{textAlign:'left'}}><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
 
       <h3>Answers:</h3>
       {decisionDetails.answers.map((answerData, index) => (
@@ -436,8 +437,11 @@ const DecisionDetails = () => {
           readOnly
           style={{ width: '100%', padding: '8px' }}
         />
-        <button onClick={() => navigator.clipboard.writeText(inviteLink)} className="green-button">Copy Link</button>
-        <button onClick={() => setIsInviteModalOpen(false)} className="gray-button" style={{ marginLeft: '10px' }}>Close</button>
+        <div style={{margin:'20px auto'}}>
+          <button onClick={() => navigator.clipboard.writeText(inviteLink)} className="green-button">Copy Link</button>
+          <button onClick={() => setIsInviteModalOpen(false)} className="gray-button" style={{ marginLeft: '10px' }}>Close</button>
+        </div>
+
       </Modal>
 
       {/* 查看成员弹窗 */}

@@ -43,12 +43,13 @@ const JoinGroupPage = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="join-group-page" style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+    <div className="join-group-page" style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
       <h2>Join Decision Group</h2>
       {groupDetails ? (
         <>
           <div style={{ marginBottom: '10px' }}><strong>Group Name:</strong> {groupDetails.group_name}</div>
           <div style={{ marginBottom: '10px' }}><strong>Decision Name:</strong> {groupDetails.decision_name}</div>
+          <div style={{ marginBottom: '10px' }}><strong>Decision Description:</strong> {groupDetails.description}</div>
           <div style={{ marginBottom: '20px' }}><strong>Invited By:</strong> {groupDetails.inviter_username}</div>
           <button onClick={handleAcceptInvitation} className="green-button">Accept Invitation</button>
         </>

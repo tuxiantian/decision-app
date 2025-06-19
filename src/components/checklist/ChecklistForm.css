@@ -229,9 +229,9 @@
 
 .question-header {
   display: flex;
-  justify-content: space-between; /* 两端对齐 */
+  justify-content: flex-start;
   align-items: center; /* 垂直居中 */
-  gap: 20px; /* 元素间距 */
+  gap: 10px; /* 元素间距 */
   margin-bottom: 10px;
   width: 100%;
 }

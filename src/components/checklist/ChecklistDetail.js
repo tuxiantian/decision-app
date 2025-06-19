@@ -17,6 +17,7 @@ const ChecklistDetail = () => {
   const [step, setStep] = useState(1);
   const [latestChecklistId, setLatestChecklistId] = useState(null);
   const [decisionName, setDecisionName] = useState('');
+  const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [finalDecision, setFinalDecision] = useState('');
@@ -90,9 +91,9 @@ const ChecklistDetail = () => {
     fetchChecklistDetails();
   }, [checklistId]);
 
-  useEffect(() => {
-    console.log(JSON.stringify(userPath));
-  }, [userPath]);
+  // useEffect(() => {
+  //   console.log(JSON.stringify(userPath));
+  // }, [userPath]);
 
   // 获取下一个问题
   const getNextQuestion = (currentQuestion, answer) => {
@@ -378,6 +379,7 @@ const ChecklistDetail = () => {
       const response = await api.post(`${API_BASE_URL}/save_checklist_answers`, {
         checklist_id: latestChecklistId,
         decision_name: decisionName,
+        description: description,
         final_decision: finalDecision,
         answers: answersArray,
       });
@@ -643,6 +645,11 @@ const ChecklistDetail = () => {
                   value={decisionName}
                   onChange={(e) => setDecisionName(e.target.value)}
                 />
+                <textarea type="text" style={{ width: '100%', padding: '10px', fontSize: '16px' }}
+                  placeholder="Enter decision description"
+                  maxLength={800}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}></textarea>
               </div>
               <button onClick={() => setStep(3)} disabled={!decisionName} className='green-button'>
                 Next
