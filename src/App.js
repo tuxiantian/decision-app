@@ -40,6 +40,7 @@ import MyReflections from './components/inspiration/MyReflections';
 import FlowTest from './components/checklist/FlowTest';
 import MermaidTool from './components/checklist/MermaidTool';
 import LandingPage from './LandingPage';
+import ChecklistView from './components/checklist/ChecklistView';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -233,6 +234,7 @@ function App() {
           <Route path="/ahp" element={<AHPAnalysis />} />
           <Route path="/ahp-add" element={<PairwiseComparison />} />
           <Route path="/checklist-form" element={<ChecklistForm />} />
+          <Route path="/checklist-view/:checklistId" element={<ChecklistView />} />
           <Route path="/checklists" element={<ChecklistList />} />
           <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
           <Route path="/history" element={<ChecklistAnswerHistory />} />

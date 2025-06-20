@@ -79,6 +79,10 @@ const ChecklistList = () => {
     navigate(`/checklist/${checklistId}`);
   };
 
+  const handleViewClick = (checklistId) => {
+    navigate(`/checklist-view/${checklistId}`);
+  };
+
   const handleViewFlowchartClick = (checklistId, isPlatform) => {
     navigate(`/checklist/flowchart/${checklistId}`, { state: { isPlatform } });
   };
@@ -187,12 +191,16 @@ const ChecklistList = () => {
 
 
                       {tab === 'platform' && (
-                        <><button
+                        <>
+                        <button onClick={() => handleViewClick(checklist.id)} className='green-button'>查看</button>
+
+                        <button
                           onClick={() => handleCloneChecklist(version.id)}
                           className='green-button'
                         >
                           克隆
-                        </button><button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>查看流程图</button>
+                        </button>
+                        <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>查看流程图</button>
                         </>
                       )}
                     </li>
@@ -230,7 +238,9 @@ const ChecklistList = () => {
               )}
 
               {tab === 'platform' && (
-                <><button
+                <>
+                <button onClick={() => handleViewClick(checklist.id)} className='green-button'>查看</button>
+                <button
                   onClick={() => handleCloneChecklist(checklist.id)}
                   className='green-button'
                 >
