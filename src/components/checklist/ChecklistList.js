@@ -129,7 +129,7 @@ const ChecklistList = () => {
           className={`tab-button ${tab === 'platform' ? 'active' : ''}`}
           onClick={() => handleTabChange('platform')}
         >
-          Platform Recommended
+          Recommended
         </button>
       </div>
 
