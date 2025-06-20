@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
@@ -54,6 +54,17 @@ const ChecklistList = () => {
       fetchPlatformChecklists(currentPage);
     }
   }, [tab, currentPage]);
+
+  const handleShareChecklist = async (checklistId) => {
+    try {
+      await api.post(`/checklists/${checklistId}/share`);
+      alert('Checklist submitted for review successfully!');
+      fetchMyChecklists(currentPage);
+    } catch (error) {
+      console.error('Error sharing checklist:', error);
+      alert(error.response?.data?.error || 'Failed to share the checklist.');
+    }
+  };
 
   const handleTabChange = (newTab) => {
     setTab(newTab);
@@ -138,6 +149,15 @@ const ChecklistList = () => {
           <li key={checklist.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc' }}>
             <div style={{ textAlign: 'left', maxWidth: '600px' }}>
               <strong>{checklist.name}</strong> - Version: {checklist.version} -Decision Count: {checklist.decision_count}
+              {/* 新增分享状态显示 */}
+              {tab === 'my' && (
+                <>
+                  -Status:  <strong>
+                    {checklist.share_status === 'pending' ? 'Not Shared' :
+                      checklist.share_status === 'review' ? 'Under Review' :
+                        checklist.share_status === 'approved' ? 'Approved' : 'Rejected'}</strong>
+                </>
+              )}
               <div>{checklist.description}</div>
               {checklist.versions && checklist.versions.length > 0 && (
                 <ul style={{ marginLeft: '20px', listStyle: 'circle' }}>
@@ -145,13 +165,26 @@ const ChecklistList = () => {
                     <li key={version.id} style={{ marginBottom: '5px' }}>
                       <strong>{version.name}</strong> - Version: {version.version} -Decision Count: {checklist.decision_count}
                       {tab === 'my' && (
-                        <button
-                          onClick={() => handleDeleteChecklist(version.id, false)}
-                          style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >
-                          <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
-                        </button>
+                        <>
+                          {checklist.share_status === 'pending' && (
+                            <button
+                              onClick={() => handleShareChecklist(checklist.id)}
+                              style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                            >
+                              <FontAwesomeIcon icon={faShareAlt} />
+                            </button>
+
+                          )}
+                          <button
+                            onClick={() => handleDeleteChecklist(version.id, false)}
+                            style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
+                          </button>
+                        </>
                       )}
+
+
 
                       {tab === 'platform' && (
                         <><button
@@ -176,16 +209,26 @@ const ChecklistList = () => {
               {tab === 'my' && (
                 <><button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
                   做决定
-                </button><button
-                  onClick={() => handleDeleteChecklist(checklist.id, true)}
-                  style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
-                >
+                </button>
+                  {checklist.share_status === 'pending' && (
+                    <button
+                      onClick={() => handleShareChecklist(checklist.id)}
+                      style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                    >
+                      <FontAwesomeIcon icon={faShareAlt} />
+                    </button>
+
+                  )}
+                  <button
+                    onClick={() => handleDeleteChecklist(checklist.id, true)}
+                    style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                  >
                     <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                   </button>
-                  <button onClick={() => handleViewFlowchartClick(checklist.id,false)} className='green-button'>查看流程图</button>
-                  </>
+                  <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='green-button'>查看流程图</button>
+                </>
               )}
-              
+
               {tab === 'platform' && (
                 <><button
                   onClick={() => handleCloneChecklist(checklist.id)}
@@ -206,7 +249,7 @@ const ChecklistList = () => {
         <p style={{ margin: '0 10px', display: 'flex', alignItems: 'center' }}>Page {currentPage} of {totalPages}</p>
         <button onClick={handleNextPage} disabled={currentPage >= totalPages} className='green-button'>Next</button>
       </div>
-    </div>
+    </div >
   );
 };
 
