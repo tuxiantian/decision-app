@@ -45,23 +45,6 @@ function App() {
   const [username, setUsername] = useState(null); // 存储用户名
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // 检查用户登录状态，获取用户名
-    const fetchUserInfo = async () => {
-      try {
-        const response = await api.get('/profile'); // 假设此端点返回用户信息
-        setUsername(response.data.username);
-        localStorage.setItem('username', response.data.username); // 同步用户名到 localStorage
-      } catch (error) {
-        console.log("用户未登录");
-      }
-    };
-    // 如果 localStorage 中没有用户名，则重新获取
-    if (!username) {
-      fetchUserInfo();
-    }
-  }, []);
-
   // 处理用户退出逻辑
   const handleLogout = async () => {
     try {
@@ -204,57 +187,92 @@ function App() {
     }
   ];
 
+  // useEffect(() => {
+  //   // 检查用户登录状态，获取用户名
+  //   const fetchUserInfo = async () => {
+  //     try {
+  //       const response = await api.get('/profile'); // 假设此端点返回用户信息
+  //       setUsername(response.data.username);
+  //       localStorage.setItem('username', response.data.username); // 同步用户名到 localStorage
+  //     } catch (error) {
+  //       console.log("用户未登录");
+  //     }
+  //   };
+  //   // 如果 localStorage 中没有用户名，则重新获取
+  //   if (!username) {
+  //     fetchUserInfo();
+  //   }
+  // }, []);
+
+  function PrivateLayout({ username, onLogout, menuItems }) {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+      const checkAuth = async () => {
+        try {
+          const response = await api.get('/profile'); // 假设此端点返回用户信息
+          setUsername(response.data.username);
+          localStorage.setItem('username', response.data.username); // 同步用户名到 localStorage
+        } catch (error) {
+          navigate('/login'); // 未登录时跳转
+        }
+      };
+      checkAuth();
+    }, [navigate]);
+
+    return (
+      <>
+        <CustomMenu menuItems={menuItems} username={username} onLogout={onLogout} />
+        <Routes>
+          {/* 所有需要登录的页面路由 */}
+          <Route path="/join-group/:groupId" element={<JoinGroupPage />} />
+          <Route path="/questionnaire/:decisionId" element={<Questionnaire />} />
+          <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
+          <Route path="/balanced-decisions/list" element={<BalancedDecisionList />} />
+          <Route path="/balanced-decisions/:id" element={<BalancedDecisionDetail />} />
+          <Route path="/ahp" element={<AHPAnalysis />} />
+          <Route path="/ahp-add" element={<PairwiseComparison />} />
+          <Route path="/checklist-form" element={<ChecklistForm />} />
+          <Route path="/checklists" element={<ChecklistList />} />
+          <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
+          <Route path="/history" element={<ChecklistAnswerHistory />} />
+          <Route path="/checklist_answers/details/:decisionId" element={<DecisionDetails />} />
+          <Route path="/checklist/update/:checklistId" element={<ChecklistForm />} />
+          <Route path="/todos" element={<TodoList />} />
+          <Route path="/history-todos" element={<TodoHistory />} />
+          <Route path='/inspiration' element={<InspirationClub />} />
+          <Route path='/reflections' element={<MyReflections />} />
+          <Route path="/articles" element={<ArticleList />} />
+          <Route path="/add-article" element={<ArticleEditor />} />
+          <Route path="/edit-article/:id" element={<ArticleEditor />} />
+          <Route path="/view-article/:source/:id" element={<ArticleViewer />} />
+          <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
+          <Route path="/checklist/flowchart/:checklistId" element={<FlowchartDetail />} />
+          <Route path="/argument-evaluator" element={<FactOpinionAnalyzer />} />
+          <Route path="/argument-evaluator-list" element={<AnalysisList />} />
+          <Route path="/analysis-detail/:id" element={<AnalysisDetail />} />
+          <Route path="/feedback" element={<FeedbackForm />} />
+          <Route path="/myfeedback" element={<MyFeedback />} />
+        </Routes>
+      </>
+    );
+  }
+
   return (
 
     <div className="App">
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage onLogin={setUsername} />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/flow" element={<FlowTest />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path='/kelly' element={<KellyCalculator />} />
+        <Route path='/mermaid' element={<MermaidTool />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        {/* 需要登录的私有页面 */}
         <Route path="/*" element={
-          <>
-            <CustomMenu
-              menuItems={menuItems}
-              username={username}
-              onLogout={handleLogout}
-            />
-            <Routes>
-
-              <Route path="/home" element={<Home />} />
-              <Route path="/flow" element={<FlowTest />} />
-              <Route path="/login" element={<LoginPage onLogin={setUsername} />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/join-group/:groupId" element={<JoinGroupPage />} />
-              <Route path="/questionnaire/:decisionId" element={<Questionnaire />} />
-              <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
-              <Route path="/balanced-decisions/list" element={<BalancedDecisionList />} />
-              <Route path="/balanced-decisions/:id" element={<BalancedDecisionDetail />} />
-              <Route path="/ahp" element={<AHPAnalysis />} />
-              <Route path="/ahp-add" element={<PairwiseComparison />} />
-              <Route path="/checklist-form" element={<ChecklistForm />} />
-              <Route path="/checklists" element={<ChecklistList />} />
-              <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
-              <Route path="/history" element={<ChecklistAnswerHistory />} />
-              <Route path="/checklist_answers/details/:decisionId" element={<DecisionDetails />} />
-              <Route path="/checklist/update/:checklistId" element={<ChecklistForm />} />
-              <Route path="/todos" element={<TodoList />} />
-              <Route path="/history-todos" element={<TodoHistory />} />
-              <Route path='/kelly' element={<KellyCalculator />} />
-              <Route path='/mermaid' element={<MermaidTool />} />
-              <Route path='/inspiration' element={<InspirationClub />} />
-              <Route path='/reflections' element={<MyReflections />} />
-              <Route path="/articles" element={<ArticleList />} />
-              <Route path="/add-article" element={<ArticleEditor />} />
-              <Route path="/edit-article/:id" element={<ArticleEditor />} />
-              <Route path="/view-article/:source/:id" element={<ArticleViewer />} />
-              <Route path="/about-us" element={<AboutUs />} />
-              <Route path="/checklist/:decisionId/review" element={<ReviewEditor />} />
-              <Route path="/checklist/flowchart/:checklistId" element={<FlowchartDetail />} />
-              <Route path="/argument-evaluator" element={<FactOpinionAnalyzer />} />
-              <Route path="/argument-evaluator-list" element={<AnalysisList />} />
-              <Route path="/analysis-detail/:id" element={<AnalysisDetail />} />
-              <Route path="/feedback" element={<FeedbackForm />} />
-              <Route path="/myfeedback" element={<MyFeedback />} />
-            </Routes>
-          </>
+          <PrivateLayout username={username} onLogout={handleLogout} menuItems={menuItems} />
         } />
       </Routes>
 
