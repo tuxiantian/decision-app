@@ -154,7 +154,7 @@ const Home = () => {
       {/* 事实、观点分析功能介绍部分 */}
       <section id="argument" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2>事实、观点分析功能</h2>
-        <p>
+        <p style={{ textAlign: 'left', lineHeight: '1.6', color: '#555' }}>
           通过“事实、观点分析”功能，您可以标记和分类不同的事实和观点，并识别潜在的逻辑错误。该功能帮助您更清晰地理解信息的结构和逻辑关系，
           为您的决策提供可靠依据。
         </p>
@@ -165,7 +165,7 @@ const Home = () => {
 
       </section>
 
-      <section  id="todos" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
+      <section id="todos" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>TodoList 组件功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
           TodoList 组件是一个全面的任务管理工具，帮助用户组织、创建和跟踪待办事项。它具有直观的用户界面，支持多种任务分类和优先级管理。以下是 TodoList 组件的主要功能：
@@ -181,9 +181,16 @@ const Home = () => {
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
           TodoList 组件通过以上功能，帮助用户系统化地管理日常任务和目标，确保他们能够根据任务的重要性和紧急性进行优先级处理，从而更加有效率地完成任务和管理时间。
         </p>
-        <Link to="/todos" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
-          任务代办清单
-        </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
+          <Link to="/todos" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            任务代办清单
+          </Link>
+
+          <Link to="/history-todos" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
+            完成的待办事项
+          </Link>
+        </div>
+
       </section>
 
       <section id="balanced" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
@@ -219,10 +226,6 @@ const Home = () => {
           <li><strong>记录启发内容</strong>：随时记录来自书籍、文章、对话或生活中的灵感片段，形成个人启发库。</li>
           <li><strong>分类整理</strong>：为每个启发内容添加标签和分类，便于后续检索和回顾。</li>
           <li><strong>添加个人感想</strong>：针对每个启发内容，可以记录自己的理解和应用场景，形成深度思考。</li>
-          <li><strong>分享交流</strong>：将启发内容分享给团队成员或社区，促进集体智慧的增长。</li>
-          <li><strong>定期回顾</strong>：系统会定期提醒用户回顾过去的启发内容，加深记忆和应用。</li>
-          <li><strong>关联决策</strong>：启发内容可以直接关联到具体的决策过程，为决策提供更多思考角度。</li>
-          <li><strong>知识图谱</strong>：系统会自动分析启发内容之间的关系，形成可视化的知识网络。</li>
         </ul>
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
           启发俱乐部不仅是一个记录工具，更是一个促进持续学习和深度思考的平台。通过系统地收集和反思启发内容，用户可以不断扩展认知边界，提升决策质量。
