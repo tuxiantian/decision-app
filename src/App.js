@@ -226,6 +226,12 @@ function App() {
         <CustomMenu menuItems={menuItems} username={username} onLogout={onLogout} />
         <Routes>
           {/* 所有需要登录的页面路由 */}
+          <Route path="/flow" element={<FlowTest />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path='/kelly' element={<KellyCalculator />} />
+          <Route path='/mermaid' element={<MermaidTool />} />
+          <Route path="/about-us" element={<AboutUs />} />
+
           <Route path="/join-group/:groupId" element={<JoinGroupPage />} />
           <Route path="/questionnaire/:decisionId" element={<Questionnaire />} />
           <Route path="/balanced-decisions" element={<BalancedDecisionMaker />} />
@@ -267,11 +273,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage onLogin={setUsername} />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/flow" element={<FlowTest />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path='/kelly' element={<KellyCalculator />} />
-        <Route path='/mermaid' element={<MermaidTool />} />
-        <Route path="/about-us" element={<AboutUs />} />
+
         {/* 需要登录的私有页面 */}
         <Route path="/*" element={
           <PrivateLayout username={username} onLogout={handleLogout} menuItems={menuItems} />
