@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { API_BASE_URL } from '../../config.js';
 import api from '../api.js';
 import DecisionFlowTool from './DecisionFlowTool';
 import './FlowchartDetail.css';
@@ -72,8 +71,8 @@ const FlowchartDetail = () => {
     const fetchChecklist = async () => {
       try {
         const endpoint = isPlatform
-          ? `${API_BASE_URL}/platform_checklists/${checklistId}`
-          : `${API_BASE_URL}/checklists/${checklistId}`;
+          ? `/platform_checklists/${checklistId}`
+          : `/checklists/${checklistId}`;
         const response = await api.get(endpoint);
         setChecklist(response.data);
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import DecisionFlowTool from './DecisionFlowTool';
 import api from '../api.js'
 
@@ -14,11 +14,16 @@ const ChecklistView = () => {
     const flowchartRef = useRef(null);
     const flowchartToolRef = useRef(null);
     const { checklistId } = useParams();
+    const location = useLocation();
+    const { isPlatform } = location.state || {};
 
     useEffect(() => {
         const fetchChecklistDetails = async () => {
             try {
-                const response = await api.get(`/platform_checklists/${checklistId}`);
+                const endpoint = isPlatform
+                    ? `/platform_checklists/${checklistId}`
+                    : `/checklists/${checklistId}`;
+                const response = await api.get(endpoint);
                 const questions = response.data.questions;
                 setQuestions(questions);
                 setFlowchartData(response.data.mermaid_code);

@@ -79,8 +79,8 @@ const ChecklistList = () => {
     navigate(`/checklist/${checklistId}`);
   };
 
-  const handleViewClick = (checklistId) => {
-    navigate(`/checklist-view/${checklistId}`);
+  const handleViewClick = (checklistId, isPlatform) => {
+    navigate(`/checklist-view/${checklistId}`, { state: { isPlatform } });
   };
 
   const handleViewFlowchartClick = (checklistId, isPlatform) => {
@@ -185,6 +185,7 @@ const ChecklistList = () => {
                           >
                             <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                           </button>
+                          <button onClick={() => handleViewClick(checklist.id,false)} className='green-button'>查看</button>
                         </>
                       )}
 
@@ -192,12 +193,12 @@ const ChecklistList = () => {
 
                       {tab === 'platform' && (
                         <>
-                        <button onClick={() => handleViewClick(checklist.id)} className='green-button'>查看</button>
+                        <button onClick={() => handleViewClick(checklist.id,true)} className='green-button'>查看</button>
 
                         <button
                           onClick={() => handleCloneChecklist(version.id)}
                           className='green-button'
-                        >
+                        >true
                           克隆
                         </button>
                         <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>查看流程图</button>
@@ -215,7 +216,9 @@ const ChecklistList = () => {
                 </button>
               )}
               {tab === 'my' && (
-                <><button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
+                <>
+                <button onClick={() => handleViewClick(checklist.id,false)} className='green-button'>查看</button>
+                <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
                   做决定
                 </button>
                   {checklist.share_status === 'pending' && (
@@ -233,13 +236,13 @@ const ChecklistList = () => {
                   >
                     <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                   </button>
-                  <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='green-button'>查看流程图</button>
+                  <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='green-button'>流程图</button>
                 </>
               )}
 
               {tab === 'platform' && (
                 <>
-                <button onClick={() => handleViewClick(checklist.id)} className='green-button'>查看</button>
+                <button onClick={() => handleViewClick(checklist.id,true)} className='green-button'>查看</button>
                 <button
                   onClick={() => handleCloneChecklist(checklist.id)}
                   className='green-button'
