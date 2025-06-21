@@ -185,7 +185,8 @@ const ChecklistList = () => {
                           >
                             <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                           </button>
-                          <button onClick={() => handleViewClick(checklist.id,false)} style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}><FontAwesomeIcon icon={faInfoCircle} /></button>
+                          <button onClick={() => handleViewClick(checklist.id, false)} style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}><FontAwesomeIcon icon={faInfoCircle} /></button>
+                          <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='green-button'>流程图</button>
                         </>
                       )}
 
@@ -193,15 +194,15 @@ const ChecklistList = () => {
 
                       {tab === 'platform' && (
                         <>
-                        <button onClick={() => handleViewClick(checklist.id,true)} className='green-button'>查看</button>
+                          <button onClick={() => handleViewClick(checklist.id, true)} className='green-button'>查看</button>
 
-                        <button
-                          onClick={() => handleCloneChecklist(version.id)}
-                          className='green-button'
-                        >
-                          克隆
-                        </button>
-                        <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>流程图</button>
+                          <button
+                            onClick={() => handleCloneChecklist(version.id)}
+                            className='green-button'
+                          >
+                            克隆
+                          </button>
+                          <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>流程图</button>
                         </>
                       )}
                     </li>
@@ -217,10 +218,10 @@ const ChecklistList = () => {
               )}
               {tab === 'my' && (
                 <>
-                <button onClick={() => handleViewClick(checklist.id,false)} className='green-button'>查看</button>
-                <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
-                  做决定
-                </button>
+                  <button onClick={() => handleViewClick(checklist.id, false)} className='green-button'>查看</button>
+                  <button onClick={() => handleMakeDecisionClick(checklist.id)} className='green-button'>
+                    做决定
+                  </button>
                   {checklist.share_status === 'pending' && (
                     <button
                       onClick={() => handleShareChecklist(checklist.id)}
@@ -242,13 +243,14 @@ const ChecklistList = () => {
 
               {tab === 'platform' && (
                 <>
-                <button onClick={() => handleViewClick(checklist.id,true)} className='green-button'>查看</button>
-                <button
-                  onClick={() => handleCloneChecklist(checklist.id)}
-                  className='green-button'
-                >
-                  克隆
-                </button><button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>流程图</button>
+                  <button onClick={() => handleViewClick(checklist.id, true)} className='green-button'>查看</button>
+                  <button
+                    onClick={() => handleCloneChecklist(checklist.id)}
+                    className='green-button'
+                  >
+                    克隆
+                  </button>
+                  <button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>流程图</button>
                 </>
               )}
 
