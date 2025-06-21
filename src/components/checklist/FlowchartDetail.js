@@ -16,13 +16,15 @@ const FlowchartDetail = () => {
   const flowchartToolRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [hasFlowchart, setHasFlowchart] = useState(false); // 新增状态
+
 
   // 计算并居中所有节点的视图
   const centerView = useCallback(() => {
     if (!flowchartToolRef.current || flowData.nodes.length === 0) return;
-    
+
     setIsLoading(false);
-    
+
     // 计算所有节点的边界
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     flowData.nodes.forEach(node => {
@@ -74,17 +76,25 @@ const FlowchartDetail = () => {
           : `${API_BASE_URL}/checklists/${checklistId}`;
         const response = await api.get(endpoint);
         setChecklist(response.data);
-        
+
         if (response.data.mermaid_code) {
           try {
             const parsedData = JSON.parse(response.data.mermaid_code);
             setFlowData(parsedData);
+            setHasFlowchart(parsedData.nodes && parsedData.nodes.length > 0);
+
           } catch (e) {
             console.error('Failed to parse flow data', e);
+            setHasFlowchart(false);
+
           }
+        } else {
+          setHasFlowchart(false);
         }
       } catch (error) {
         console.error('Error fetching checklist:', error);
+        setHasFlowchart(false);
+
       }
     };
 
@@ -93,8 +103,10 @@ const FlowchartDetail = () => {
 
   // 数据加载完成后自动居中视图
   useEffect(() => {
-    if (flowData.nodes.length > 0) {
+    if (flowData.nodes?.length > 0) {
       centerView();
+    } else {
+      setHasFlowchart(false);
     }
   }, [flowData, centerView]);
 
@@ -108,11 +120,11 @@ const FlowchartDetail = () => {
       // 获取画布的实际尺寸
       const canvasContainer = flowchartRef.current.querySelector('.decision-flow-container');
       const { scrollWidth, scrollHeight } = canvasContainer;
-      
+
       // 临时调整容器大小以包含整个画布
       const originalOverflow = flowchartRef.current.style.overflow;
       flowchartRef.current.style.overflow = 'visible';
-      
+
       // 截图整个画布内容
       const canvas = await html2canvas(canvasContainer, {
         scale: 2,
@@ -150,28 +162,30 @@ const FlowchartDetail = () => {
       <h2>{checklist.name} - 流程图</h2>
 
       <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '15px' }}>
-        <button 
-          onClick={handleDownload} 
+        <button
+          onClick={handleDownload}
           className="flowchart-button"
-          disabled={!isReady}
+          disabled={!isReady || !hasFlowchart}
           style={{
-            background: isReady ? '#28a745' : '#6c757d',
-            cursor: isReady ? 'pointer' : 'not-allowed'
+            background: isReady && hasFlowchart ? '#28a745' : '#6c757d',
+            cursor: isReady && hasFlowchart ? 'pointer' : 'not-allowed'
           }}
         >
           导出为PNG
         </button>
-        
-        <button 
-          onClick={centerView} 
+
+        <button
+          onClick={centerView}
           className="flowchart-button"
+          disabled={!hasFlowchart}
           style={{
-            background: '#17a2b8',
+            background: hasFlowchart ? '#17a2b8' : '#6c757d',
+            cursor: hasFlowchart ? 'pointer' : 'not-allowed'
           }}
         >
           重置视图
         </button>
-        
+
         <Link
           to="/checklists"
           className="flowchart-button"
@@ -183,7 +197,7 @@ const FlowchartDetail = () => {
         </Link>
       </div>
 
-      {isLoading && (
+      {isLoading && hasFlowchart &&(
         <div style={{ textAlign: 'center', padding: '10px', color: '#6c757d' }}>
           正在调整视图以显示完整流程图...
         </div>
