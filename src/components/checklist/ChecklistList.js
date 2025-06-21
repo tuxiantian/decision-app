@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faShareAlt } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faShareAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
@@ -185,7 +185,7 @@ const ChecklistList = () => {
                           >
                             <FontAwesomeIcon icon={faTrash} style={{ color: '#ff4444', fontSize: '1.2rem' }} />
                           </button>
-                          <button onClick={() => handleViewClick(checklist.id,false)} className='green-button'>查看</button>
+                          <button onClick={() => handleViewClick(checklist.id,false)} style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}><FontAwesomeIcon icon={faInfoCircle} /></button>
                         </>
                       )}
 
@@ -198,10 +198,10 @@ const ChecklistList = () => {
                         <button
                           onClick={() => handleCloneChecklist(version.id)}
                           className='green-button'
-                        >true
+                        >
                           克隆
                         </button>
-                        <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>查看流程图</button>
+                        <button onClick={() => handleViewFlowchartClick(checklist.id)} className='green-button'>流程图</button>
                         </>
                       )}
                     </li>
@@ -248,7 +248,7 @@ const ChecklistList = () => {
                   className='green-button'
                 >
                   克隆
-                </button><button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>查看流程图</button>
+                </button><button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='green-button'>流程图</button>
                 </>
               )}
 
