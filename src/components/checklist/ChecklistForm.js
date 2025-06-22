@@ -46,10 +46,10 @@ const ChecklistForm = () => {
     setIsWheelEnabled(activeTab === 'flowchart');
   }, [activeTab]);
 
-  // 根据 checklistId 判断是否为更新模式，并在组件加载时获取数据
+  // 根据 checklistId 判断是否为更新版本模式，并在组件加载时获取数据
   useEffect(() => {
     if (checklistId) {
-      api.get(`${API_BASE_URL}/checklists/${checklistId}`)
+      api.get(`/checklists/latest/${checklistId}`)
         .then(response => {
           const data = response.data;
           setChecklistName(data.name);
