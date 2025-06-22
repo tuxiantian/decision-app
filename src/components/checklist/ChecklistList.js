@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
-import '//at.alicdn.com/t/c/font_4955755_dc25n80b0a.js';
+import '//at.alicdn.com/t/c/font_4955755_wck13l63429.js';
 import '../../App.css';
 
 const ChecklistList = () => {
@@ -72,6 +72,10 @@ const ChecklistList = () => {
 
   const handleUpdateClick = (checklistId) => {
     navigate(`/checklist/update/${checklistId}`);
+  };
+
+  const handleEditClick = (checklistId) => {
+    navigate(`/checklist/edit/${checklistId}`);
   };
 
   const handleMakeDecisionClick = (checklistId) => {
@@ -273,6 +277,14 @@ const ChecklistList = () => {
                         <use xlinkHref="#icon-chakan"></use>
                       </svg>
                       <span class="tooltip-text">查看</span>
+                    </div>
+                  </button>
+                  <button onClick={() => handleEditClick(checklist.id, false)} className='icon-button'>
+                    <div class="icon-tooltip">
+                      <svg class="icon" aria-hidden="true">
+                        <use xlinkHref="#icon-bianji"></use>
+                      </svg>
+                      <span class="tooltip-text">编辑</span>
                     </div>
                   </button>
                   <button onClick={() => handleMakeDecisionClick(checklist.id)} className='icon-button'>

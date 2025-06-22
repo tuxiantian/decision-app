@@ -41,6 +41,7 @@ import FlowTest from './components/checklist/FlowTest';
 import MermaidTool from './components/checklist/MermaidTool';
 import LandingPage from './LandingPage';
 import ChecklistView from './components/checklist/ChecklistView';
+import ChecklistEditor from './components/checklist/ChecklistEditor';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -243,6 +244,7 @@ function App() {
           <Route path="/checklist-view/:checklistId" element={<ChecklistView />} />
           <Route path="/checklists" element={<ChecklistList />} />
           <Route path="/checklist/:checklistId" element={<ChecklistDetail />} />
+          <Route path="/checklist/edit/:checklistId" element={<ChecklistEditor />} />
           <Route path="/history" element={<ChecklistAnswerHistory />} />
           <Route path="/checklist_answers/details/:decisionId" element={<DecisionDetails />} />
           <Route path="/checklist/update/:checklistId" element={<ChecklistForm />} />
