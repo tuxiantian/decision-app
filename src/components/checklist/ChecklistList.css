@@ -1,0 +1,166 @@
+/* ChecklistList.css */
+
+/* 容器样式 */
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 标签页样式 */
+.tab-container {
+  display: flex;
+  width: 80%;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px 0;
+  text-align: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.tab-button.active {
+  font-weight: bold;
+  border-bottom: 2px solid #2196F3;
+}
+
+/* 清单列表样式 */
+.checklist-list {
+  list-style: none;
+  padding: 0;
+  width: 80%;
+}
+
+.checklist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.checklist-info {
+  flex: 1;
+  max-width: 600px;
+  text-align: left;
+}
+
+.checklist-meta {
+  margin-bottom: 5px;
+}
+
+.checklist-meta .separator {
+  margin: 0 10px;
+  color: #ccc;
+}
+
+/* 版本列表样式 */
+.version-list {
+  margin-left: 20px;
+  list-style: circle;
+  padding-left: 15px;
+}
+
+.version-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.version-meta {
+  margin-bottom: 5px;
+}
+
+.version-meta .separator {
+  margin: 0 10px;
+  color: #ccc;
+}
+
+/* 操作按钮区域 */
+.checklist-actions,
+.version-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* 图标按钮样式 */
+.icon-button {
+  background: none;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.icon-tooltip {
+  position: relative;
+  display: flex;
+}
+
+.icon-tooltip .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: auto;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 4px 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.icon-button:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* 分页控件样式 */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px auto;
+  width: 80%;
+}
+
+.pagination-controls button {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.pagination-controls span {
+  margin: 0 10px;
+}
