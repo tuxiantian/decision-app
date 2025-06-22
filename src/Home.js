@@ -70,18 +70,21 @@ const Home = () => {
       </header>
 
       <section id="checklist" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Checklist 组件功能介绍</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>决策清单功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
-          Checklist 是我们 Decision App 的核心功能，帮助用户系统化地规划和执行复杂的决策过程。在决策清单里面列举了人们在做决定之前要考虑到的重大问题，每当人们要做决定前要按照决策清单中的问题思考一遍，这样能避免人们做出临时随性的决定，可以避免重大损失。
+          决策清单是我们 Decision App 的核心功能，帮助用户规划决策过程。在决策清单里面列举了人们在做决定之前要考虑到的重大问题，每当人们要做决定前要按照决策清单中的问题思考一遍，这样能避免人们做出拍脑袋的决定，关键时刻可以避免重大损失。
           它的主要功能包括：
         </p>
         <ul style={{ lineHeight: '1.8', color: '#555', paddingLeft: '20px', textAlign: 'left' }}>
-          <li><strong>创建和管理决策清单</strong>：用户可以通过简单的表单来创建新的 Checklist，定义决策的名称、描述、以及一系列需要考虑的问题，确保在决策过程中没有遗漏任何关键因素。</li>
-          <li><strong>对决策清单里的问题生成按步骤决策的流程图</strong>：借助内置的 Mermaid 工具，用户可以将决策清单里的问题按步骤转换为直观的流程图。在可视化的基础上，用户能更好地理解每一步之间的关系，并进行更合理的决策。</li>
+          <li><strong>创建和管理决策清单</strong>：用户可以通过简单的表单来创建新的 Checklist，定义决策的名称、描述、以及一系列需要考虑的问题，确保在决策过程中没有遗漏任何关键因素。
+          平台会提供一些精选的决策清单(部分来自用户的分享),如果你有需要可以克隆到自己的决策清单列表中。你也可以将自己的决策清单分享出去,平台审核后,会到推荐列表中,这样你的智慧将能够帮助更多的人。</li>
+          <li><strong>图文并茂</strong>：借助内置的在线流程图画图工具，用户可以将决策清单里的问题按步骤转换为直观的流程图。在可视化的基础上，用户能更好地理解每一步之间的关系，并进行更合理的决策。</li>
           <li><strong>版本管理和更新</strong>：每个 Checklist 都支持多版本管理。用户可以轻松地创建新的版本、更新现有清单的问题，以适应不断变化的决策需求，同时保留所有历史版本，方便参考和回顾。</li>
-          <li><strong>状态检测与决策支持</strong>：在用户每次按照决策清单做决定之前，系统提供决策状态检查工具，帮助用户在最理性和最平静的状态下做出决定。通过逐步检测用户的状态，如是否感到疲惫、当前的情绪等，确保用户在最佳心理状态下执行 Checklist。同时，用户在按照决策清单做决定回答每个问题的时候，可以引用系统知识库和自己创建的知识库里的思维模型方面的文章来作为支撑自己决策的依据。</li>
+          <li><strong>状态检测与决策支持</strong>：在用户每次按照决策清单做决定之前，系统提供决策状态检查工具，帮助用户在最理性和最平静的状态下做出决定。通过逐步检测用户的状态，如是否感到疲惫、当前的情绪等，确保用户在最佳心理状态下做决定。
+          同时，用户在按照决策清单做决定回答每个问题的时候，可以引用系统知识库和自己创建的知识库里的思维模型方面的文章来作为支撑自己决策的依据。</li>
           <li><strong>可视化流程与下载</strong>：用户还可以查看并下载决策的流程图，以便在团队会议、项目汇报中展示决策思路。通过这种方式，用户可以轻松地与他人分享决策过程，获得更多的支持和建议。</li>
-          <li><strong>交互和评估</strong>：Checklist 的交互设计友好，用户可以轻松地添加、移除或编辑每个问题。通过对决策清单里的问题的不断调整，用户能够进一步细化决策流程，确保所有重要细节都得到有效考虑。</li>
+          <li><strong>邀请朋友决策</strong>：自己按照某个决策清单做出决定后,可以查看决定详情,在那里新建决策组,生成邀请链接,邀请朋友、家人来决策,看他们面对同样的问题是如何考虑的。
+          个人看问题常常存在局限性,通过对比自己和家人、朋友的想法能大大减少犯盲人摸象的错误。</li>
           <li><strong>事后复盘功能</strong>：在做出决定后，用户可以添加当初做决定的复盘，记录决策过程中的经验和教训，方便未来参考和改进。</li>
         </ul>
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
@@ -102,17 +105,16 @@ const Home = () => {
       <section id="ahp" className="home-section" style={{ width: '90%', margin: '20px auto', boxSizing: 'border-box', backgroundColor: '#f9f9f9', padding: '20px', borderRadius: '8px', border: '1px solid #ccc' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>AHPAnalysis 功能介绍</h2>
         <p style={{ lineHeight: '1.6', color: '#555', marginBottom: '20px', textAlign: 'left' }}>
-          AHPAnalysis 是一个基于层次分析法（AHP）的工具组件，用于帮助用户系统地做出复杂的多准则决策。该组件提供了用户友好的界面，允许用户添加和比较不同的决策准则和备选方案。以下是 AHPAnalysis 组件的主要功能：
+          AHP分析是一个基于层次分析法（AHP）的工具，用于帮助用户做出多准则和多备选方案的决策。以下是AHP分析工具的主要功能：
         </p>
         <ul style={{ lineHeight: '1.8', color: '#555', paddingLeft: '20px', textAlign: 'left' }}>
-          <li><strong>历史记录管理</strong>：用户可以查看和管理过去的决策分析记录，包括查看详情和删除无用的记录。</li>
-          <li><strong>新增决策分析</strong>：用户可以通过点击“新增”按钮来创建一个新的决策分析，并添加自定义的决策准则和备选方案。</li>
-          <li><strong>成对比较准则与备选方案</strong>：用户可以对所有准则和备选方案进行成对比较，系统会生成准则的成对比较矩阵，并根据评分衡量每个因素的优先级。</li>
-          <li><strong>自动计算和显示结果</strong>：系统将根据用户输入的评分计算出每个备选方案的最终得分，并显示在页面上。</li>
-          <li><strong>保存历史</strong>：用户可以将分析结果保存为历史记录，便于后续参考和管理。</li>
+          <li><strong>新增决策分析</strong>：用户可以通过点击“新增”按钮来创建一个新的决策分析，并添加自定义的决策准则和备选方案。点击生成矩阵按钮,生成准则比较矩阵和单一准则下备选方案比较矩阵。
+          将准则两两比较的结果以分数的形式填写到准则比较矩阵表格里,然后再将各个单一准则下备选方案两两比较的结果以分数的形式填写到备选方案比较矩阵里,最后系统将根据用户输入的评分计算出每个备选方案的最终得分,给出最优候选方案，并显示在页面上。
+          </li>
+          <li><strong>历史决策存档</strong>：完整保存每次分析的过程数据和结果，便于后续参考和管理。</li>
         </ul>
         <p style={{ lineHeight: '1.6', color: '#555', marginTop: '20px', textAlign: 'left' }}>
-          AHPAnalysis 通过这些功能，帮助用户系统化地分析每个影响因素，确保决策过程科学透明，是一个非常有用的决策辅助工具。
+          AHP分析帮助用户在同样的准则考量下从多个备选方案里选出最优的方案。
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '20px' }}>
           <Link to="/ahp" className="home-link-button" style={{ display: 'block', textAlign: 'center', marginTop: '20px', padding: '10px 20px', backgroundColor: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '5px' }}>
