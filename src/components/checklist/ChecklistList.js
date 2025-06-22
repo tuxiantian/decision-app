@@ -178,11 +178,11 @@ const ChecklistList = () => {
                               onClick={() => handleShareChecklist(checklist.id)}
                               className='icon-button'
                             >
-                              <div class="icon-tooltip">
-                                <svg class="icon" aria-hidden="true">
+                              <div className="icon-tooltip">
+                                <svg className="icon" aria-hidden="true">
                                   <use xlinkHref="#icon-a-huaban1fuben37"></use>
                                 </svg>
-                                <span class="tooltip-text">分享</span>
+                                <span className="tooltip-text">分享</span>
 
                               </div>
                             </button>
@@ -192,27 +192,27 @@ const ChecklistList = () => {
                             onClick={() => handleDeleteChecklist(version.id, false)}
                             className='icon-button'
                           >
-                            <div class="icon-tooltip">
-                              <svg class="icon" aria-hidden="true">
+                            <div className="icon-tooltip">
+                              <svg className="icon" aria-hidden="true">
                                 <use xlinkHref="#icon-shanchu"></use>
                               </svg>
-                              <span class="tooltip-text">删除</span>
+                              <span className="tooltip-text">删除</span>
 
                             </div>
                           </button>
                           <button onClick={() => handleViewClick(checklist.id, false)} className='icon-button'>
-                            <div class="icon-tooltip">
-                              <svg class="icon" aria-hidden="true">
+                            <div className="icon-tooltip">
+                              <svg className="icon" aria-hidden="true">
                                 <use xlinkHref="#icon-chakan"></use>
                               </svg>
-                              <span class="tooltip-text">查看</span>
+                              <span className="tooltip-text">查看</span>
                             </div></button>
                           <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='icon-button'>
-                            <div class="icon-tooltip">
-                              <svg class="icon" aria-hidden="true" aria-label='流程图' title="流程图">
+                            <div className="icon-tooltip">
+                              <svg className="icon" aria-hidden="true" aria-label='流程图' title="流程图">
                                 <use xlinkHref="#icon-liuchengtu"></use>
                               </svg>
-                              <span class="tooltip-text">流程图</span>
+                              <span className="tooltip-text">流程图</span>
                             </div>
                           </button>
                         </>
@@ -223,11 +223,11 @@ const ChecklistList = () => {
                       {tab === 'platform' && (
                         <>
                           <button onClick={() => handleViewClick(checklist.id, true)} className='icon-button'>
-                            <div class="icon-tooltip">
-                              <svg class="icon" aria-hidden="true">
+                            <div className="icon-tooltip">
+                              <svg className="icon" aria-hidden="true">
                                 <use xlinkHref="#icon-chakan"></use>
                               </svg>
-                              <span class="tooltip-text">查看</span>
+                              <span className="tooltip-text">查看</span>
                             </div>
 
                           </button>
@@ -236,19 +236,19 @@ const ChecklistList = () => {
                             onClick={() => handleCloneChecklist(version.id)}
                             className='icon-button'
                           >
-                            <div class="icon-tooltip">
-                              <svg class="icon" aria-hidden="true" aria-label='克隆' title="克隆">
+                            <div className="icon-tooltip">
+                              <svg className="icon" aria-hidden="true" aria-label='克隆' title="克隆">
                                 <use xlinkHref="#icon-kelong"></use>
                               </svg>
-                              <span class="tooltip-text">克隆</span>
+                              <span className="tooltip-text">克隆</span>
                             </div>
                           </button>
                           <button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='icon-button'>
-                            <div class="icon-tooltip">
-                              <svg class="icon" aria-hidden="true" aria-label='流程图' title="流程图">
+                            <div className="icon-tooltip">
+                              <svg className="icon" aria-hidden="true" aria-label='流程图' title="流程图">
                                 <use xlinkHref="#icon-liuchengtu"></use>
                               </svg>
-                              <span class="tooltip-text">流程图</span>
+                              <span className="tooltip-text">流程图</span>
                             </div>
                           </button>
                         </>
@@ -261,38 +261,38 @@ const ChecklistList = () => {
             <div style={{ display: 'flex', gap: '10px' }}>
               {tab === 'my' && checklist.can_update && (
                 <button onClick={() => handleUpdateClick(checklist.id)} className='icon-button'>
-                  <div class="icon-tooltip">
-                    <svg class="icon" aria-hidden="true">
+                  <div className="icon-tooltip">
+                    <svg className="icon" aria-hidden="true">
                       <use xlinkHref="#icon-gengxinbanben"></use>
                     </svg>
-                    <span class="tooltip-text">更新版本</span>
+                    <span className="tooltip-text">更新版本</span>
                   </div>
                 </button>
               )}
               {tab === 'my' && (
                 <>
                   <button onClick={() => handleViewClick(checklist.id, false)} className='icon-button'>
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true">
                         <use xlinkHref="#icon-chakan"></use>
                       </svg>
-                      <span class="tooltip-text">查看</span>
+                      <span className="tooltip-text">查看</span>
                     </div>
                   </button>
                   <button onClick={() => handleEditClick(checklist.id, false)} className='icon-button'>
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true">
                         <use xlinkHref="#icon-bianji"></use>
                       </svg>
-                      <span class="tooltip-text">编辑</span>
+                      <span className="tooltip-text">编辑</span>
                     </div>
                   </button>
                   <button onClick={() => handleMakeDecisionClick(checklist.id)} className='icon-button'>
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true">
                         <use xlinkHref="#icon-jueding"></use>
                       </svg>
-                      <span class="tooltip-text">做决定</span>
+                      <span className="tooltip-text">做决定</span>
 
                     </div>
                   </button>
@@ -301,11 +301,11 @@ const ChecklistList = () => {
                       onClick={() => handleShareChecklist(checklist.id)}
                       className='icon-button'
                     >
-                      <div class="icon-tooltip">
-                        <svg class="icon" aria-hidden="true">
+                      <div className="icon-tooltip">
+                        <svg className="icon" aria-hidden="true">
                           <use xlinkHref="#icon-a-huaban1fuben37"></use>
                         </svg>
-                        <span class="tooltip-text">分享</span>
+                        <span className="tooltip-text">分享</span>
 
                       </div>
                     </button>
@@ -315,20 +315,20 @@ const ChecklistList = () => {
                     onClick={() => handleDeleteChecklist(checklist.id, true)}
                     className='icon-button'
                   >
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true">
                         <use xlinkHref="#icon-shanchu"></use>
                       </svg>
-                      <span class="tooltip-text">删除</span>
+                      <span className="tooltip-text">删除</span>
 
                     </div>
                   </button>
                   <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='icon-button'>
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true" aria-label='流程图' title="流程图">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true" aria-label='流程图' title="流程图">
                         <use xlinkHref="#icon-liuchengtu"></use>
                       </svg>
-                      <span class="tooltip-text">流程图</span>
+                      <span className="tooltip-text">流程图</span>
                     </div>
                   </button>
                 </>
@@ -337,11 +337,11 @@ const ChecklistList = () => {
               {tab === 'platform' && (
                 <>
                   <button onClick={() => handleViewClick(checklist.id, true)} className='icon-button'>
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true">
                         <use xlinkHref="#icon-chakan"></use>
                       </svg>
-                      <span class="tooltip-text">查看</span>
+                      <span className="tooltip-text">查看</span>
                     </div>
 
                   </button>
@@ -349,19 +349,19 @@ const ChecklistList = () => {
                     onClick={() => handleCloneChecklist(checklist.id)}
                     className='icon-button'
                   >
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true" aria-label='克隆' title="克隆">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true" aria-label='克隆' title="克隆">
                         <use xlinkHref="#icon-kelong"></use>
                       </svg>
-                      <span class="tooltip-text">克隆</span>
+                      <span className="tooltip-text">克隆</span>
                     </div>
                   </button>
                   <button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='icon-button'>
-                    <div class="icon-tooltip">
-                      <svg class="icon" aria-hidden="true" aria-label='流程图' title="流程图">
+                    <div className="icon-tooltip">
+                      <svg className="icon" aria-hidden="true" aria-label='流程图' title="流程图">
                         <use xlinkHref="#icon-liuchengtu"></use>
                       </svg>
-                      <span class="tooltip-text">流程图</span>
+                      <span className="tooltip-text">流程图</span>
                     </div>
                   </button>
                 </>
