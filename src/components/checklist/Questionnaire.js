@@ -178,9 +178,6 @@ const Questionnaire = () => {
         }
     };
 
-    useEffect(() => {
-        console.log(JSON.stringify(answers));
-    }, [answers]);
     // 渲染当前问题
     const renderCurrentQuestion = () => {
         if (!currentQuestion) return null;
