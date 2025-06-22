@@ -155,14 +155,14 @@ const ChecklistList = () => {
         {(tab === 'my' ? myChecklists : platformChecklists).map(checklist => (
           <li key={checklist.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc' }}>
             <div style={{ textAlign: 'left', maxWidth: '600px' }}>
-              <strong>{checklist.name}</strong> - Version: {checklist.version} -Decision Count: {checklist.decision_count}
+              <strong>{checklist.name}</strong> - 版本: {checklist.version} -决定数量: {checklist.decision_count}
               {/* 新增分享状态显示 */}
               {tab === 'my' && (
                 <>
-                  -Status:  <strong>
-                    {checklist.share_status === 'pending' ? 'Not Shared' :
-                      checklist.share_status === 'review' ? 'Under Review' :
-                        checklist.share_status === 'approved' ? 'Approved' : 'Rejected'}</strong>
+                  -分享状态:  <strong>
+                    {checklist.share_status === 'pending' ? '未分享' :
+                      checklist.share_status === 'review' ? '审核中' :
+                        checklist.share_status === 'approved' ? '通过' : '拒绝'}</strong>
                 </>
               )}
               <div>{checklist.description}</div>
@@ -170,12 +170,15 @@ const ChecklistList = () => {
                 <ul style={{ marginLeft: '20px', listStyle: 'circle' }}>
                   {checklist.versions.map(version => (
                     <li key={version.id} style={{ marginBottom: '5px' }}>
-                      <strong>{version.name}</strong> - Version: {version.version} -Decision Count: {checklist.decision_count}
+                      <strong>{version.name}</strong> - 版本: {version.version} -决定数量: {version.decision_count}-分享状态:  <strong>
+                    {version.share_status === 'pending' ? '未分享' :
+                      version.share_status === 'review' ? '审核中' :
+                        version.share_status === 'approved' ? '通过' : '拒绝'}</strong>
                       {tab === 'my' && (
                         <>
-                          {checklist.share_status === 'pending' && (
+                          {version.share_status === 'pending' && (
                             <button
-                              onClick={() => handleShareChecklist(checklist.id)}
+                              onClick={() => handleShareChecklist(version.id)}
                               className='icon-button'
                             >
                               <div className="icon-tooltip">
@@ -200,14 +203,14 @@ const ChecklistList = () => {
 
                             </div>
                           </button>
-                          <button onClick={() => handleViewClick(checklist.id, false)} className='icon-button'>
+                          <button onClick={() => handleViewClick(version.id, false)} className='icon-button'>
                             <div className="icon-tooltip">
                               <svg className="icon" aria-hidden="true">
                                 <use xlinkHref="#icon-chakan"></use>
                               </svg>
                               <span className="tooltip-text">查看</span>
                             </div></button>
-                          <button onClick={() => handleViewFlowchartClick(checklist.id, false)} className='icon-button'>
+                          <button onClick={() => handleViewFlowchartClick(version.id, false)} className='icon-button'>
                             <div className="icon-tooltip">
                               <svg className="icon" aria-hidden="true" aria-label='流程图' title="流程图">
                                 <use xlinkHref="#icon-liuchengtu"></use>
@@ -222,7 +225,7 @@ const ChecklistList = () => {
 
                       {tab === 'platform' && (
                         <>
-                          <button onClick={() => handleViewClick(checklist.id, true)} className='icon-button'>
+                          <button onClick={() => handleViewClick(version.id, true)} className='icon-button'>
                             <div className="icon-tooltip">
                               <svg className="icon" aria-hidden="true">
                                 <use xlinkHref="#icon-chakan"></use>
@@ -243,7 +246,7 @@ const ChecklistList = () => {
                               <span className="tooltip-text">克隆</span>
                             </div>
                           </button>
-                          <button onClick={() => handleViewFlowchartClick(checklist.id, true)} className='icon-button'>
+                          <button onClick={() => handleViewFlowchartClick(version.id, true)} className='icon-button'>
                             <div className="icon-tooltip">
                               <svg className="icon" aria-hidden="true" aria-label='流程图' title="流程图">
                                 <use xlinkHref="#icon-liuchengtu"></use>
@@ -258,6 +261,8 @@ const ChecklistList = () => {
                 </ul>
               )}
             </div>
+
+            
             <div style={{ display: 'flex', gap: '10px' }}>
               {tab === 'my' && checklist.can_update && (
                 <button onClick={() => handleUpdateClick(checklist.id)} className='icon-button'>
