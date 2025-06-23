@@ -138,7 +138,7 @@ li {
   border: none;
   cursor: pointer;
   border-radius: 8px;
-  margin-right: 10px;
+  margin: 0 10px;
 }
 .green-button:disabled {
   background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));

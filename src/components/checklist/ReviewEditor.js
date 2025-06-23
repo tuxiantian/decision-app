@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import { API_BASE_URL } from '../../config'; 
+import { API_BASE_URL } from '../../config';
 import api from '../api.js'
 
 const ReviewEditor = () => {
@@ -95,7 +95,7 @@ const ReviewEditor = () => {
         style={{ width: '100%', marginBottom: '10px' }}
         placeholder="Enter your review here"
       />
-      
+
       <button onClick={handleOpenModal} style={{ marginBottom: '10px' }} className='green-button'>Reference Cognitive Bias Articles</button>
 
       <Modal
@@ -156,8 +156,13 @@ const ReviewEditor = () => {
           ))
         )}
       </div>
+      <div style={{ margin: '20px auto' }}>
+        <button onClick={handleSaveReview} className='green-button'>Save Review</button>
+        <button onClick={() => navigate('/history')} className='green-button'>
+          Back to Checklist Answer History
+        </button>
+      </div>
 
-      <button onClick={handleSaveReview} style={{ marginTop: '20px' }} className='green-button'>Save Review</button>
     </div>
   );
 };
