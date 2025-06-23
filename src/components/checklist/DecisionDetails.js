@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 import { Viewer } from '@toast-ui/react-editor';
-import { API_BASE_URL } from '../../config.js';
+import { WEBSITE_URL } from '../../config.js';
 import api from '../api.js'
 import './DecisionDetails.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -34,7 +34,7 @@ const DecisionDetails = () => {
   useEffect(() => {
     const fetchDecisionDetails = async () => {
       try {
-        const response = await api.get(`${API_BASE_URL}/checklist_answers/details/${decisionId}`);
+        const response = await api.get(`/checklist_answers/details/${decisionId}`);
         const r = response.data;
         r.answers = filterAndFormatAnswers(r.answers)
         setDecisionDetails(r);
@@ -53,7 +53,7 @@ const DecisionDetails = () => {
   }, [decisionId]);
 
   const fetchReviews = () => {
-    api.get(`${API_BASE_URL}/reviews/${decisionId}`)
+    api.get(`/reviews/${decisionId}`)
       .then(response => setReviews(response.data))
       .catch(error => console.error('Error fetching reviews:', error));
   };
@@ -107,8 +107,8 @@ const DecisionDetails = () => {
     try {
       // 根据文章的来源选择不同的接口
       const endpoint = isPlatformArticle
-        ? `${API_BASE_URL}/platform_articles/${articleId}`
-        : `${API_BASE_URL}/articles/${articleId}`;
+        ? `/platform_articles/${articleId}`
+        : `/articles/${articleId}`;
       const response = await api.get(endpoint);
       setSelectedArticle(response.data);
       setShowArticleModal(true);
@@ -128,7 +128,7 @@ const DecisionDetails = () => {
 
   const handleGroupSubmit = async () => {
     try {
-      const response = await api.post(`${API_BASE_URL}/decision_groups`, {
+      const response = await api.post(`/decision_groups`, {
         name: groupName,
         owner_id: 1,  // 这里用实际用户 ID 替换
         checklist_decision_id: decisionId,
@@ -507,7 +507,7 @@ const DecisionDetails = () => {
                 <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                   {review.referenced_articles.map((article) => (
                     <li key={article.id}>
-                      <a href={`http://localhost:3000/view-article/${article.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
+                      <a href={`${WEBSITE_URL}/view-article/${article.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
                         {article.title}
                       </a>
                     </li>
