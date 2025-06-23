@@ -188,6 +188,11 @@ const ChecklistList = () => {
           onClick={() => navigateTo.view(version.id, false)} 
         />
         <IconButton 
+          icon="bianji" 
+          text="编辑" 
+          onClick={() => navigateTo.edit(version.id)} 
+        />
+        <IconButton 
           icon="liuchengtu" 
           text="流程图" 
           onClick={() => navigateTo.flowchart(version.id, false)} 
