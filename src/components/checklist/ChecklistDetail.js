@@ -554,30 +554,32 @@ const ChecklistDetail = () => {
           {step === 1 && (
             <div>
               <h2>Step 1: Overview of Checklist</h2>
-              <h3>Flowchart:</h3>
-              {flowchartData && renderFlowchart && (
-                <div ref={flowchartRef}
-                  style={{
-                    height: '700px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    overflow: 'auto',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    position: 'relative'
-                  }}>
 
-                  <DecisionFlowTool
-                    ref={flowchartToolRef}
-                    readOnly={true}
-                    initialNodes={flowData.nodes}
-                    initialConnections={flowData.connections}
-                  />
+              {flowchartData && flowData.nodes?.length > 0 && renderFlowchart && (
+                <>
+                  <h3>Flowchart:</h3>
+                  <div ref={flowchartRef}
+                    style={{
+                      height: '700px',
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      overflow: 'auto',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                      position: 'relative'
+                    }}>
 
-                </div>
+                    <DecisionFlowTool
+                      ref={flowchartToolRef}
+                      readOnly={true}
+                      initialNodes={flowData.nodes}
+                      initialConnections={flowData.connections}
+                    />
 
+                  </div>
+                </>
               )}
               <div>
-                <h3 style={{margin:'20px auto'}}>Checklist Questions:</h3>
+                <h3 style={{ margin: '20px auto' }}>Checklist Questions:</h3>
                 <div className="question-tree">
                   {questions
                     .filter(q => !q.parent_id) // 只显示根问题
@@ -645,7 +647,7 @@ const ChecklistDetail = () => {
                   value={decisionName}
                   onChange={(e) => setDecisionName(e.target.value)}
                 />
-                <textarea type="text" style={{ width: '100%', padding: '10px', fontSize: '16px' }}
+                <textarea type="text" style={{ width: '100%', padding: '10px', fontSize: '16px',minHeight:'200px' }}
                   placeholder="Enter decision description"
                   maxLength={800}
                   value={description}
