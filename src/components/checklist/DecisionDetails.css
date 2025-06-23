@@ -149,6 +149,13 @@
     padding: 10px 0;
 }
 
+.answers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .toggle-button {
   background: none !important;
   border: none !important;

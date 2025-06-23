@@ -16,7 +16,7 @@ const DecisionDetails = () => {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedUsersByQuestion, setSelectedUsersByQuestion] = useState({}); // 每个问题的选中用户ID
   const [expandedQuestions, setExpandedQuestions] = useState({ 0: true }); // 控制每个问题的展开状态
-
+  const [allExpanded, setAllExpanded] = useState(true); // 默认展开所有问题
 
   const navigate = useNavigate();
 
@@ -188,6 +188,25 @@ const DecisionDetails = () => {
     }));
   };
 
+  const toggleAllQuestions = () => {
+    if (allExpanded) {
+      // 折叠所有问题
+      const collapsedState = {};
+      decisionDetails.answers.forEach((_, index) => {
+        collapsedState[index] = false;
+      });
+      setExpandedQuestions(collapsedState);
+    } else {
+      // 展开所有问题
+      const expandedState = {};
+      decisionDetails.answers.forEach((_, index) => {
+        expandedState[index] = true;
+      });
+      setExpandedQuestions(expandedState);
+    }
+    setAllExpanded(!allExpanded);
+  };
+
   if (!decisionDetails) return <div>Loading...</div>;
 
   return (
@@ -195,8 +214,23 @@ const DecisionDetails = () => {
       <h2>{decisionDetails.decision_name} - Details</h2>
       <div style={{ textAlign: 'left' }}><strong>Decision description:</strong> {decisionDetails.description}</div>
       <div style={{ textAlign: 'left' }}><strong>Final Decision:</strong> {decisionDetails.final_decision}</div>
+      <div className="answers-header">
+        <h3>Answers:</h3>
+        <button
+          onClick={toggleAllQuestions}
+          className="toggle-button"
+          style={{
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px'
+          }}
+        >
+          <FontAwesomeIcon icon={allExpanded ? faChevronUp : faChevronDown} />
+          {allExpanded ? 'Collapse All' : 'Expand All'}
+        </button>
+      </div>
 
-      <h3>Answers:</h3>
       {decisionDetails.answers.map((answerData, index) => (
         <div key={index} className="question-section">
           <div className="question-header">
