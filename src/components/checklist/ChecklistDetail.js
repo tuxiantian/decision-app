@@ -446,6 +446,7 @@ const ChecklistDetail = () => {
               onClick={() => handleAnswerChange(currentQuestion, answers[currentQuestion.id]?.answer ?? '')}
               style={{ marginTop: '10px' }}
               className='green-button'
+              disabled={!answers[currentQuestion.id]?.answer?.trim()}
             >
               下一题
             </button>
@@ -491,6 +492,7 @@ const ChecklistDetail = () => {
               }}
               className='green-button'
               style={{ marginTop: '10px' }}
+              disabled={answers[currentQuestion.id]?.answer === undefined}
             >
               下一题
             </button>
