@@ -428,7 +428,7 @@ const DecisionDetails = () => {
       {/* 配置决策组按钮，仅在没有组的情况下显示 */}
       {
         !decisionDetails.has_group && (
-          <button onClick={openGroupModal} className='green-button' style={{ marginBottom: '20px' }}>Configure Decision Group</button>
+          <button onClick={openGroupModal} className='green-button' style={{ margin: '20px 10px' }}>Configure Decision Group</button>
         )
       }
 
@@ -510,7 +510,7 @@ const DecisionDetails = () => {
         <button onClick={() => setIsMembersModalOpen(false)} className="gray-button">Close</button>
       </Modal>
 
-      <button onClick={openReviewModal} className='green-button' style={{ marginBottom: '20px' }}>View Reviews</button>
+      <button onClick={openReviewModal} className='green-button' style={{ margin: '20px 10px' }}>View Reviews</button>
       <Modal
         isOpen={isReviewModalOpen}
         onRequestClose={() => setIsReviewModalOpen(false)}
@@ -555,7 +555,7 @@ const DecisionDetails = () => {
         <button onClick={() => setIsReviewModalOpen(false)} className='green-button'>Close</button>
       </Modal>
 
-      <button onClick={() => navigate('/history')} className="green-button" style={{ marginBottom: '20px' }}>Back to Checklist Answer History</button>
+      <button onClick={() => navigate('/history')} className="green-button" style={{ margin: '20px 10px' }}>Back to Checklist Answer History</button>
       {/* Article Modal */}
       <Modal
         isOpen={showArticleModal}
