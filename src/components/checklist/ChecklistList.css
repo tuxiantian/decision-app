@@ -14,8 +14,7 @@
 /* 标签页样式 */
 .tab-container {
   display: flex;
-  width: 80%;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }
 
