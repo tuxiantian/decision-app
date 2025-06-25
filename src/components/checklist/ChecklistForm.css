@@ -320,6 +320,17 @@
   background-color: #219653;
 }
 
+/* 禁用状态的 Add Follow-up 按钮样式 */
+.add-followup-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.add-followup-btn:disabled:hover {
+  background-color: #cccccc;
+}
+
 .remove-option-btn {
   background-color: #e74c3c;
   color: white;

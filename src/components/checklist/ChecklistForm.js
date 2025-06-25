@@ -520,6 +520,7 @@ const ChecklistForm = () => {
                     <button
                       onClick={() => handleAddQuestion(question.id, optIndex)}
                       className="add-followup-btn"
+                      disabled={!option.trim()}
                     >
                       Add Follow-up
                     </button>
