@@ -3,7 +3,7 @@ import { FaTimes } from 'react-icons/fa';  // 需要安装 react-icons 包
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../config';
 import api from '../api.js'
-import '../../App.css'
+import './ArticleList.css'
 
 const ArticleList = () => {
     const [articles, setArticles] = useState([]);

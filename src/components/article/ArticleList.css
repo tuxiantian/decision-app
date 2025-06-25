@@ -1,0 +1,6 @@
+/* 标签页样式 */
+.tab-container {
+  display: flex;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
