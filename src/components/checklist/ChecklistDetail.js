@@ -233,17 +233,20 @@ const ChecklistDetail = () => {
       setCurrentQuestion(nextQuestion);
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // 没有更多问题，进入下一步
+      // 没有更多问题，进入下一步,由于前面多加了userPath,所以这里要移除一个,否则一路回退到不了第一个问题
       setStep(4);
+      setUserPath(prev => [
+        ...prev.slice(0, -1)
+      ]);
     }
   };
 
   // 回溯到上一个问题
   const goBackToPreviousQuestion = () => {
-    if (userPath.length <= 1) return;
+    if (userPath.length < 1) return;
 
     // 获取上一个问题和答案
-    const lastStep = userPath[userPath.length - 2];
+    const lastStep = userPath[userPath.length - 1];
     const prevQuestion = questions.find(q => q.id === lastStep.questionId);
 
     // 从路径中移除最后一步
@@ -666,7 +669,7 @@ const ChecklistDetail = () => {
               <h2>Step 3: Answer Checklist Questions</h2>
               {renderCurrentQuestion()}
               <div style={{ marginTop: '20px' }}>
-                {userPath.length > 1 && (
+                {userPath.length >= 1 && currentQuestionIndex > 0 && (
                   <button onClick={goBackToPreviousQuestion}  className='green-button'>
                     Previous Question
                   </button>
