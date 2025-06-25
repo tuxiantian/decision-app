@@ -167,8 +167,6 @@ export default function InspirationClub() {
     const getTimelineData = (inspirationId) => {
         if (!inspirationId || !reflections[inspirationId]) return [];
 
-        const inspiration = inspirations.find(item => item.id === inspirationId);
-
         return reflections[inspirationId]
             .map(reflection => ({
                 id: reflection.id,

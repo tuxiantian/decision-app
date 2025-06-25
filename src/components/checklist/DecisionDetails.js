@@ -7,7 +7,7 @@ import { WEBSITE_URL } from '../../config.js';
 import api from '../api.js'
 import './DecisionDetails.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const DecisionDetails = () => {
   const { decisionId } = useParams();
@@ -516,42 +516,126 @@ const DecisionDetails = () => {
         contentLabel="Review Modal"
         style={{
           content: {
-            top: '10%',
+            top: '5%',
             left: '50%',
             right: 'auto',
             bottom: 'auto',
             marginRight: '-50%',
             transform: 'translate(-50%, 0)',
-            width: '60%',
-            maxHeight: '80%',
+            width: '70%',
+            maxHeight: '90%',
             overflow: 'auto'
           }
         }}
       >
-        <h2>Reviews</h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ margin: 0 }}>Reviews Timeline</h2>
+          <button
+            onClick={() => setIsReviewModalOpen(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '1.5em',
+              color: '#666',
+              padding: '5px 10px',
+              marginLeft: 'auto'
+            }}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
         {reviews.length === 0 ? (
           <p>No reviews available.</p>
         ) : (
-          reviews.map((review, index) => (
-            <div key={index}>
-              <Viewer initialValue={review.content} />
-              <div style={{ textAlign: 'left', marginTop: '10px' }}>
-                <strong>Referenced Articles:</strong>
-                <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                  {review.referenced_articles.map((article) => (
-                    <li key={article.id}>
-                      <a href={`${WEBSITE_URL}/view-article/${article.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline', color: 'blue' }}>
-                        {article.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <hr />
-            </div>
-          ))
+          <div className="timeline-container" style={{
+            position: 'relative',
+            paddingLeft: '30px',
+            marginTop: '20px'
+          }}>
+            {/* 时间轴竖线 */}
+            <div style={{
+              position: 'absolute',
+              left: '15px',
+              top: '0',
+              bottom: '0',
+              width: '2px',
+              backgroundColor: '#007bff'
+            }}></div>
+
+            {reviews
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // 按时间排序
+              .map((review, index) => (
+                <div key={index} style={{
+                  position: 'relative',
+                  marginBottom: '30px',
+                  paddingLeft: '20px'
+                }}>
+                  {/* 时间轴节点 */}
+                  <div style={{
+                    position: 'absolute',
+                    left: '-8px',
+                    top: '5px',
+                    width: '16px',
+                    height: '16px',
+                    borderRadius: '50%',
+                    backgroundColor: '#007bff',
+                    border: '3px solid white'
+                  }}></div>
+
+                  {/* 时间标签 */}
+                  <div style={{
+                    fontWeight: 'bold',
+                    color: '#555',
+                    marginBottom: '5px'
+                  }}>
+                    {new Date(review.created_at).toLocaleString()}
+                  </div>
+
+                  {/* 内容区域 */}
+                  <div style={{
+                    backgroundColor: '#f8f9fa',
+                    padding: '15px',
+                    borderRadius: '5px',
+                    borderLeft: '3px solid #007bff'
+                  }}>
+                    <Viewer initialValue={review.content} />
+
+                    {/* 引用的文章 */}
+                    {review.referenced_articles.length > 0 && (
+                      <div style={{ marginTop: '10px' }}>
+                        <strong>Referenced Articles:</strong>
+                        <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
+                          {review.referenced_articles.map((article) => (
+                            <li key={article.id}>
+                              <a
+                                href={`${WEBSITE_URL}/view-article/${article.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  textDecoration: 'underline',
+                                  color: '#007bff'
+                                }}
+                              >
+                                {article.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
         )}
-        <button onClick={() => setIsReviewModalOpen(false)} className='green-button'>Close</button>
+        <button
+          onClick={() => setIsReviewModalOpen(false)}
+          className='green-button'
+          style={{ marginTop: '20px' }}
+        >
+          Close
+        </button>
       </Modal>
 
       <button onClick={() => navigate('/history')} className="green-button" style={{ margin: '20px 10px' }}>Back to Checklist Answer History</button>
