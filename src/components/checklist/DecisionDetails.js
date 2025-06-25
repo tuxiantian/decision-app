@@ -258,7 +258,6 @@ const DecisionDetails = () => {
           {/* 根据答案数量显示不同布局 */}
           {answerData.responses.length === 1 && expandedQuestions[index] ? (
             <div className="single-answer">
-              <strong>{answerData.responses[0].username}:</strong>
               <p>{answerData.isChoice ? answerData.responses[0].formattedAnswer : answerData.responses[0].answer}</p>
               {(answerData.responses[0].referenced_articles.length > 0 ||
                 answerData.responses[0].referenced_platform_articles.length > 0) && (
