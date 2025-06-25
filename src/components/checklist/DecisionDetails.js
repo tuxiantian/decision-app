@@ -534,7 +534,7 @@ const DecisionDetails = () => {
         ) : (
           reviews.map((review, index) => (
             <div key={index}>
-              <p>{review.content}</p>
+              <Viewer initialValue={review.content} />
               <div style={{ textAlign: 'left', marginTop: '10px' }}>
                 <strong>Referenced Articles:</strong>
                 <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>

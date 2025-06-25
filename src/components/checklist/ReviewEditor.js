@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import '@toast-ui/editor/dist/toastui-editor.css';
+import { Editor } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import { API_BASE_URL } from '../../config';
 import api from '../api.js'
 
 const ReviewEditor = () => {
@@ -14,9 +15,10 @@ const ReviewEditor = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
+  const editorRef = useRef();
 
   const fetchArticles = (search = '', page = 1) => {
-    api.get(`${API_BASE_URL}/articles?search=${search}&page=${page}&page_size=10`)
+    api.get(`/articles?search=${search}&page=${page}&page_size=10`)
       .then(response => {
         setArticles(response.data.articles);
         setTotalPages(response.data.total_pages);
@@ -28,6 +30,7 @@ const ReviewEditor = () => {
   useEffect(() => {
     // 初始获取文章数据
     fetchArticles();
+    editorRef.current.getInstance().setMarkdown('');
   }, []);
 
   const handleSaveReview = () => {
@@ -42,10 +45,10 @@ const ReviewEditor = () => {
       referenced_articles: referencedArticles.map(article => article.id) // 只保存文章的 id
     };
 
-    api.post(`${API_BASE_URL}/reviews`, reviewData)
+    api.post(`/reviews`, reviewData)
       .then(() => {
         alert('Review saved successfully');
-        navigate(`/checklist/${decisionId}`);
+        navigate(`/history`);
       })
       .catch(error => console.error('Error saving review:', error));
   };
@@ -85,18 +88,43 @@ const ReviewEditor = () => {
     }
   };
 
+  const handleImageUpload = async (blob, callback) => {
+    // 创建 FormData 对象，将 blob 作为参数
+    const formData = new FormData();
+    formData.append('file', blob);
+    formData.append('type', 'review');
+    try {
+      // 向 Flask 后端发送 POST 请求，将图片上传到 MinIO
+      const response = await api.post(`/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // 使用回调函数，将生成的 URL 设置到编辑器中
+      const imageUrl = response.data.url;
+      callback(imageUrl, 'Uploaded Image');
+    } catch (error) {
+      console.error('There was an error uploading the image:', error);
+    }
+  };
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>Review Decision</h2>
-      <textarea
-        value={content}
-        onChange={e => setContent(e.target.value)}
-        rows="10"
-        style={{ width: '100%', marginBottom: '10px' }}
-        placeholder="Enter your review here"
+      <Editor
+        initialValue={content}
+        previewStyle="vertical"
+        height="600px"
+        initialEditType="markdown"
+        useCommandShortcut={true}
+        ref={editorRef}
+        onChange={() => setContent(editorRef.current.getInstance().getMarkdown())}
+        hooks={{
+          addImageBlobHook: (blob, callback) => handleImageUpload(blob, callback),
+        }}
       />
-
-      <button onClick={handleOpenModal} style={{ marginBottom: '10px' }} className='green-button'>Reference Cognitive Bias Articles</button>
+      <button onClick={handleOpenModal} style={{ margin: '10px auto' }} className='green-button'>Reference Cognitive Bias Articles</button>
 
       <Modal
         isOpen={isModalOpen}
@@ -156,7 +184,7 @@ const ReviewEditor = () => {
           ))
         )}
       </div>
-      <div  className='button-container'>
+      <div className='button-container'>
         <button onClick={handleSaveReview} className='green-button'>Save Review</button>
         <button onClick={() => navigate('/history')} className='green-button'>
           Back to Checklist Answer History

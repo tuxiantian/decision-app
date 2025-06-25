@@ -135,7 +135,7 @@ li {
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: 20px;
+  margin: 20px auto;
 }
 
 .green-button {
