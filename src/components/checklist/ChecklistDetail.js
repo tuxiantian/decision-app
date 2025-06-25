@@ -667,12 +667,12 @@ const ChecklistDetail = () => {
               {renderCurrentQuestion()}
               <div style={{ marginTop: '20px' }}>
                 {userPath.length > 1 && (
-                  <button onClick={goBackToPreviousQuestion} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
+                  <button onClick={goBackToPreviousQuestion}  className='green-button'>
                     Previous Question
                   </button>
                 )}
 
-                <button onClick={() => setStep(2)} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
+                <button onClick={() => setStep(2)}  className='green-button'>
                   Previous Step
                 </button>
               </div>
@@ -691,10 +691,10 @@ const ChecklistDetail = () => {
                 />
               </div>
               <div style={{ marginTop: '20px' }}>
-                <button onClick={() => setStep(3)} style={{ marginRight: '10px', padding: '10px 20px' }} className='green-button'>
+                <button onClick={() => setStep(3)}  className='green-button'>
                   Previous Step
                 </button>
-                <button onClick={handleSubmit} disabled={!finalDecision} style={{ padding: '10px 20px' }} className='green-button'>
+                <button onClick={handleSubmit} disabled={!finalDecision}  className='green-button'>
                   Submit
                 </button>
               </div>
