@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useParams,useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../../config'; 
-import api from '../api'; 
+import { useParams, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config';
+import api from '../api';
 import './BalancedDecisionDetail.css';
 
 function BalancedDecisionDetail() {
@@ -21,7 +21,7 @@ function BalancedDecisionDetail() {
     fetchDecisionDetails();
   }, [id]);
 
-  const goBack=()=>{
+  const goBack = () => {
     navigate('/balanced-decisions/list');
   }
 
@@ -109,12 +109,12 @@ function BalancedDecisionDetail() {
         <p>Final Decision: {decision.result}</p>
       </div>
       <div>
-      <button
-                  className="button details-button"
-                  onClick={() => goBack()}
-                >
-                  Go Back
-                </button>
+        <button
+          className="button details-button"
+          onClick={() => goBack()}
+        >
+          Go Back
+        </button>
       </div>
     </div>
   );
