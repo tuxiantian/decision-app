@@ -156,7 +156,7 @@ const ReviewEditor = () => {
           ))
         )}
       </div>
-      <div style={{ margin: '20px auto' }}>
+      <div  className='button-container'>
         <button onClick={handleSaveReview} className='green-button'>Save Review</button>
         <button onClick={() => navigate('/history')} className='green-button'>
           Back to Checklist Answer History
