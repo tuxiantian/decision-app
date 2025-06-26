@@ -414,15 +414,7 @@ const DecisionDetails = () => {
 
 
 
-      {/* 显示决策组信息 */}
-      {
-        decisionDetails.has_group && (
-          <div>
-            <h3>Decision Group: {decisionDetails.group.name}</h3>
-            <p>Members Count: {decisionDetails.group.members_count}</p>
-          </div>
-        )
-      }
+
 
       {/* 配置决策组按钮，仅在没有组的情况下显示 */}
       {
@@ -467,8 +459,8 @@ const DecisionDetails = () => {
       {
         groupId && (
           <>
-            <button onClick={generateInviteLink} className="green-button">Generate Invite Link</button>
-            <button onClick={fetchGroupMembers} className="green-button">View Group Members</button>
+            <button onClick={generateInviteLink} className="green-button" style={{ margin: '0 10px' }}>Generate Invite Link</button>
+            <button onClick={fetchGroupMembers} className="green-button" style={{ margin: '0 10px' }}>View Group Members</button>
           </>
         )
       }
@@ -500,6 +492,15 @@ const DecisionDetails = () => {
         onRequestClose={() => setIsMembersModalOpen(false)}
         contentLabel="Group Members"
       >
+        {/* 显示决策组信息 */}
+        {
+          decisionDetails.has_group && (
+            <div>
+              <h3>Decision Group: {decisionDetails.group.name}</h3>
+              <p>Members Count: {decisionDetails.group.members_count}</p>
+            </div>
+          )
+        }
         <h2>Group Members</h2>
         <ul>
           {groupMembers.map((member) => (
