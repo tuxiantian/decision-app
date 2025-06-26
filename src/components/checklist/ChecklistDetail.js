@@ -297,16 +297,15 @@ const ChecklistDetail = () => {
 
   useEffect(() => {
     if (tab === 'my') {
-      fetchArticles(1);
+      fetchArticles(currentPage);
     } else if (tab === 'recommended') {
-      fetchPlatformArticles(1);
+      fetchPlatformArticles(currentPage);
     }
-  }, [tab]);
+  }, [tab,currentPage]);
 
   const handleTabChange = (newTab) => {
     setTab(newTab);
     setCurrentPage(1); // Reset to the first page
-    setSearchTerm(''); // Clear search term
   };
 
   const handleSearch = () => {
@@ -401,13 +400,13 @@ const ChecklistDetail = () => {
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      fetchArticles(currentPage + 1);
+      setCurrentPage(currentPage + 1);
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      fetchArticles(currentPage - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
 
