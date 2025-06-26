@@ -6,6 +6,7 @@ import { API_BASE_URL } from '../../config.js';
 import api from '../api.js'
 import DecisionFlowTool from './DecisionFlowTool';
 import './ChecklistDetail.css';
+import '//at.alicdn.com/t/c/font_4955755_wck13l63429.js';
 
 // 在组件加载前设置应用程序元素，通常设置为根元素
 Modal.setAppElement('#root');
@@ -514,7 +515,7 @@ const ChecklistDetail = () => {
           selectedArticles[currentQuestion?.id].length > 0) ||
           (selectedPlatformArticles[currentQuestion?.id] &&
             selectedPlatformArticles[currentQuestion?.id].length > 0) ? (
-          <div>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
             <h4>Referenced Articles:</h4>
 
             {/* 显示用户自己的文章 */}
@@ -523,8 +524,27 @@ const ChecklistDetail = () => {
                 <div style={{ marginLeft: '15px' }}>
                   <h5>My Articles:</h5>
                   {selectedArticles[currentQuestion?.id].map((article) => (
-                    <div key={article.id} style={{ marginBottom: '5px' }}>
-                      {article.title}
+                    <div key={article.id} style={{display: 'flex', alignItems: 'center' }}>
+                      <span>{article.title}</span>
+                      <button
+                        onClick={() => {
+                          const updatedArticles = selectedArticles[currentQuestion?.id].filter(
+                            (art) => art.id !== article.id
+                          );
+                          setSelectedArticles({
+                            ...selectedArticles,
+                            [currentQuestion?.id]: updatedArticles,
+                          });
+                        }}
+                        className="icon-button"
+                      >
+                        <div className="icon-tooltip">
+                          <svg className="icon" aria-hidden="true">
+                            <use xlinkHref={`#icon-shanchu`}></use>
+                          </svg>
+                          <span className="tooltip-text">移除</span>
+                        </div>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -536,8 +556,27 @@ const ChecklistDetail = () => {
                 <div style={{ marginLeft: '15px', marginTop: '10px' }}>
                   <h5>Platform Recommended Articles:</h5>
                   {selectedPlatformArticles[currentQuestion?.id].map((article) => (
-                    <div key={article.id} style={{ marginBottom: '5px' }}>
-                      {article.title}
+                    <div key={article.id} style={{display: 'flex', alignItems: 'center' }}>
+                      <span>{article.title}</span>
+                      <button
+                        onClick={() => {
+                          const updatedArticles = selectedArticles[currentQuestion?.id].filter(
+                            (art) => art.id !== article.id
+                          );
+                          setSelectedArticles({
+                            ...selectedArticles,
+                            [currentQuestion?.id]: updatedArticles,
+                          });
+                        }}
+                         className="icon-button"
+                      >
+                        <div className="icon-tooltip">
+                          <svg className="icon" aria-hidden="true">
+                            <use xlinkHref={`#icon-shanchu`}></use>
+                          </svg>
+                          <span className="tooltip-text">移除</span>
+                        </div>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -652,7 +691,7 @@ const ChecklistDetail = () => {
                   value={decisionName}
                   onChange={(e) => setDecisionName(e.target.value)}
                 />
-                <textarea type="text" style={{ width: '100%', padding: '10px', fontSize: '16px',minHeight:'200px' }}
+                <textarea type="text" style={{ width: '100%', padding: '10px', fontSize: '16px', minHeight: '200px' }}
                   placeholder="Enter decision description"
                   maxLength={800}
                   value={description}
@@ -670,12 +709,12 @@ const ChecklistDetail = () => {
               {renderCurrentQuestion()}
               <div style={{ marginTop: '20px' }}>
                 {userPath.length >= 1 && currentQuestionIndex > 0 && (
-                  <button onClick={goBackToPreviousQuestion}  className='green-button'>
+                  <button onClick={goBackToPreviousQuestion} className='green-button'>
                     Previous Question
                   </button>
                 )}
 
-                <button onClick={() => setStep(2)}  className='green-button'>
+                <button onClick={() => setStep(2)} className='green-button'>
                   Previous Step
                 </button>
               </div>
@@ -694,10 +733,10 @@ const ChecklistDetail = () => {
                 />
               </div>
               <div style={{ marginTop: '20px' }}>
-                <button onClick={() => setStep(3)}  className='green-button'>
+                <button onClick={() => setStep(3)} className='green-button'>
                   Previous Step
                 </button>
-                <button onClick={handleSubmit} disabled={!finalDecision}  className='green-button'>
+                <button onClick={handleSubmit} disabled={!finalDecision} className='green-button'>
                   Submit
                 </button>
               </div>
