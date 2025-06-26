@@ -6,6 +6,9 @@ import '../../App.css'
 
 
 const ChecklistAnswerHistory = () => {
+  const [tab, setTab] = useState('my'); // 'my' or 'invited'
+  const [myDecisions, setMyDecisions] = useState([]);
+  const [invitedDecisions, setInvitedDecisions] = useState([]);
   const [checklistDecisions, setChecklistDecisions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -14,7 +17,7 @@ const ChecklistAnswerHistory = () => {
   const pageSize = 5;
   const navigate = useNavigate();
 
-  const fetchChecklistDecisions = async (page) => {
+  const fetchMyDecisions = async (page) => {
     try {
       const response = await api.get(`${API_BASE_URL}/checklist_answers`, {
         params: {
@@ -25,7 +28,7 @@ const ChecklistAnswerHistory = () => {
 
       if (response.data) {
         const { checklistDecisions, total_pages } = response.data;
-        setChecklistDecisions(checklistDecisions);
+        setMyDecisions(checklistDecisions);
         setTotalPages(total_pages);
       }
     } catch (error) {
@@ -33,12 +36,41 @@ const ChecklistAnswerHistory = () => {
     }
   };
 
-  useEffect(() => {
-    fetchChecklistDecisions(currentPage);
-  }, [currentPage]);
+  const fetchInvitedDecisions = async (page) => {
+    try {
+      const response = await api.get(`/invited_checklist_decisions`, {
+        params: {
+          page: page,
+          page_size: pageSize
+        }
+      });
+      if (response.data) {
+        setInvitedDecisions(response.data.invitedChecklistDecisions);
+        setTotalPages(response.data.total_pages);
+      }
+    } catch (error) {
+      console.error('Error fetching invited checklist decisions', error);
+    }
+  };
 
-  const handleViewDetails = (decisionId) => {
-    navigate(`/checklist_answers/details/${decisionId}`);
+  useEffect(() => {
+    if (tab === 'my') {
+      fetchMyDecisions(currentPage);
+    } else {
+      fetchInvitedDecisions(currentPage);
+    }
+  }, [tab, currentPage]);
+
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    setCurrentPage(1);
+  };
+
+  const handleViewDetails = (decisionId, isMy) => {
+    if (isMy)
+      navigate(`/checklist_answers/details/${decisionId}`);
+    else
+      navigate(`/invited_checklist_answers/details/${decisionId}`);
   };
 
   // 打开确认删除模态框
@@ -55,7 +87,7 @@ const ChecklistAnswerHistory = () => {
   const handleDelete = async (id) => {
     try {
       await api.delete(`${API_BASE_URL}/checklist_answers/${id}`);
-      await fetchChecklistDecisions(currentPage);
+      await fetchMyDecisions(currentPage);
       closeConfirmModal();
     } catch (error) {
       console.error('Error deleting checklist decision', error);
@@ -109,21 +141,63 @@ const ChecklistAnswerHistory = () => {
     );
   };
 
+  const renderMyDecisionItem = (decision) => (
+    <li key={decision.decision_id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
+      <div><strong>Decision Name:</strong> {decision.decision_name}</div>
+      <div><strong>Version:</strong> {decision.version} <strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
+      <div><strong>Final Decision:</strong> {decision.final_decision}</div>
+      <button onClick={() => handleViewDetails(decision.decision_id,true)} style={{ marginRight: '10px' }} className='green-button'>查看</button>
+      <button onClick={() => openConfirmModal(decision)} style={{ marginRight: '10px' }} className='red-button'>删除</button>
+      <button onClick={() => navigate(`/checklist/${decision.decision_id}/review`)} className='green-button'>复盘</button>
+    </li>
+  );
+
+  const renderInvitedDecisionItem = (decision) => (
+    <li key={decision.decision_id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
+      <div style={{ textAlign: 'left' }}>
+        <div><strong>Decision Name:</strong> {decision.decision_name}</div>
+        <div><strong>Description:</strong> {decision.description}</div>
+        <div><strong>inviter username:</strong> {decision.owner_username}</div>
+      </div>
+
+      {/* Button container with centered alignment */}
+      <div style={{ textAlign: 'center', marginTop: '10px' }}>
+        <button
+          onClick={() => handleViewDetails(decision.decision_id,false)}
+          style={{ marginRight: '10px' }}
+          className='green-button'
+        >
+          查看
+        </button>
+      </div>
+    </li>
+  );
+
   return (
     <div className="checklist-answer-history" style={{ maxWidth: '800px', margin: '0 auto' }}>
       <h2>Checklist Answer History</h2>
-      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-        {checklistDecisions.map((decision) => (
-          <li key={decision.decision_id} style={{ borderBottom: '1px solid #ccc', padding: '10px 0', marginBottom: '10px' }}>
-            <div><strong>Decision Name:</strong> {decision.decision_name}</div>
-            <div><strong>Version:</strong> {decision.version} <strong>Created At:</strong> {new Date(decision.created_at).toLocaleString()}</div>
-            <div><strong>Final Decision:</strong> {decision.final_decision}</div>
-            <button onClick={() => handleViewDetails(decision.decision_id)} style={{ marginRight: '10px' }} className='green-button'>查看</button>
-            <button onClick={() => openConfirmModal(decision)} style={{ marginRight: '10px' }} className='red-button'>删除</button>
-            <button onClick={() => navigate(`/checklist/${decision.decision_id}/review`)} className='green-button'>复盘</button>
+      {/* Tab System */}
+      <div className="tab-container" style={{ marginBottom: '20px' }}>
+        <button
+          className={`tab-button ${tab === 'my' ? 'active' : ''}`}
+          onClick={() => handleTabChange('my')}
 
-          </li>
-        ))}
+        >
+          My Decisions
+        </button>
+        <button
+          className={`tab-button ${tab === 'invited' ? 'active' : ''}`}
+          onClick={() => handleTabChange('invited')}
+
+        >
+          Invited Decisions
+        </button>
+      </div>
+
+      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+        {tab === 'my'
+          ? myDecisions.map(renderMyDecisionItem)
+          : invitedDecisions.map(renderInvitedDecisionItem)}
       </ul>
       <div style={{ display: 'flex', justifyContent: 'space-around', margin: '20px auto' }}>
         <button onClick={handlePrevPage} disabled={currentPage === 1} className='green-button'>Previous</button>
