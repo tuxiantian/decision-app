@@ -270,7 +270,7 @@ const ChecklistDetail = () => {
 
   const fetchArticles = async (page = 1) => {
     try {
-      const response = await api.get(`${API_BASE_URL}/articles`, {
+      const response = await api.get(`/articles`, {
         params: { search: searchTerm, page, page_size: 10 },
       });
       setArticles(response.data.articles);
@@ -284,7 +284,7 @@ const ChecklistDetail = () => {
   // Function to fetch platform recommended articles
   const fetchPlatformArticles = async (page = 1) => {
     try {
-      const response = await api.get(`${API_BASE_URL}/platform_articles`, {
+      const response = await api.get(`/platform_articles`, {
         params: { search: searchTerm, page, page_size: 10 },
       });
       setPlatformArticles(response.data.articles);

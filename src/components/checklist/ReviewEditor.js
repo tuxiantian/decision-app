@@ -3,17 +3,21 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import { Editor } from '@toast-ui/react-editor';
 import { useParams, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
-import api from '../api.js'
+import api from '../api.js';
+import '//at.alicdn.com/t/c/font_4955755_wck13l63429.js';
 
 const ReviewEditor = () => {
   const { decisionId } = useParams();
   const [content, setContent] = useState('');
   const [articles, setArticles] = useState([]);
+  const [platformArticles, setPlatformArticles] = useState([]);
   const [referencedArticles, setReferencedArticles] = useState([]);
+  const [referencedPlatformArticles, setReferencedPlatformArticles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [tab, setTab] = useState('my');
   const navigate = useNavigate();
   const editorRef = useRef();
 
@@ -25,6 +29,17 @@ const ReviewEditor = () => {
         setCurrentPage(response.data.current_page);
       })
       .catch(error => console.error('Error fetching articles:', error));
+  };
+
+  // 获取平台推荐文章
+  const fetchPlatformArticles = (search = '', page = 1) => {
+    api.get(`/platform_articles?search=${search}&page=${page}&page_size=10`)
+      .then(response => {
+        setPlatformArticles(response.data.articles);
+        setTotalPages(response.data.total_pages);
+        setCurrentPage(response.data.current_page);
+      })
+      .catch(error => console.error('Error fetching platform articles:', error));
   };
 
   useEffect(() => {
@@ -42,7 +57,8 @@ const ReviewEditor = () => {
     const reviewData = {
       decision_id: decisionId,
       content,
-      referenced_articles: referencedArticles.map(article => article.id) // 只保存文章的 id
+      referenced_articles: referencedArticles.map(article => article.id), // 只保存文章的 id
+      referenced_platform_articles: referencedPlatformArticles.map(article => article.id)
     };
 
     api.post(`/reviews`, reviewData)
@@ -55,36 +71,88 @@ const ReviewEditor = () => {
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-    fetchArticles(); // 打开弹窗时获取数据
+    if (tab === 'my') {
+      fetchArticles();
+    } else {
+      fetchPlatformArticles();
+    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
+
   const handleSearch = () => {
-    fetchArticles(searchTerm, 1);
+    setCurrentPage(1);
+    if (tab === 'my') {
+      fetchArticles(searchTerm, 1);
+    } else {
+      fetchPlatformArticles(searchTerm, 1);
+    }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      fetchArticles(searchTerm, currentPage - 1);
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+      if (tab === 'my') {
+        fetchArticles(searchTerm, newPage);
+      } else {
+        fetchPlatformArticles(searchTerm, newPage);
+      }
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      fetchArticles(searchTerm, currentPage + 1);
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+      if (tab === 'my') {
+        fetchArticles(searchTerm, newPage);
+      } else {
+        fetchPlatformArticles(searchTerm, newPage);
+      }
+    }
+  };
+
+  // 切换标签页
+  const handleTabChange = (newTab) => {
+    setTab(newTab);
+    setCurrentPage(1);
+    if (newTab === 'my') {
+      fetchArticles();
+    } else {
+      fetchPlatformArticles();
+    }
+  };
+
+  // 移除引用的文章
+  const handleRemoveArticle = (articleId, isPlatformArticle = false) => {
+    if (isPlatformArticle) {
+      setReferencedPlatformArticles(referencedPlatformArticles.filter(article => article.id !== articleId));
+    } else {
+      setReferencedArticles(referencedArticles.filter(article => article.id !== articleId));
     }
   };
 
   const handleSelectArticle = (article) => {
-    if (referencedArticles.some((refArticle) => refArticle.id === article.id)) {
-      // 如果已经引用，取消引用
-      setReferencedArticles(referencedArticles.filter((refArticle) => refArticle.id !== article.id));
+    if (tab === 'my') {
+      if (referencedArticles.some((refArticle) => refArticle.id === article.id)) {
+        // 取消引用我的文章
+        setReferencedArticles(referencedArticles.filter((refArticle) => refArticle.id !== article.id));
+      } else {
+        // 引用我的文章
+        setReferencedArticles([...referencedArticles, article]);
+      }
     } else {
-      // 添加引用
-      setReferencedArticles([...referencedArticles, article]);
+      if (referencedPlatformArticles.some((refArticle) => refArticle.id === article.id)) {
+        // 取消引用平台文章
+        setReferencedPlatformArticles(referencedPlatformArticles.filter((refArticle) => refArticle.id !== article.id));
+      } else {
+        // 引用平台文章
+        setReferencedPlatformArticles([...referencedPlatformArticles, article]);
+      }
     }
   };
 
@@ -141,6 +209,20 @@ const ReviewEditor = () => {
         }}
       >
         <h2>Select Articles to Reference</h2>
+        <div className="tab-container">
+          <button
+            className={`tab-button ${tab === 'my' ? 'active' : ''}`}
+            onClick={() => handleTabChange('my')}
+          >
+            我的
+          </button>
+          <button
+            className={`tab-button ${tab === 'recommended' ? 'active' : ''}`}
+            onClick={() => handleTabChange('recommended')}
+          >
+            推荐
+          </button>
+        </div>
         <div style={{ marginBottom: '10px' }}>
           <input
             type="text"
@@ -152,11 +234,15 @@ const ReviewEditor = () => {
           <button onClick={handleSearch} className='green-button'>Search</button>
         </div>
 
-        {articles.map(article => (
+        {(tab === 'my' ? articles : platformArticles).map(article => (
           <div key={article.id} style={{ marginBottom: '10px' }}>
             <input
               type="checkbox"
-              checked={referencedArticles.some((refArticle) => refArticle.id === article.id)}
+              checked={
+                tab === 'my'
+                  ? referencedArticles.some((refArticle) => refArticle.id === article.id)
+                  : referencedPlatformArticles.some((refArticle) => refArticle.id === article.id)
+              }
               onChange={() => handleSelectArticle(article)}
             />
             <label style={{ marginLeft: '5px' }}>{article.title}</label>
@@ -172,16 +258,49 @@ const ReviewEditor = () => {
         <button onClick={handleCloseModal} style={{ marginTop: '20px' }} className='green-button'>Done</button>
       </Modal>
 
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h4>Referenced Articles:</h4>
-        {referencedArticles.length === 0 ? (
+        {referencedArticles.length === 0 && referencedPlatformArticles.length === 0 ? (
           <p>No articles referenced.</p>
         ) : (
-          referencedArticles.map(article => (
-            <div key={article.id}>
-              <p>{article.title}</p>
-            </div>
-          ))
+          <>
+            {referencedArticles.length > 0 && (
+              <div>
+                <h5>My Articles:</h5>
+                {referencedArticles.map(article => (
+                  <div key={article.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ marginRight: '8px' }}>{article.title}</span>
+                    <button
+                      onClick={() => handleRemoveArticle(article.id, false)}
+                      className="icon-button"
+                    >
+                      <svg className="icon" aria-hidden="true">
+                        <use xlinkHref="#icon-shanchu"></use>
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {referencedPlatformArticles.length > 0 && (
+              <div>
+                <h5>Platform Recommended Articles:</h5>
+                {referencedPlatformArticles.map(article => (
+                  <div key={article.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ marginRight: '8px' }}>{article.title}</span>
+                    <button
+                      onClick={() => handleRemoveArticle(article.id, true)}
+                      className="icon-button"
+                    >
+                      <svg className="icon" aria-hidden="true">
+                        <use xlinkHref="#icon-shanchu"></use>
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
       <div className='button-container'>
