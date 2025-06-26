@@ -6,6 +6,9 @@ import Modal from 'react-modal';
 import api from '../api.js';
 import '//at.alicdn.com/t/c/font_4955755_wck13l63429.js';
 
+// 最大引用数量
+const MAX_REFERENCE_COUNT = 10;
+
 const ReviewEditor = () => {
   const { decisionId } = useParams();
   const [content, setContent] = useState('');
@@ -141,17 +144,22 @@ const ReviewEditor = () => {
       if (referencedArticles.some((refArticle) => refArticle.id === article.id)) {
         // 取消引用我的文章
         setReferencedArticles(referencedArticles.filter((refArticle) => refArticle.id !== article.id));
-      } else {
-        // 引用我的文章
+      } else if (referencedArticles.length < MAX_REFERENCE_COUNT) {
         setReferencedArticles([...referencedArticles, article]);
+      } 
+      // 如果超限
+      else {
+        alert(`最多只能引用 ${MAX_REFERENCE_COUNT} 篇我的文章！`);
       }
     } else {
       if (referencedPlatformArticles.some((refArticle) => refArticle.id === article.id)) {
         // 取消引用平台文章
         setReferencedPlatformArticles(referencedPlatformArticles.filter((refArticle) => refArticle.id !== article.id));
-      } else {
-        // 引用平台文章
+      } else if (referencedPlatformArticles.length < MAX_REFERENCE_COUNT) {
         setReferencedPlatformArticles([...referencedPlatformArticles, article]);
+      } 
+      else {
+        alert(`最多只能引用 ${MAX_REFERENCE_COUNT} 篇平台推荐文章！`);
       }
     }
   };
