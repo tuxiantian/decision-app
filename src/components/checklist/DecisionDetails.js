@@ -602,14 +602,37 @@ const DecisionDetails = () => {
                     <Viewer initialValue={review.content} />
 
                     {/* 引用的文章 */}
-                    {review.referenced_articles.length > 0 && (
+                    {review.referenced_articles?.length > 0 && (
                       <div style={{ marginTop: '10px' }}>
                         <strong>Referenced Articles:</strong>
                         <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
                           {review.referenced_articles.map((article) => (
                             <li key={article.id}>
                               <a
-                                href={`${WEBSITE_URL}/view-article/${article.id}`}
+                                href={`${WEBSITE_URL}/view-article/my/${article.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  textDecoration: 'underline',
+                                  color: '#007bff'
+                                }}
+                              >
+                                {article.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {review.referenced_platform_articles?.length > 0 && (
+                      <div style={{ marginTop: '10px' }}>
+                        <strong>Referenced Platform Recommended Articles:</strong>
+                        <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
+                          {review.referenced_platform_articles.map((article) => (
+                            <li key={article.id}>
+                              <a
+                                href={`${WEBSITE_URL}/view-article/recommended/${article.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
