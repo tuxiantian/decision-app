@@ -106,7 +106,6 @@ const ChecklistList = () => {
           <span className="separator">|</span>
           <span>分享状态: <strong>{getShareStatusText(checklist.share_status)}</strong></span>
         </div>
-        <div>{checklist.description}</div>
         {checklist.versions?.length > 0 && (
           <ul className="version-list">
             {checklist.versions.map(version => renderMyVersionItem(version))}
