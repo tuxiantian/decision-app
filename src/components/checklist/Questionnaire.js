@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import Modal from 'react-modal';
 import api from '../api.js'
+import '//at.alicdn.com/t/c/font_4955755_wck13l63429.js';
 import './Questionnaire.css';  // 新增样式文件导入
 
 const Questionnaire = () => {
@@ -13,6 +15,17 @@ const Questionnaire = () => {
     const [userPath, setUserPath] = useState([]);
     // 新增状态管理展开/折叠
     const [expandedQuestions, setExpandedQuestions] = useState({});
+    // New state for article references
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [articles, setArticles] = useState([]);
+    const [platformArticles, setPlatformArticles] = useState([]);
+    const [selectedArticles, setSelectedArticles] = useState({});
+    const [selectedPlatformArticles, setSelectedPlatformArticles] = useState({});
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [tab, setTab] = useState('my');
+    const [activeQuestionId, setActiveQuestionId] = useState(null);
 
     // 切换问题展开状态
     const toggleQuestion = (questionId) => {
@@ -43,6 +56,114 @@ const Questionnaire = () => {
         };
         fetchQuestions();
     }, [decisionId]);
+
+    // Fetch articles
+    const fetchArticles = async (page = 1) => {
+        try {
+            const response = await api.get(`/articles`, {
+                params: { search: searchTerm, page, page_size: 10 },
+            });
+            setArticles(response.data.articles);
+            setTotalPages(response.data.total_pages);
+            setCurrentPage(page);
+        } catch (error) {
+            console.error('Error fetching articles', error);
+        }
+    };
+
+    // Fetch platform articles
+    const fetchPlatformArticles = async (page = 1) => {
+        try {
+            const response = await api.get(`/platform_articles`, {
+                params: { search: searchTerm, page, page_size: 10 },
+            });
+            setPlatformArticles(response.data.articles);
+            setTotalPages(response.data.total_pages);
+            setCurrentPage(page);
+        } catch (error) {
+            console.error('Error fetching platform articles', error);
+        }
+    };
+
+    useEffect(() => {
+        if (tab === 'my') {
+            fetchArticles(currentPage);
+        } else if (tab === 'recommended') {
+            fetchPlatformArticles(currentPage);
+        }
+    }, [tab, currentPage]);
+
+    const handleTabChange = (newTab) => {
+        setTab(newTab);
+        setCurrentPage(1);
+    };
+
+    const handleSearch = () => {
+        setCurrentPage(1);
+        if (tab === 'my') {
+            fetchArticles(1);
+        } else if (tab === 'recommended') {
+            fetchPlatformArticles(1);
+        }
+    };
+
+    // Open article reference modal
+    const handleReferenceArticles = (questionId) => {
+        setActiveQuestionId(questionId);
+        setIsModalOpen(true);
+        if (tab === 'my') {
+            fetchArticles(1);
+        } else {
+            fetchPlatformArticles(1);
+        }
+    };
+
+    // Select/deselect article
+    const handleSelectArticle = (articleId) => {
+        if (activeQuestionId === null) return;
+
+        if (tab === 'my') {
+            const selected = selectedArticles[activeQuestionId] || [];
+            const selectedArticle = articles.find((art) => art.id === articleId);
+
+            if (selected.some((art) => art.id === articleId)) {
+                setSelectedArticles({
+                    ...selectedArticles,
+                    [activeQuestionId]: selected.filter((art) => art.id !== articleId),
+                });
+            } else {
+                if (selected.length < 5 && selectedArticle) {
+                    setSelectedArticles({
+                        ...selectedArticles,
+                        [activeQuestionId]: [...selected, selectedArticle],
+                    });
+                } else {
+                    alert("You can reference up to 5 articles only.");
+                }
+            }
+        }
+
+        if (tab === 'recommended') {
+            const selected = selectedPlatformArticles[activeQuestionId] || [];
+            const selectedArticle = platformArticles.find((art) => art.id === articleId);
+
+            if (selected.some((art) => art.id === articleId)) {
+                setSelectedPlatformArticles({
+                    ...selectedPlatformArticles,
+                    [activeQuestionId]: selected.filter((art) => art.id !== articleId),
+                });
+            } else {
+                if (selected.length < 5 && selectedArticle) {
+                    setSelectedPlatformArticles({
+                        ...selectedPlatformArticles,
+                        [activeQuestionId]: [...selected, selectedArticle],
+                    });
+                } else {
+                    alert("You can reference up to 5 articles only.");
+                }
+            }
+        }
+    };
 
     useEffect(() => { console.log(JSON.stringify(userPath)) }, [step]);
 
@@ -118,7 +239,12 @@ const Questionnaire = () => {
         // 保存答案
         setAnswers(prev => ({
             ...prev,
-            [question.id]: value
+            [question.id]: {
+                ...prev[question.id],
+                answer: value,
+                referenced_articles: selectedArticles[question.id] || [],
+                referenced_platform_articles: selectedPlatformArticles[question.id] || []
+            }
         }));
 
         // 如果已经回答过，替换最后一步而不是新增
@@ -163,7 +289,9 @@ const Questionnaire = () => {
         try {
             const answersArray = Object.keys(answers).map(questionId => ({
                 question_id: parseInt(questionId, 10),
-                answer: answers[questionId] ?? ''
+                answer: answers[questionId]?.answer ?? '',
+                referenced_articles: answers[questionId]?.referenced_articles?.map(a => a.id) || [],
+                referenced_platform_articles: answers[questionId]?.referenced_platform_articles?.map(a => a.id) || []
             }));
             await api.post(`/checklist_answers/decision/${decisionId}`, {
                 answers: answersArray
@@ -190,23 +318,89 @@ const Questionnaire = () => {
                     <>
                         <textarea
                             className="answer-textarea"
-                            value={answers[currentQuestion.id] || ''}
+                            value={answers[currentQuestion.id]?.answer || ''}
                             onChange={(e) => {
-                                // 只更新答案状态，不触发导航
                                 setAnswers(prev => ({
                                     ...prev,
-                                    [currentQuestion.id]: e.target.value
+                                    [currentQuestion.id]: {
+                                        ...prev[currentQuestion.id],
+                                        answer: e.target.value
+                                    }
                                 }));
                             }}
                             placeholder={currentQuestion.description}
                         />
+                        <button
+                            className="green-button"
+                            onClick={() => handleReferenceArticles(currentQuestion.id)}
+                        >
+                            Reference Articles
+                        </button>
+
+                        {/* Show referenced articles */}
+                        {(selectedArticles[currentQuestion.id]?.length > 0 ||
+                            selectedPlatformArticles[currentQuestion.id]?.length > 0) && (
+                                <div className="referenced-articles">
+                                    <h4>Referenced Articles:</h4>
+                                    {selectedArticles[currentQuestion.id]?.length > 0 && (
+                                        <div>
+                                            <h5>My Articles:</h5>
+                                            {selectedArticles[currentQuestion.id].map(article => (
+                                                <div key={article.id} className="article-item">
+                                                    {article.title}
+                                                    <button
+                                                        onClick={() => {
+                                                            const updated = selectedArticles[currentQuestion.id]
+                                                                .filter(a => a.id !== article.id);
+                                                            setSelectedArticles({
+                                                                ...selectedArticles,
+                                                                [currentQuestion.id]: updated
+                                                            });
+                                                        }}
+                                                        className="icon-button"
+                                                    >
+                                                        <svg className="icon" aria-hidden="true">
+                                                            <use xlinkHref="#icon-shanchu"></use>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {selectedPlatformArticles[currentQuestion.id]?.length > 0 && (
+                                        <div>
+                                            <h5>Platform Articles:</h5>
+                                            {selectedPlatformArticles[currentQuestion.id].map(article => (
+                                                <div key={article.id} className="article-item">
+                                                    {article.title}
+                                                    <button
+                                                        onClick={() => {
+                                                            const updated = selectedPlatformArticles[currentQuestion.id]
+                                                                .filter(a => a.id !== article.id);
+                                                            setSelectedPlatformArticles({
+                                                                ...selectedPlatformArticles,
+                                                                [currentQuestion.id]: updated
+                                                            });
+                                                        }}
+                                                        className="icon-button"
+                                                    >
+                                                        <svg className="icon" aria-hidden="true">
+                                                            <use xlinkHref="#icon-shanchu"></use>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         <div className="navigation-buttons">
                             {userPath.length > 1 && (
                                 <button className="primary-button" onClick={goBackToPreviousQuestion}>上一题</button>
                             )}
                             <button
                                 className="primary-button"
-                                onClick={() => handleAnswerChange(currentQuestion, answers[currentQuestion.id] || '')}
+                                onClick={() => handleAnswerChange(currentQuestion, answers[currentQuestion.id]?.answer || '')}
                             >
                                 下一题
                             </button>
@@ -222,23 +416,91 @@ const Questionnaire = () => {
                                         id={`option-${currentQuestion.id}-${optIndex}`}
                                         name={`question-${currentQuestion.id}`}
                                         value={optIndex}
-                                        checked={answers[currentQuestion.id] === optIndex}
+                                        checked={answers[currentQuestion.id]?.answer === optIndex}
                                         onChange={() => {
                                             setAnswers(prev => ({
                                                 ...prev,
-                                                [currentQuestion.id]: optIndex
+                                                [currentQuestion.id]: {
+                                                    ...prev[currentQuestion.id],
+                                                    answer: optIndex
+                                                }
                                             }));
                                         }}
                                     />
                                     <label
                                         htmlFor={`option-${currentQuestion.id}-${optIndex}`}
-                                        className={`option-label ${answers[currentQuestion.id] === optIndex ? 'selected' : ''}`}
+                                        className={`option-label ${answers[currentQuestion.id]?.answer === optIndex ? 'selected' : ''}`}
                                     >
                                         {option}
                                     </label>
                                 </div>
                             ))}
                         </div>
+
+                        <button
+                            className="green-button"
+                            onClick={() => handleReferenceArticles(currentQuestion.id)}
+                        >
+                            Reference Articles
+                        </button>
+
+                        {/* Show referenced articles for choice questions */}
+                        {(selectedArticles[currentQuestion.id]?.length > 0 ||
+                            selectedPlatformArticles[currentQuestion.id]?.length > 0) && (
+                                <div className="referenced-articles">
+                                    <h4>Referenced Articles:</h4>
+                                    {selectedArticles[currentQuestion.id]?.length > 0 && (
+                                        <div>
+                                            <h5>My Articles:</h5>
+                                            {selectedArticles[currentQuestion.id].map(article => (
+                                                <div key={article.id} className="article-item">
+                                                    {article.title}
+                                                    <button
+                                                        onClick={() => {
+                                                            const updated = selectedArticles[currentQuestion.id]
+                                                                .filter(a => a.id !== article.id);
+                                                            setSelectedArticles({
+                                                                ...selectedArticles,
+                                                                [currentQuestion.id]: updated
+                                                            });
+                                                        }}
+                                                        className="icon-button"
+                                                    >
+                                                        <svg className="icon" aria-hidden="true">
+                                                            <use xlinkHref="#icon-shanchu"></use>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {selectedPlatformArticles[currentQuestion.id]?.length > 0 && (
+                                        <div>
+                                            <h5>Platform Articles:</h5>
+                                            {selectedPlatformArticles[currentQuestion.id].map(article => (
+                                                <div key={article.id} className="article-item">
+                                                    {article.title}
+                                                    <button
+                                                        onClick={() => {
+                                                            const updated = selectedPlatformArticles[currentQuestion.id]
+                                                                .filter(a => a.id !== article.id);
+                                                            setSelectedPlatformArticles({
+                                                                ...selectedPlatformArticles,
+                                                                [currentQuestion.id]: updated
+                                                            });
+                                                        }}
+                                                        className="icon-button"
+                                                    >
+                                                        <svg className="icon" aria-hidden="true">
+                                                            <use xlinkHref="#icon-shanchu"></use>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         <div className="navigation-buttons">
                             {userPath.length > 1 && (
                                 <button className="primary-button" onClick={goBackToPreviousQuestion}>上一题</button>
@@ -246,10 +508,10 @@ const Questionnaire = () => {
                             <button
                                 className="primary-button"
                                 onClick={() => {
-                                    if (answers[currentQuestion.id] === undefined) {
+                                    if (answers[currentQuestion.id]?.answer === undefined) {
                                         alert('请选择一个选项');
                                     } else {
-                                        handleAnswerChange(currentQuestion, answers[currentQuestion.id]);
+                                        handleAnswerChange(currentQuestion, answers[currentQuestion.id].answer);
                                     }
                                 }}
                             >
@@ -261,6 +523,93 @@ const Questionnaire = () => {
             </div>
         );
     };
+
+    // Article reference modal
+    const renderArticleModal = () => (
+        <Modal
+            isOpen={isModalOpen}
+            onRequestClose={() => setIsModalOpen(false)}
+            style={{
+                content: {
+                    width: '600px',
+                    margin: '0 auto',
+                    padding: '20px',
+                },
+                overlay: {
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                },
+            }}
+        >
+            <h2>Select Articles to Reference</h2>
+            <div className="tab-container">
+                <button
+                    className={`tab-button ${tab === 'my' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('my')}
+                >
+                    我的
+                </button>
+                <button
+                    className={`tab-button ${tab === 'recommended' ? 'active' : ''}`}
+                    onClick={() => handleTabChange('recommended')}
+                >
+                    推荐
+                </button>
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+                <input
+                    type="text"
+                    placeholder="Search articles..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ marginRight: '10px', padding: '5px' }}
+                />
+                <button className="green-button" onClick={handleSearch}>Search</button>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+                {(tab === 'my' ? articles : platformArticles).map((article) => (
+                    <div key={article.id} style={{ marginBottom: '10px', textAlign: 'left' }}>
+                        <input
+                            type="checkbox"
+                            checked={
+                                tab === 'my'
+                                    ? selectedArticles[activeQuestionId]?.some(a => a.id === article.id)
+                                    : selectedPlatformArticles[activeQuestionId]?.some(a => a.id === article.id) || false
+                            }
+                            onChange={() => handleSelectArticle(article.id)}
+                            style={{ marginRight: '5px' }}
+                        />
+                        {article.title}
+                    </div>
+                ))}
+            </div>
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
+                <button
+                    className="green-button"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                >
+                    Previous Page
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button
+                    className="green-button"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                >
+                    Next Page
+                </button>
+            </div>
+            <button
+                onClick={() => setIsModalOpen(false)}
+                style={{ marginTop: '20px' }}
+                className="green-button"
+            >
+                Done
+            </button>
+        </Modal>
+    );
 
     // 控制不同步骤的渲染
     if (step === 1) {
@@ -321,6 +670,7 @@ const Questionnaire = () => {
                 >
                     开始回答问题
                 </button>
+
             </div>
         );
     }
@@ -329,6 +679,7 @@ const Questionnaire = () => {
         return (
             <div className="questionnaire-step">
                 {renderCurrentQuestion()}
+                {renderArticleModal()}
             </div>
         );
     }
@@ -341,15 +692,62 @@ const Questionnaire = () => {
                     {
                         userPath.map((step, index) => {
                             const question = questions.find(q => q.id === step.questionId);
+                            const answer = answers[step.questionId];
                             return (
                                 <div key={index} className="review-item">
                                     <h3>{question.question}</h3>
                                     <p>
                                         <strong>Answer: </strong>
                                         {question.type === 'choice'
-                                            ? question.options[step.answer]
-                                            : step.answer}
+                                            ? question.options[answer?.answer]
+                                            : answer?.answer}
                                     </p>
+                                    {/* 引用的文章 */}
+                                    {answer?.referenced_articles?.length > 0 && (
+                                        <div style={{ marginTop: '10px' }}>
+                                            <strong>Referenced Articles:</strong>
+                                            <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
+                                                {answer.referenced_articles.map((article) => (
+                                                    <li key={article.id}>
+                                                        <a
+                                                            href={`${window.location.origin}/view-article/my/${article.id}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                textDecoration: 'underline',
+                                                                color: '#007bff'
+                                                            }}
+                                                        >
+                                                            {article.title}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+
+                                    {answer?.referenced_platform_articles?.length > 0 && (
+                                        <div style={{ marginTop: '10px' }}>
+                                            <strong>Referenced Platform Recommended Articles:</strong>
+                                            <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
+                                                {answer.referenced_platform_articles.map((article) => (
+                                                    <li key={article.id}>
+                                                        <a
+                                                            href={`${window.location.origin}/view-article/recommended/${article.id}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{
+                                                                textDecoration: 'underline',
+                                                                color: '#007bff'
+                                                            }}
+                                                        >
+                                                            {article.title}
+                                                        </a>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
