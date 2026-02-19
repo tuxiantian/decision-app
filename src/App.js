@@ -43,6 +43,9 @@ import LandingPage from './LandingPage';
 import ChecklistView from './components/checklist/ChecklistView';
 import ChecklistEditor from './components/checklist/ChecklistEditor';
 import InvitedDecisionDetails from './components/checklist/InvitedDecisionDetails';
+import MinimaxRegretDecision from './components/mininmaxregret/MinimaxRegretDecision';
+import ModelList from './components/mininmaxregret/ModelList';
+import ModelDetail from './components/mininmaxregret/ModelDetail';
 
 function App() {
   const [username, setUsername] = useState(null); // 存储用户名
@@ -153,6 +156,18 @@ function App() {
       ]
     },
     {
+      title: '最大后悔最小',
+      children: [
+        {
+          title: '列表',
+          path: '/minimax-regret-decision/list'
+        }, {
+          title: '最大后悔最小决策模型',
+          path: '/minimax-regret-decision'
+        }
+      ]
+    },
+    {
       title: '更多',
       children: [
         {
@@ -232,6 +247,9 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path='/kelly' element={<KellyCalculator />} />
           <Route path='/mermaid' element={<MermaidTool />} />
+          <Route path='/minimax-regret-decision' element={<MinimaxRegretDecision />} />
+          <Route path='/minimax-regret-decision/list' element={<ModelList />} />
+          <Route path='/minimax-regret-decision/detail/:modelId' element={<ModelDetail />} />
           <Route path="/about-us" element={<AboutUs />} />
 
           <Route path="/join-group/:groupId" element={<JoinGroupPage />} />
