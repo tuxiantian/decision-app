@@ -9,11 +9,11 @@ const API_BASE_URL = 'http://localhost:5000/api';
 const ModelDetail = () => {
   const { modelId } = useParams();
   const navigate = useNavigate();
-  
+
   const [model, setModel] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [reanalyzing, setReanalyzing] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     console.log('ModelDetail mounted with modelId:', modelId);
@@ -37,25 +37,72 @@ const ModelDetail = () => {
     }
   };
 
-  const handleReanalyze = async () => {
-    setReanalyzing(true);
+  // 导出PDF - 调用后端接口
+  const exportToPDF = async (simple = false) => {
+    setExporting(true);
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/models/${modelId}/reanalyze`);
-      setModel({
-        ...model,
-        result: {
-          ...response.data,
-          created_at: new Date().toISOString()
-        }
+      const endpoint = simple
+        ? `${API_BASE_URL}/models/${modelId}/export-simple-pdf`
+        : `${API_BASE_URL}/models/${modelId}/export-pdf`;
+
+      // 使用 fetch 或 axios 获取PDF文件
+      const response = await axios.get(endpoint, {
+        responseType: 'blob', // 重要：设置为blob类型
+        // 重要：告诉 axios 获取所有响应头
+        headers: {
+          'Accept': 'application/pdf',
+        },
+        // 确保能获取到自定义头
+        withCredentials: true,
       });
-      setError('');
+
+      // 创建下载链接
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+
+      // 从响应头中获取文件名，或使用默认名
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = simple ? '决策摘要.pdf' : '决策报告.pdf';
+
+      if (contentDisposition) {
+        // 尝试解析 filename* 参数 (RFC 5987)
+        
+        const filenameStarMatch = contentDisposition.match(/filename\*=(?:UTF-8|utf-8)''(.+)/);
+        if (filenameStarMatch && filenameStarMatch[1]) {
+          filename = decodeURIComponent(filenameStarMatch[1]);
+        } else {
+          // 尝试解析普通 filename 参数
+          const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1];
+          } else {
+            // 尝试另一种格式
+            const simpleFilenameMatch = contentDisposition.match(/filename=([^;]+)/);
+            if (simpleFilenameMatch && simpleFilenameMatch[1]) {
+              filename = simpleFilenameMatch[1].replace(/['"]/g, '');
+            }
+          }
+        }
+        console.log(filename);
+      }
+
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      // 清理URL对象
+      window.URL.revokeObjectURL(url);
+
     } catch (err) {
-      setError('Reanalysis failed');
+      console.error('PDF导出失败:', err);
+      setError('PDF导出失败：' + (err.response?.data?.error || err.message));
     } finally {
-      setReanalyzing(false);
+      setExporting(false);
     }
   };
-
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleString('zh-CN');
@@ -96,7 +143,7 @@ const ModelDetail = () => {
           <h1>{model.name}</h1>
           <span className="model-id">ID: {model.id}</span>
         </div>
-       
+
       </div>
 
       {/* 错误提示 */}
@@ -252,19 +299,19 @@ const ModelDetail = () => {
 
           {/* 导出按钮 */}
           <div className="export-actions">
-            <button 
-              className="btn btn-outline"
-              onClick={() => {
-                const dataStr = JSON.stringify(model.result, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                const exportFileDefaultName = `result_${model.name}_${new Date().toISOString()}.json`;
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-              }}
+            <button
+              className="btn btn-primary"
+              onClick={() => exportToPDF(false)}
+              disabled={exporting}
             >
-              导出结果 (JSON)
+              {exporting ? '生成中...' : '导出完整PDF报告'}
+            </button>
+            <button
+              className="btn btn-outline"
+              onClick={() => exportToPDF(true)}
+              disabled={exporting}
+            >
+              {exporting ? '生成中...' : '导出简洁PDF'}
             </button>
           </div>
         </div>

@@ -672,3 +672,27 @@
     print-color-adjust: exact;
   }
 }
+
+/* 添加到 ModelDetail.css */
+.export-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.export-actions .btn {
+  min-width: 160px;
+}
+
+@media (max-width: 480px) {
+  .export-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .export-actions .btn {
+    width: 100%;
+  }
+}
