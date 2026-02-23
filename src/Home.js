@@ -43,6 +43,7 @@ const Home = () => {
     { id: 'argument', label: '观点分析' },
     { id: 'todos', label: '待办事项' },
     { id: 'balanced', label: '平衡决策' },
+    { id: 'minimax-regret', label: '最大后悔最小' },
     { id: 'inspiration', label: '启发俱乐部' }
   ];
 
