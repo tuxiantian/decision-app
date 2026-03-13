@@ -266,184 +266,211 @@ const DecisionFlowTool = React.forwardRef(({
         return false;
     };
 
-    // 智能计算箭头旋转角度
-    const calculateSmartArrowRotation = (points, anchorPosition, isStraightLine) => {
-        // 如果是直线路径，根据最后一段的自然方向计算角度
-        if (isStraightLine) {
-            if (points.length < 2) return "0";
-            const lastSegment = points[points.length - 2];
-            const targetPoint = points[points.length - 1];
-
-            const dx = targetPoint.x - lastSegment.x;
-            const dy = targetPoint.y - lastSegment.y;
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-            return angle.toString();
-        }
-
-        // 如果是折线路径，根据锚点位置确定方向
-        switch (anchorPosition) {
-            case 'top': return "90";    // 箭头向下
-            case 'right': return "180";   // 箭头向左
-            case 'bottom': return "-90";   // 箭头向上
-            case 'left': return "0";     // 箭头向右
-            default: return "0";
-        }
+    // 计算箭头多边形顶点
+    const calculateArrowPolygon = (endPoint, prevPoint, arrowSize = 8) => {
+        const dx = endPoint.x - prevPoint.x;
+        const dy = endPoint.y - prevPoint.y;
+        const angle = Math.atan2(dy, dx);
+        
+        // 箭头三个顶点
+        const arrowLength = arrowSize * 1.5;
+        const arrowWidth = arrowSize;
+        
+        const x1 = endPoint.x - arrowLength * Math.cos(angle);
+        const y1 = endPoint.y - arrowLength * Math.sin(angle);
+        
+        const leftAngle = angle + Math.PI / 2;
+        const rightAngle = angle - Math.PI / 2;
+        
+        const x2 = x1 + arrowWidth * Math.cos(leftAngle);
+        const y2 = y1 + arrowWidth * Math.sin(leftAngle);
+        
+        const x3 = x1 + arrowWidth * Math.cos(rightAngle);
+        const y3 = y1 + arrowWidth * Math.sin(rightAngle);
+        
+        return `${endPoint.x},${endPoint.y} ${x2},${y2} ${x1},${y1} ${x3},${y3}`;
     };
 
-    // 计算绕过节点的路径
+    // 计算路径终点（箭头尖端对准锚点）
+    const calculatePathEndPoint = (endPoint, prevPoint, arrowSize = 8, anchorPosition = 'right') => {
+        // 路径直接延伸到锚点,箭头尖端会在锚点位置
+        return endPoint;
+    };
+
+    // 计算智能路径（直线或折线）
     const calculatePath = (start, end, nodes, excludeIds = [], targetAnchorPosition) => {
-        const directPath = { points: [start, end], intersects: false, isStraightLine: true };
-
-        // 1. 检查直接路径是否可行
+        // 1. 首先尝试直接直线路径
         if (!doesPathIntersectNode(start, end, nodes, excludeIds)) {
-            return directPath;
+            return { points: [start, end], intersects: false, isStraightLine: true };
         }
 
-        // 2. 找出所有障碍节点
-        const obstacles = nodes.filter(node =>
-            !excludeIds.includes(node.id) &&
-            lineIntersectsRect(start, end, {
-                left: node.x,
-                top: node.y,
-                right: node.x + node.width,
-                bottom: node.y + node.height
-            })
-        );
+        // 2. 计算智能折线路径（自动绕过障碍）
+        const points = calculateSmartPolylinePath(start, end, nodes, excludeIds, targetAnchorPosition);
+        return { points, intersects: true, isStraightLine: false };
+    };
 
-        // 3. 如果没有障碍(可能是误检)，返回直接路径
-        if (obstacles.length === 0) {
-            return { points: [start, end], intersects: false };
+    // 计算折线路径（类似语雀风格）
+    const calculatePolylinePath = (start, end, anchorPosition) => {
+        const points = [start];
+        
+        // 根据锚点位置决定拐点策略
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        
+        // 计算中间拐点
+        let midPoint1, midPoint2;
+        
+        switch (anchorPosition) {
+            case 'top':
+            case 'bottom':
+                // 垂直方向锚点：先水平移动，再垂直移动
+                midPoint1 = { x: start.x + dx * 0.5, y: start.y };
+                midPoint2 = { x: start.x + dx * 0.5, y: end.y };
+                break;
+            case 'left':
+            case 'right':
+                // 水平方向锚点：先垂直移动，再水平移动
+                midPoint1 = { x: start.x, y: start.y + dy * 0.5 };
+                midPoint2 = { x: end.x, y: start.y + dy * 0.5 };
+                break;
+            default:
+                // 默认：简单的L型折线
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    // 水平距离更大：先水平移动一半，再垂直，再水平
+                    midPoint1 = { x: start.x + dx * 0.5, y: start.y };
+                    midPoint2 = { x: start.x + dx * 0.5, y: end.y };
+                } else {
+                    // 垂直距离更大：先垂直移动一半，再水平，再垂直
+                    midPoint1 = { x: start.x, y: start.y + dy * 0.5 };
+                    midPoint2 = { x: end.x, y: start.y + dy * 0.5 };
+                }
         }
+        
+        // 调整最后一点，考虑箭头偏移
+        const adjustedEnd = calculatePathEndPoint(end, midPoint2, 8, anchorPosition);
+        
+        points.push(midPoint1, midPoint2, adjustedEnd);
+        return points;
+    };
 
-        // 4. 对每个障碍物计算绕行路径
-        let bestPath = null;
-        let bestScore = Infinity;
-
-        // 尝试多种绕行策略
+    // 计算智能折线路径（自动绕过障碍）
+    const calculateSmartPolylinePath = (start, end, nodes, excludeIds, targetAnchorPosition) => {
+        // 首先尝试基本的折线路径
+        let points = calculatePolylinePath(start, end, targetAnchorPosition);
+        
+        // 检查路径每一段是否穿过障碍
+        let hasIntersection = false;
+        for (let i = 0; i < points.length - 1; i++) {
+            if (doesPathIntersectNode(points[i], points[i + 1], nodes, excludeIds)) {
+                hasIntersection = true;
+                break;
+            }
+        }
+        
+        // 如果没有障碍，返回基本折线
+        if (!hasIntersection) {
+            return points;
+        }
+        
+        // 如果有障碍，尝试绕行策略
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // 尝试不同的绕行策略
         const strategies = [
-            // 上方绕行
+            // 策略1：上方绕行
             () => {
-                const topPoints = [];
-                obstacles.forEach(obstacle => {
-                    topPoints.push({ x: start.x, y: obstacle.y - 10 });
-                    topPoints.push({ x: end.x, y: obstacle.y - 10 });
-                });
-                return [start, ...topPoints, end];
-            },
-            // 下方绕行
-            () => {
-                const bottomPoints = [];
-                obstacles.forEach(obstacle => {
-                    bottomPoints.push({ x: start.x, y: obstacle.y + obstacle.height + 10 });
-                    bottomPoints.push({ x: end.x, y: obstacle.y + obstacle.height + 10 });
-                });
-                return [start, ...bottomPoints, end];
-            },
-            // 左侧绕行
-            () => {
-                const leftPoints = [];
-                obstacles.forEach(obstacle => {
-                    leftPoints.push({ x: obstacle.x - 10, y: start.y });
-                    leftPoints.push({ x: obstacle.x - 10, y: end.y });
-                });
-                return [start, ...leftPoints, end];
-            },
-            // 右侧绕行
-            () => {
-                const rightPoints = [];
-                obstacles.forEach(obstacle => {
-                    rightPoints.push({ x: obstacle.x + obstacle.width + 10, y: start.y });
-                    rightPoints.push({ x: obstacle.x + obstacle.width + 10, y: end.y });
-                });
-                return [start, ...rightPoints, end];
-            },
-            // 组合绕行 (上-右-下)
-            () => {
-                const midY = (start.y + end.y) / 2;
-                const midX = (start.x + end.x) / 2;
+                const offset = Math.max(30, distance * 0.1);
                 return [
                     start,
-                    { x: start.x, y: midY - 20 },
-                    { x: end.x, y: midY - 20 },
-                    end
+                    { x: start.x, y: start.y - offset },
+                    { x: end.x, y: end.y - offset },
+                    calculatePathEndPoint(end, { x: end.x, y: end.y - offset }, 8, targetAnchorPosition)
                 ];
             },
-            // 组合绕行 (左-下-右)
+            // 策略2：下方绕行
             () => {
-                const midY = (start.y + end.y) / 2;
-                const midX = (start.x + end.x) / 2;
+                const offset = Math.max(30, distance * 0.1);
                 return [
                     start,
-                    { x: midX - 20, y: start.y },
-                    { x: midX - 20, y: end.y },
-                    end
+                    { x: start.x, y: start.y + offset },
+                    { x: end.x, y: end.y + offset },
+                    calculatePathEndPoint(end, { x: end.x, y: end.y + offset }, 8, targetAnchorPosition)
+                ];
+            },
+            // 策略3：左侧绕行
+            () => {
+                const offset = Math.max(30, distance * 0.1);
+                return [
+                    start,
+                    { x: start.x - offset, y: start.y },
+                    { x: end.x - offset, y: end.y },
+                    calculatePathEndPoint(end, { x: end.x - offset, y: end.y }, 8, targetAnchorPosition)
+                ];
+            },
+            // 策略4：右侧绕行
+            () => {
+                const offset = Math.max(30, distance * 0.1);
+                return [
+                    start,
+                    { x: start.x + offset, y: start.y },
+                    { x: end.x + offset, y: end.y },
+                    calculatePathEndPoint(end, { x: end.x + offset, y: end.y }, 8, targetAnchorPosition)
+                ];
+            },
+            // 策略5：S型绕行
+            () => {
+                const offset = Math.max(40, distance * 0.15);
+                return [
+                    start,
+                    { x: start.x + dx * 0.3, y: start.y - offset },
+                    { x: start.x + dx * 0.7, y: end.y + offset },
+                    calculatePathEndPoint(end, { x: start.x + dx * 0.7, y: end.y + offset }, 8, targetAnchorPosition)
                 ];
             }
         ];
-
-        // 评估每种绕行策略
-        strategies.forEach(strategy => {
-            const candidatePath = strategy();
+        
+        // 尝试每种策略，选择有效的路径
+        for (const strategy of strategies) {
+            const candidatePoints = strategy();
             let valid = true;
-            let pathLength = 0;
-
+            
             // 检查路径每一段是否有效
-            for (let i = 0; i < candidatePath.length - 1; i++) {
-                if (doesPathIntersectNode(candidatePath[i], candidatePath[i + 1], nodes, excludeIds)) {
+            for (let i = 0; i < candidatePoints.length - 1; i++) {
+                if (doesPathIntersectNode(candidatePoints[i], candidatePoints[i + 1], nodes, excludeIds)) {
                     valid = false;
                     break;
                 }
-                pathLength += Math.sqrt(
-                    Math.pow(candidatePath[i + 1].x - candidatePath[i].x, 2) +
-                    Math.pow(candidatePath[i + 1].y - candidatePath[i].y, 2)
-                );
             }
-
-            // 选择最短的有效路径
-            if (valid && pathLength < bestScore) {
-                bestScore = pathLength;
-                bestPath = candidatePath;
-            }
-        });
-
-        // 在返回路径前，调整最后一段的方向以匹配锚点方向
-        if (bestPath && bestPath.length > 1) {
-            const lastSegment = bestPath[bestPath.length - 2];
-            const targetPoint = bestPath[bestPath.length - 1];
-
-            switch (targetAnchorPosition) {
-                case 'top':
-                case 'bottom':
-                    // 垂直方向锚点 - 确保最后一段是垂直的
-                    lastSegment.x = targetPoint.x;
-                    break;
-                case 'left':
-                case 'right':
-                    // 水平方向锚点 - 确保最后一段是水平的
-                    lastSegment.y = targetPoint.y;
-                    break;
+            
+            if (valid) {
+                return candidatePoints;
             }
         }
-        // 如果找到有效路径则返回，否则返回直接路径
-        return bestPath
-            ? {
-                points: adjustLastSegment(bestPath, targetAnchorPosition),
-                intersects: true,
-                isStraightLine: false
-            }
-            : directPath;
+        
+        // 如果所有策略都失败，返回基本折线路径
+        return points;
     };
 
-    // 生成路径数据，确保最后一段与锚点方向对齐
-    const generatePathData = (points) => {
+    // 生成折线路径数据，类似语雀风格
+    const generatePathData = (points, anchorPosition) => {
         if (points.length < 2) return '';
 
         let path = `M ${points[0].x} ${points[0].y}`;
-
+        
+        // 如果是直线路径（只有2个点），直接返回直线
+        if (points.length === 2) {
+            path += ` L ${points[1].x} ${points[1].y}`;
+            return path;
+        }
+        
+        // 如果是绕行路径（points.length > 2），生成折线
+        // 保留原始中间点，生成折线路径
         for (let i = 1; i < points.length; i++) {
             path += ` L ${points[i].x} ${points[i].y}`;
         }
-
+        
         return path;
     };
 
@@ -1571,10 +1598,16 @@ const DecisionFlowTool = React.forwardRef(({
                             [conn.from.nodeId, conn.to.nodeId],
                             conn.to.anchorPosition
                         );
-                        // 计算箭头旋转角度
-                        const arrowRotation = calculateSmartArrowRotation(path.points,
-                            conn.to.anchorPosition,
-                            path.isStraightLine);
+                        // 计算箭头多边形
+                        const arrowPolygon = path.points.length >= 2
+                            ? calculateArrowPolygon(
+                                path.points[path.points.length - 1],
+                                path.points[path.points.length - 2],
+                                8,
+                                conn.to.anchorPosition
+                              )
+                            : '';
+                        
                         return (
                             <svg
                                 key={conn.id}
@@ -1589,27 +1622,15 @@ const DecisionFlowTool = React.forwardRef(({
                                     overflow: 'visible'
                                 }}
                             >
-                                <defs>
-                                    <marker
-                                        id={`arrowhead-${conn.id}`}
-                                        markerWidth="10"
-                                        markerHeight="7"
-                                        refX="9"
-                                        refY="3.5"
-                                        orient={arrowRotation}
-                                    >
-                                        <polygon points="0 0, 10 3.5, 0 7" fill={isFullScreen ? "#fff" : "#333"} />
-                                    </marker>
-                                </defs>
+                                {/* 连接线 */}
                                 <path
-                                    d={generatePathData(path.points)}
+                                    d={generatePathData(path.points, conn.to.anchorPosition)}
                                     stroke={selectedConnectionId === conn.id ? "#e74c3c" :
                                         (hoveredAnchor?.nodeId === conn.to.nodeId &&
                                             hoveredAnchor?.position === conn.to.anchorPosition) ? "#ff6b6b" :
                                             (isFullScreen ? "#fff" : "#333")}
                                     strokeWidth={selectedConnectionId === conn.id ? "4" : "2"}
                                     fill="none"
-                                    markerEnd={`url(#arrowhead-${conn.id})`}
                                     onClick={(e) => {
                                         if (readOnly) return;
                                         e.stopPropagation();
@@ -1618,6 +1639,21 @@ const DecisionFlowTool = React.forwardRef(({
                                     }}
                                     style={{ cursor: readOnly ? 'default' : 'pointer', pointerEvents: readOnly ? 'none' : 'visibleStroke' }}
                                 />
+                                {/* 箭头多边形 */}
+                                {arrowPolygon && (
+                                    <polygon
+                                        points={arrowPolygon}
+                                        fill={selectedConnectionId === conn.id ? "#e74c3c" :
+                                            (hoveredAnchor?.nodeId === conn.to.nodeId &&
+                                                hoveredAnchor?.position === conn.to.anchorPosition) ? "#ff6b6b" :
+                                                (isFullScreen ? "#fff" : "#333")}
+                                        stroke={selectedConnectionId === conn.id ? "#e74c3c" :
+                                            (hoveredAnchor?.nodeId === conn.to.nodeId &&
+                                                hoveredAnchor?.position === conn.to.anchorPosition) ? "#ff6b6b" :
+                                                (isFullScreen ? "#fff" : "#333")}
+                                        strokeWidth="1"
+                                    />
+                                )}
                             </svg>
                         );
                     })}
@@ -1648,7 +1684,6 @@ const DecisionFlowTool = React.forwardRef(({
                                 y2={(connectingStart.currentY - canvasTransform.translateY) / canvasTransform.scale}
                                 stroke={isFullScreen ? "#fff" : "#333"}
                                 strokeWidth="2"
-                                markerEnd="url(#arrowhead)"
                             />
                         </svg>
                     )}

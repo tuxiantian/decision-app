@@ -17,6 +17,28 @@ line {
     pointer-events: visibleStroke;
 }
 
+/* 连接线悬停效果 */
+path {
+    transition: stroke 0.2s ease, stroke-width 0.2s ease;
+}
+
+/* 连接线悬停状态 */
+path:hover {
+    stroke-width: 3px;
+    cursor: pointer;
+}
+
+/* 选中状态的连接线 */
+path.selected {
+    stroke-width: 4px;
+    animation: pulse 1.5s infinite;
+}
+
+/* 箭头多边形悬停效果 */
+polygon {
+    transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
 /* 顶部操作栏 */
 .toolbar-top {
     padding: 6px 12px;
